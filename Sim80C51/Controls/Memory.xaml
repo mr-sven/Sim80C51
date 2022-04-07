@@ -1,0 +1,71 @@
+﻿<UserControl x:Class="Sim80C51.Controls.Memory"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+             xmlns:local="clr-namespace:Sim80C51.Controls"
+             xmlns:tbx="clr-namespace:Sim80C51.Toolbox.Wpf;assembly=Sim80C51.Toolbox.Wpf"
+             mc:Ignorable="d" 
+             d:DesignHeight="450" d:DesignWidth="800">
+    <d:DesignerProperties.DesignStyle>
+        <Style TargetType="UserControl">
+            <Setter Property="Background" Value="White"/>
+        </Style>
+    </d:DesignerProperties.DesignStyle>
+    <UserControl.Resources>
+        <tbx:GreaterThanConverter x:Key="greaterThanConverter"/>
+        <tbx:ByteToHexadecimalConverter x:Key="ByteToHexadecimalConverter"/>
+    </UserControl.Resources>
+    <UserControl.ContextMenu>
+        <ContextMenu>
+            <MenuItem Header="Save" Command="{Binding SaveMemoryCommand}"/>
+        </ContextMenu>
+    </UserControl.ContextMenu>
+    <DataGrid AutoGenerateColumns="False" ItemsSource="{Binding Memory}" CanUserAddRows="False" CanUserSortColumns="False" FontFamily="Lucida Console"
+              CanUserResizeRows="False" CanUserResizeColumns="False" SelectionMode="Single" SelectionUnit="Cell" VerticalScrollBarVisibility="Auto" HorizontalScrollBarVisibility="Auto">
+        <DataGrid.Columns>
+            <DataGridTextColumn Header="+0" Binding="{Binding Row[0], Converter={StaticResource ByteToHexadecimalConverter}}"/>
+            <DataGridTextColumn Header="+1" Binding="{Binding Row[1], Converter={StaticResource ByteToHexadecimalConverter}}"/>
+            <DataGridTextColumn Header="+2" Binding="{Binding Row[2], Converter={StaticResource ByteToHexadecimalConverter}}"/>
+            <DataGridTextColumn Header="+3" Binding="{Binding Row[3], Converter={StaticResource ByteToHexadecimalConverter}}"/>
+            <DataGridTextColumn Header="+4" Binding="{Binding Row[4], Converter={StaticResource ByteToHexadecimalConverter}}"/>
+            <DataGridTextColumn Header="+5" Binding="{Binding Row[5], Converter={StaticResource ByteToHexadecimalConverter}}"/>
+            <DataGridTextColumn Header="+6" Binding="{Binding Row[6], Converter={StaticResource ByteToHexadecimalConverter}}"/>
+            <DataGridTextColumn Header="+7" Binding="{Binding Row[7], Converter={StaticResource ByteToHexadecimalConverter}}"/>
+            <DataGridTextColumn Header="+8" Binding="{Binding Row[8], Converter={StaticResource ByteToHexadecimalConverter}}"/>
+            <DataGridTextColumn Header="+9" Binding="{Binding Row[9], Converter={StaticResource ByteToHexadecimalConverter}}"/>
+            <DataGridTextColumn Header="+A" Binding="{Binding Row[10], Converter={StaticResource ByteToHexadecimalConverter}}"/>
+            <DataGridTextColumn Header="+B" Binding="{Binding Row[11], Converter={StaticResource ByteToHexadecimalConverter}}"/>
+            <DataGridTextColumn Header="+C" Binding="{Binding Row[12], Converter={StaticResource ByteToHexadecimalConverter}}"/>
+            <DataGridTextColumn Header="+D" Binding="{Binding Row[13], Converter={StaticResource ByteToHexadecimalConverter}}"/>
+            <DataGridTextColumn Header="+E" Binding="{Binding Row[14], Converter={StaticResource ByteToHexadecimalConverter}}"/>
+            <DataGridTextColumn Header="+F" Binding="{Binding Row[15], Converter={StaticResource ByteToHexadecimalConverter}}"/>
+            <DataGridTextColumn Header="Ansi" Binding="{Binding Ansi}" IsReadOnly="True"/>
+        </DataGrid.Columns>
+        <DataGrid.RowHeaderTemplate>
+            <DataTemplate>
+                <TextBlock Text="{Binding Item.Index, RelativeSource={RelativeSource AncestorType=DataGridRow}, StringFormat={}{0:X3}0}"></TextBlock>
+            </DataTemplate>
+        </DataGrid.RowHeaderTemplate>
+        <DataGrid.RowStyle>
+            <Style TargetType="DataGridRow">
+                <Style.Triggers>
+                    <MultiDataTrigger>
+                        <MultiDataTrigger.Conditions>
+                            <Condition Binding="{Binding Index, Converter={StaticResource greaterThanConverter}, ConverterParameter=7}" Value="True" />
+                            <Condition Binding="{Binding DataContext.MarkUpperInternalRam, RelativeSource={RelativeSource AncestorType=UserControl}}" Value="True" />
+                        </MultiDataTrigger.Conditions>
+                        <Setter Property="Background" Value="LightGoldenrodYellow"/>
+                    </MultiDataTrigger>
+                    <MultiDataTrigger>
+                        <MultiDataTrigger.Conditions>
+                            <Condition Binding="{Binding Index, Converter={StaticResource greaterThanConverter}, ConverterParameter=15}" Value="True" />
+                            <Condition Binding="{Binding DataContext.MarkUpperInternalRam, RelativeSource={RelativeSource AncestorType=UserControl}}" Value="True" />
+                        </MultiDataTrigger.Conditions>
+                        <Setter Property="Background" Value="LightBlue"/>
+                    </MultiDataTrigger>
+                </Style.Triggers>
+            </Style>
+        </DataGrid.RowStyle>
+    </DataGrid>
+</UserControl>

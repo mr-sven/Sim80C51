@@ -1,0 +1,112 @@
+﻿<UserControl x:Class="Sim80C51.Controls.ListingEditor"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+             xmlns:local="clr-namespace:Sim80C51.Controls"
+             xmlns:tbx="clr-namespace:Sim80C51.Toolbox.Wpf;assembly=Sim80C51.Toolbox.Wpf"
+             mc:Ignorable="d" MinHeight="200"
+             d:DesignHeight="450" d:DesignWidth="800">
+    <d:DesignerProperties.DesignStyle>
+        <Style TargetType="UserControl">
+            <Setter Property="Background" Value="White"/>
+        </Style>
+    </d:DesignerProperties.DesignStyle>
+    <UserControl.DataContext>
+        <local:ListingEditorContext/>
+    </UserControl.DataContext>
+    <ListView ScrollViewer.HorizontalScrollBarVisibility="Auto" ScrollViewer.VerticalScrollBarVisibility="Auto" Name="ListingView" IsSynchronizedWithCurrentItem="True" KeyDown="ListingView_KeyDown"
+                  SelectionMode="Single" SelectionChanged="ListingView_SelectionChanged"
+                  FontFamily="Lucida Console" Foreground="Black" ItemsSource="{Binding Listing}" KeyUp="ListView_KeyUp" SelectedItem="{Binding SelectedListingEntry}">
+        <ListView.Resources>
+            <Style TargetType="{x:Type ListViewItem}">
+                <Style.Triggers>
+                    <DataTrigger Value="True">
+                        <DataTrigger.Binding>
+                            <MultiBinding>
+                                <MultiBinding.Converter>
+                                    <tbx:EqualityConverter />
+                                </MultiBinding.Converter>
+                                <Binding Path="Address" />
+                                <Binding Path="DataContext.HighlightAddress" RelativeSource="{RelativeSource AncestorType=UserControl}" />
+                            </MultiBinding>
+                        </DataTrigger.Binding>
+                        <Setter Property="Background" Value="Aqua" />
+                    </DataTrigger>
+                </Style.Triggers>
+            </Style>
+        </ListView.Resources>
+        <ListView.View>
+            <GridView>
+                <GridViewColumn Header="Addr." Width="45" DisplayMemberBinding="{Binding Address, StringFormat={}{0:X4}}" />
+                <GridViewColumn Header="Data" Width="180" DisplayMemberBinding="{Binding DataString}" />
+                <GridViewColumn Header="Label" Width="150" DisplayMemberBinding="{Binding Label}" />
+                <GridViewColumn Header="Inst." Width="50" >
+                    <GridViewColumn.CellTemplate>
+                        <DataTemplate>
+                            <TextBlock x:Name="Txt" Text="{Binding Instruction}" />
+                            <DataTemplate.Triggers>
+                                <DataTrigger Binding="{Binding Instruction}" Value="RET">
+                                    <Setter TargetName="Txt" Property="Foreground" Value="Red" />
+                                </DataTrigger>
+                                <DataTrigger Binding="{Binding Instruction}" Value="RETI">
+                                    <Setter TargetName="Txt" Property="Foreground" Value="Red" />
+                                </DataTrigger>
+                                <DataTrigger Binding="{Binding Instruction}" Value="JMP">
+                                    <Setter TargetName="Txt" Property="Foreground" Value="GoldenRod" />
+                                </DataTrigger>
+                                <DataTrigger Binding="{Binding Instruction}" Value="AJMP">
+                                    <Setter TargetName="Txt" Property="Foreground" Value="GoldenRod" />
+                                </DataTrigger>
+                                <DataTrigger Binding="{Binding Instruction}" Value="LJMP">
+                                    <Setter TargetName="Txt" Property="Foreground" Value="GoldenRod" />
+                                </DataTrigger>
+                                <DataTrigger Binding="{Binding Instruction}" Value="SJMP">
+                                    <Setter TargetName="Txt" Property="Foreground" Value="GoldenRod" />
+                                </DataTrigger>
+                                <DataTrigger Binding="{Binding Instruction}" Value="DJNZ">
+                                    <Setter TargetName="Txt" Property="Foreground" Value="DarkOrange" />
+                                </DataTrigger>
+                                <DataTrigger Binding="{Binding Instruction}" Value="JBC">
+                                    <Setter TargetName="Txt" Property="Foreground" Value="DarkOrange" />
+                                </DataTrigger>
+                                <DataTrigger Binding="{Binding Instruction}" Value="JB">
+                                    <Setter TargetName="Txt" Property="Foreground" Value="DarkOrange" />
+                                </DataTrigger>
+                                <DataTrigger Binding="{Binding Instruction}" Value="JNB">
+                                    <Setter TargetName="Txt" Property="Foreground" Value="DarkOrange" />
+                                </DataTrigger>
+                                <DataTrigger Binding="{Binding Instruction}" Value="CJNE">
+                                    <Setter TargetName="Txt" Property="Foreground" Value="DarkOrange" />
+                                </DataTrigger>
+                                <DataTrigger Binding="{Binding Instruction}" Value="JC">
+                                    <Setter TargetName="Txt" Property="Foreground" Value="DarkOrange" />
+                                </DataTrigger>
+                                <DataTrigger Binding="{Binding Instruction}" Value="JNC">
+                                    <Setter TargetName="Txt" Property="Foreground" Value="DarkOrange" />
+                                </DataTrigger>
+                                <DataTrigger Binding="{Binding Instruction}" Value="JZ">
+                                    <Setter TargetName="Txt" Property="Foreground" Value="DarkOrange" />
+                                </DataTrigger>
+                                <DataTrigger Binding="{Binding Instruction}" Value="JNZ">
+                                    <Setter TargetName="Txt" Property="Foreground" Value="DarkOrange" />
+                                </DataTrigger>
+                                <DataTrigger Binding="{Binding Instruction}" Value="DB">
+                                    <Setter TargetName="Txt" Property="Foreground" Value="DarkTurquoise" />
+                                </DataTrigger>
+                            </DataTemplate.Triggers>
+                        </DataTemplate>
+                    </GridViewColumn.CellTemplate>
+                </GridViewColumn>
+                <GridViewColumn Header="Arguments" Width="300" DisplayMemberBinding="{Binding ArgumentString}" />
+                <GridViewColumn Header="Comment" Width="300">
+                    <GridViewColumn.CellTemplate>
+                        <DataTemplate>
+                            <TextBlock Text="{Binding Comment}" Foreground="Gray" />
+                        </DataTemplate>
+                    </GridViewColumn.CellTemplate>
+                </GridViewColumn>
+            </GridView>
+        </ListView.View>
+    </ListView>
+</UserControl>

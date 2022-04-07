@@ -1,0 +1,262 @@
+﻿<UserControl x:Class="Sim80C51.Controls.CPU.P80C552"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+             xmlns:local="clr-namespace:Sim80C51.Controls.CPU"
+             xmlns:proc="clr-namespace:Sim80C51.Processors" 
+             xmlns:tbx="clr-namespace:Sim80C51.Toolbox.Wpf;assembly=Sim80C51.Toolbox.Wpf"
+             mc:Ignorable="d" 
+             d:DesignHeight="250" d:DesignWidth="1000">
+    <d:DesignerProperties.DesignStyle>
+        <Style TargetType="UserControl">
+            <Setter Property="Background" Value="White"/>
+        </Style>
+    </d:DesignerProperties.DesignStyle>
+    <UserControl.DataContext>
+        <proc:P80C552/>
+    </UserControl.DataContext>
+    <UserControl.Resources>
+        <tbx:ByteToHexadecimalConverter x:Key="ByteToHexadecimalConverter"/>
+    </UserControl.Resources>
+    <ScrollViewer HorizontalScrollBarVisibility="Auto" VerticalScrollBarVisibility="Disabled">
+        <StackPanel Orientation="Horizontal">
+            <!--#region SFR -->
+            <GroupBox Header="Register">
+                <tbx:TwoColumnGrid RowSpacing="2" ColumnSpacing="4" Margin="5">
+                    <TextBlock VerticalAlignment="Center">R0:</TextBlock>
+                    <TextBox Width="20" Text="{Binding R0, Converter={StaticResource ByteToHexadecimalConverter}}"/>
+                    <TextBlock VerticalAlignment="Center">R1:</TextBlock>
+                    <TextBox Width="20" Text="{Binding R1, Converter={StaticResource ByteToHexadecimalConverter}}"/>
+                    <TextBlock VerticalAlignment="Center">R2:</TextBlock>
+                    <TextBox Width="20" Text="{Binding R2, Converter={StaticResource ByteToHexadecimalConverter}}"/>
+                    <TextBlock VerticalAlignment="Center">R3:</TextBlock>
+                    <TextBox Width="20" Text="{Binding R3, Converter={StaticResource ByteToHexadecimalConverter}}"/>
+                    <TextBlock VerticalAlignment="Center">R4:</TextBlock>
+                    <TextBox Width="20" Text="{Binding R4, Converter={StaticResource ByteToHexadecimalConverter}}"/>
+                    <TextBlock VerticalAlignment="Center">R5:</TextBlock>
+                    <TextBox Width="20" Text="{Binding R5, Converter={StaticResource ByteToHexadecimalConverter}}"/>
+                    <TextBlock VerticalAlignment="Center">R6:</TextBlock>
+                    <TextBox Width="20" Text="{Binding R6, Converter={StaticResource ByteToHexadecimalConverter}}"/>
+                    <TextBlock VerticalAlignment="Center">R7:</TextBlock>
+                    <TextBox Width="20" Text="{Binding R7, Converter={StaticResource ByteToHexadecimalConverter}}"/>
+                </tbx:TwoColumnGrid>
+            </GroupBox>
+            <GroupBox Header="Core / WDT">
+                <tbx:TwoColumnGrid RowSpacing="2" ColumnSpacing="4" Margin="5">
+                    <TextBlock VerticalAlignment="Center">ACC:</TextBlock>
+                    <TextBox Width="20" Text="{Binding ACC, Converter={StaticResource ByteToHexadecimalConverter}}"/>
+                    <TextBlock VerticalAlignment="Center">B:</TextBlock>
+                    <TextBox Width="20" Text="{Binding B, Converter={StaticResource ByteToHexadecimalConverter}}"/>
+                    <TextBlock VerticalAlignment="Center">PSW:</TextBlock>
+                    <TextBox Width="20" Text="{Binding PSW, Converter={StaticResource ByteToHexadecimalConverter}}"/>
+                    <TextBlock VerticalAlignment="Center">PCON:</TextBlock>
+                    <TextBox Width="20" Text="{Binding PCON, Converter={StaticResource ByteToHexadecimalConverter}}"/>
+                    <TextBlock VerticalAlignment="Center">SP:</TextBlock>
+                    <TextBox Width="20" Text="{Binding SP, Converter={StaticResource ByteToHexadecimalConverter}}"/>
+                    <TextBlock VerticalAlignment="Center">DPH:</TextBlock>
+                    <TextBox Width="20" Text="{Binding DPH, Converter={StaticResource ByteToHexadecimalConverter}}"/>
+                    <TextBlock VerticalAlignment="Center">DPL:</TextBlock>
+                    <TextBox Width="20" Text="{Binding DPL, Converter={StaticResource ByteToHexadecimalConverter}}"/>
+                    <TextBlock VerticalAlignment="Center">T3:</TextBlock>
+                    <TextBox Width="20" Text="{Binding T3, Converter={StaticResource ByteToHexadecimalConverter}}"/>
+                    <TextBlock VerticalAlignment="Center" TextDecorations="OverLine">EW:</TextBlock>
+                    <CheckBox IsChecked="{Binding EW}"/>
+                </tbx:TwoColumnGrid>
+            </GroupBox>
+            <GroupBox Header="IE / ADC">
+                <tbx:TwoColumnGrid RowSpacing="2" ColumnSpacing="4" Margin="5">
+                    <TextBlock VerticalAlignment="Center">IEN0:</TextBlock>
+                    <TextBox Width="20" Text="{Binding IEN0, Converter={StaticResource ByteToHexadecimalConverter}}"/>
+                    <TextBlock VerticalAlignment="Center">IEN1:</TextBlock>
+                    <TextBox Width="20" Text="{Binding IEN1, Converter={StaticResource ByteToHexadecimalConverter}}"/>
+                    <TextBlock VerticalAlignment="Center">IP0:</TextBlock>
+                    <TextBox Width="20" Text="{Binding IP0, Converter={StaticResource ByteToHexadecimalConverter}}"/>
+                    <TextBlock VerticalAlignment="Center">IP1:</TextBlock>
+                    <TextBox Width="20" Text="{Binding IP1, Converter={StaticResource ByteToHexadecimalConverter}}"/>
+                    <TextBlock VerticalAlignment="Center">ADCH:</TextBlock>
+                    <TextBox Width="20" Text="{Binding ADCH, Converter={StaticResource ByteToHexadecimalConverter}}"/>
+                    <TextBlock VerticalAlignment="Center">ADCON:</TextBlock>
+                    <TextBox Width="20" Text="{Binding ADCON, Converter={StaticResource ByteToHexadecimalConverter}}"/>
+                </tbx:TwoColumnGrid>
+            </GroupBox>
+            <GroupBox Header="Serial">
+                <tbx:TwoColumnGrid RowSpacing="2" ColumnSpacing="4" Margin="5">
+                    <TextBlock VerticalAlignment="Center">S0BUF:</TextBlock>
+                    <TextBox Width="20" Text="{Binding S0BUF, Converter={StaticResource ByteToHexadecimalConverter}}"/>
+                    <TextBlock VerticalAlignment="Center">S0CON:</TextBlock>
+                    <TextBox Width="20" Text="{Binding S0CON, Converter={StaticResource ByteToHexadecimalConverter}}"/>
+                    <TextBlock VerticalAlignment="Center">S1ADR:</TextBlock>
+                    <TextBox Width="20" Text="{Binding S1ADR, Converter={StaticResource ByteToHexadecimalConverter}}"/>
+                    <TextBlock VerticalAlignment="Center">S1DAT:</TextBlock>
+                    <TextBox Width="20" Text="{Binding S1DAT, Converter={StaticResource ByteToHexadecimalConverter}}"/>
+                    <TextBlock VerticalAlignment="Center">S1STA:</TextBlock>
+                    <TextBox Width="20" Text="{Binding S1STA, Converter={StaticResource ByteToHexadecimalConverter}}"/>
+                    <TextBlock VerticalAlignment="Center">S1CON:</TextBlock>
+                    <TextBox Width="20" Text="{Binding S1CON, Converter={StaticResource ByteToHexadecimalConverter}}"/>
+                </tbx:TwoColumnGrid>
+            </GroupBox>
+            <GroupBox Header="Ports">
+                <tbx:TwoColumnGrid RowSpacing="2" ColumnSpacing="4" Margin="5">
+                    <TextBlock VerticalAlignment="Center">P0:</TextBlock>
+                    <TextBox Width="20" Text="{Binding P0, Converter={StaticResource ByteToHexadecimalConverter}}"/>
+                    <TextBlock VerticalAlignment="Center">P1:</TextBlock>
+                    <TextBox Width="20" Text="{Binding P1, Converter={StaticResource ByteToHexadecimalConverter}}"/>
+                    <TextBlock VerticalAlignment="Center">P2:</TextBlock>
+                    <TextBox Width="20" Text="{Binding P2, Converter={StaticResource ByteToHexadecimalConverter}}"/>
+                    <TextBlock VerticalAlignment="Center">P3:</TextBlock>
+                    <TextBox Width="20" Text="{Binding P3, Converter={StaticResource ByteToHexadecimalConverter}}"/>
+                    <TextBlock VerticalAlignment="Center">P4:</TextBlock>
+                    <TextBox Width="20" Text="{Binding P4, Converter={StaticResource ByteToHexadecimalConverter}}"/>
+                    <TextBlock VerticalAlignment="Center">P5:</TextBlock>
+                    <TextBox Width="20" Text="{Binding P5, Converter={StaticResource ByteToHexadecimalConverter}}"/>
+                </tbx:TwoColumnGrid>
+            </GroupBox>
+            <GroupBox Header="PWM / T0 / T1">
+                <tbx:TwoColumnGrid RowSpacing="2" ColumnSpacing="4" Margin="5">
+                    <TextBlock VerticalAlignment="Center">PWMP:</TextBlock>
+                    <TextBox Width="20" Text="{Binding PWMP, Converter={StaticResource ByteToHexadecimalConverter}}"/>
+                    <TextBlock VerticalAlignment="Center">PWM0:</TextBlock>
+                    <TextBox Width="20" Text="{Binding PWM0, Converter={StaticResource ByteToHexadecimalConverter}}"/>
+                    <TextBlock VerticalAlignment="Center">PWM1:</TextBlock>
+                    <TextBox Width="20" Text="{Binding PWM1, Converter={StaticResource ByteToHexadecimalConverter}}"/>
+                    <TextBlock VerticalAlignment="Center">TMOD:</TextBlock>
+                    <TextBox Width="20" Text="{Binding TMOD, Converter={StaticResource ByteToHexadecimalConverter}}"/>
+                    <TextBlock VerticalAlignment="Center">TCON:</TextBlock>
+                    <TextBox Width="20" Text="{Binding TCON, Converter={StaticResource ByteToHexadecimalConverter}}"/>
+                    <TextBlock VerticalAlignment="Center">TH0:</TextBlock>
+                    <TextBox Width="20" Text="{Binding TH0, Converter={StaticResource ByteToHexadecimalConverter}}"/>
+                    <TextBlock VerticalAlignment="Center">TL0:</TextBlock>
+                    <TextBox Width="20" Text="{Binding TL0, Converter={StaticResource ByteToHexadecimalConverter}}"/>
+                    <TextBlock VerticalAlignment="Center">TH1:</TextBlock>
+                    <TextBox Width="20" Text="{Binding TH1, Converter={StaticResource ByteToHexadecimalConverter}}"/>
+                    <TextBlock VerticalAlignment="Center">TL1:</TextBlock>
+                    <TextBox Width="20" Text="{Binding TL1, Converter={StaticResource ByteToHexadecimalConverter}}"/>
+                </tbx:TwoColumnGrid>
+            </GroupBox>
+            <GroupBox Header="Timer 2">
+                <StackPanel Orientation="Horizontal">
+                    <tbx:TwoColumnGrid RowSpacing="2" ColumnSpacing="4" Margin="5">
+                        <TextBlock VerticalAlignment="Center">TM2CON:</TextBlock>
+                        <TextBox Width="20" Text="{Binding TM2CON, Converter={StaticResource ByteToHexadecimalConverter}}"/>
+                        <TextBlock VerticalAlignment="Center">TM2IR:</TextBlock>
+                        <TextBox Width="20" Text="{Binding TM2IR, Converter={StaticResource ByteToHexadecimalConverter}}"/>
+                        <TextBlock VerticalAlignment="Center">TMH2:</TextBlock>
+                        <TextBox Width="20" Text="{Binding TMH2, Converter={StaticResource ByteToHexadecimalConverter}}"/>
+                        <TextBlock VerticalAlignment="Center">TML2:</TextBlock>
+                        <TextBox Width="20" Text="{Binding TML2, Converter={StaticResource ByteToHexadecimalConverter}}"/>
+                        <TextBlock VerticalAlignment="Center">RTE:</TextBlock>
+                        <TextBox Width="20" Text="{Binding RTE, Converter={StaticResource ByteToHexadecimalConverter}}"/>
+                        <TextBlock VerticalAlignment="Center">STE:</TextBlock>
+                        <TextBox Width="20" Text="{Binding STE, Converter={StaticResource ByteToHexadecimalConverter}}"/>
+                        <TextBlock VerticalAlignment="Center">CTCON:</TextBlock>
+                        <TextBox Width="20" Text="{Binding CTCON, Converter={StaticResource ByteToHexadecimalConverter}}"/>
+                    </tbx:TwoColumnGrid>
+                    <tbx:TwoColumnGrid RowSpacing="2" ColumnSpacing="4" Margin="5">
+                        <TextBlock VerticalAlignment="Center">CTH0:</TextBlock>
+                        <TextBox Width="20" Text="{Binding CTH0, Converter={StaticResource ByteToHexadecimalConverter}}"/>
+                        <TextBlock VerticalAlignment="Center">CTL0:</TextBlock>
+                        <TextBox Width="20" Text="{Binding CTL0, Converter={StaticResource ByteToHexadecimalConverter}}"/>
+                        <TextBlock VerticalAlignment="Center">CTH1:</TextBlock>
+                        <TextBox Width="20" Text="{Binding CTH1, Converter={StaticResource ByteToHexadecimalConverter}}"/>
+                        <TextBlock VerticalAlignment="Center">CTL1:</TextBlock>
+                        <TextBox Width="20" Text="{Binding CTL1, Converter={StaticResource ByteToHexadecimalConverter}}"/>
+                        <TextBlock VerticalAlignment="Center">CTH2:</TextBlock>
+                        <TextBox Width="20" Text="{Binding CTH2, Converter={StaticResource ByteToHexadecimalConverter}}"/>
+                        <TextBlock VerticalAlignment="Center">CTL2:</TextBlock>
+                        <TextBox Width="20" Text="{Binding CTL2, Converter={StaticResource ByteToHexadecimalConverter}}"/>
+                        <TextBlock VerticalAlignment="Center">CTH3:</TextBlock>
+                        <TextBox Width="20" Text="{Binding CTH3, Converter={StaticResource ByteToHexadecimalConverter}}"/>
+                        <TextBlock VerticalAlignment="Center">CTL3:</TextBlock>
+                        <TextBox Width="20" Text="{Binding CTL3, Converter={StaticResource ByteToHexadecimalConverter}}"/>
+                    </tbx:TwoColumnGrid>
+                    <tbx:TwoColumnGrid RowSpacing="2" ColumnSpacing="4" Margin="5">
+                        <TextBlock VerticalAlignment="Center">CMH0:</TextBlock>
+                        <TextBox Width="20" Text="{Binding CMH0, Converter={StaticResource ByteToHexadecimalConverter}}"/>
+                        <TextBlock VerticalAlignment="Center">CML0:</TextBlock>
+                        <TextBox Width="20" Text="{Binding CML0, Converter={StaticResource ByteToHexadecimalConverter}}"/>
+                        <TextBlock VerticalAlignment="Center">CMH1:</TextBlock>
+                        <TextBox Width="20" Text="{Binding CMH1, Converter={StaticResource ByteToHexadecimalConverter}}"/>
+                        <TextBlock VerticalAlignment="Center">CML1:</TextBlock>
+                        <TextBox Width="20" Text="{Binding CML1, Converter={StaticResource ByteToHexadecimalConverter}}"/>
+                        <TextBlock VerticalAlignment="Center">CMH2:</TextBlock>
+                        <TextBox Width="20" Text="{Binding CMH2, Converter={StaticResource ByteToHexadecimalConverter}}"/>
+                        <TextBlock VerticalAlignment="Center">CML2:</TextBlock>
+                        <TextBox Width="20" Text="{Binding CML2, Converter={StaticResource ByteToHexadecimalConverter}}"/>
+                    </tbx:TwoColumnGrid>
+                </StackPanel>
+            </GroupBox>
+            <!--#endregion-->
+            <!--#region PSW / PC-->
+            <StackPanel Orientation="Vertical">
+                <GroupBox Header="PSW">
+                    <Grid>
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="25"/>
+                            <ColumnDefinition Width="25"/>
+                            <ColumnDefinition Width="25"/>
+                            <ColumnDefinition Width="25"/>
+                            <ColumnDefinition Width="25"/>
+                            <ColumnDefinition Width="25"/>
+                            <ColumnDefinition Width="25"/>
+                            <ColumnDefinition Width="25"/>
+                        </Grid.ColumnDefinitions>
+                        <Grid.RowDefinitions>
+                            <RowDefinition/>
+                            <RowDefinition/>
+                        </Grid.RowDefinitions>
+                        <TextBlock Grid.Column="0" HorizontalAlignment="Center">CY</TextBlock>
+                        <TextBlock Grid.Column="1" HorizontalAlignment="Center">AC</TextBlock>
+                        <TextBlock Grid.Column="2" HorizontalAlignment="Center">F0</TextBlock>
+                        <TextBlock Grid.Column="3" HorizontalAlignment="Center">RS1</TextBlock>
+                        <TextBlock Grid.Column="4" HorizontalAlignment="Center">RS0</TextBlock>
+                        <TextBlock Grid.Column="5" HorizontalAlignment="Center">OV</TextBlock>
+                        <TextBlock Grid.Column="6" HorizontalAlignment="Center">F1</TextBlock>
+                        <TextBlock Grid.Column="7" HorizontalAlignment="Center">P</TextBlock>
+                        <CheckBox Grid.Row="1" Grid.Column="0" HorizontalAlignment="Center" IsChecked="{Binding CY}"/>
+                        <CheckBox Grid.Row="1" Grid.Column="1" HorizontalAlignment="Center" IsChecked="{Binding AC}"/>
+                        <CheckBox Grid.Row="1" Grid.Column="2" HorizontalAlignment="Center" IsChecked="{Binding F0}"/>
+                        <CheckBox Grid.Row="1" Grid.Column="3" HorizontalAlignment="Center" IsChecked="{Binding RS1}"/>
+                        <CheckBox Grid.Row="1" Grid.Column="4" HorizontalAlignment="Center" IsChecked="{Binding RS0}"/>
+                        <CheckBox Grid.Row="1" Grid.Column="5" HorizontalAlignment="Center" IsChecked="{Binding OV}"/>
+                        <CheckBox Grid.Row="1" Grid.Column="6" HorizontalAlignment="Center" IsChecked="{Binding F1}"/>
+                        <CheckBox Grid.Row="1" Grid.Column="7" HorizontalAlignment="Center" IsChecked="{Binding P}"/>
+                    </Grid>
+                </GroupBox>
+                <GroupBox Header="16-Bit Vars">
+                    <StackPanel Orientation="Horizontal">
+                        <tbx:TwoColumnGrid RowSpacing="2" ColumnSpacing="4" Margin="5">
+                            <TextBlock>PC:</TextBlock>
+                            <TextBlock Text="{Binding PC, StringFormat={}{0:X4}}"/>
+                            <TextBlock>DPTR:</TextBlock>
+                            <TextBlock Text="{Binding DPTR, StringFormat={}{0:X4}}"/>
+                            <TextBlock>T0:</TextBlock>
+                            <TextBlock Text="{Binding TM0, StringFormat={}{0:X4}}"/>
+                            <TextBlock>T1:</TextBlock>
+                            <TextBlock Text="{Binding TM1, StringFormat={}{0:X4}}"/>
+                            <TextBlock>TM2:</TextBlock>
+                            <TextBlock Text="{Binding TM2, StringFormat={}{0:X4}}"/>
+                            <TextBlock>CT0:</TextBlock>
+                            <TextBlock Text="{Binding CT0, StringFormat={}{0:X4}}"/>
+                            <TextBlock>CT1:</TextBlock>
+                            <TextBlock Text="{Binding CT1, StringFormat={}{0:X4}}"/>
+                        </tbx:TwoColumnGrid>
+                        <tbx:TwoColumnGrid RowSpacing="2" ColumnSpacing="4" Margin="5">
+                            <TextBlock>CT2:</TextBlock>
+                            <TextBlock Text="{Binding CT2, StringFormat={}{0:X4}}"/>
+                            <TextBlock>CT3:</TextBlock>
+                            <TextBlock Text="{Binding CT3, StringFormat={}{0:X4}}"/>
+                            <TextBlock>CM0:</TextBlock>
+                            <TextBlock Text="{Binding CM0, StringFormat={}{0:X4}}"/>
+                            <TextBlock>CM1:</TextBlock>
+                            <TextBlock Text="{Binding CM1, StringFormat={}{0:X4}}"/>
+                            <TextBlock>CM2:</TextBlock>
+                            <TextBlock Text="{Binding CM2, StringFormat={}{0:X4}}"/>
+                        </tbx:TwoColumnGrid>
+                    </StackPanel>
+                </GroupBox>
+            </StackPanel>
+            <!--#endregion-->
+        </StackPanel>
+    </ScrollViewer>
+</UserControl>
