@@ -121,8 +121,8 @@ Bit fields on Ports P0 to P4 should not set the `Addressable` parameter, because
 
 ## Things to do
 
-- [] check the EA bit on IEN0 Register set to disable all Interrupts
-- [] adding HD44780 display control
-- [] display PWM out based on Crystal speed
-- [] show serial baud based on Crystal speed
-- [] many more
+- [ ] check the EA bit on IEN0 Register set to disable all Interrupts
+- [ ] adding HD44780 display control
+- [ ] display PWM out based on Crystal speed
+- [ ] show serial baud based on Crystal speed
+- [ ] many more
