@@ -101,9 +101,9 @@
                         </DockPanel>
                     </TabItem>
                 </TabControl>
-                <TabControl Grid.Row="1">
-                    <TabItem Header="Breakpoints">
-                        <ListBox ItemsSource="{Binding Breakpoints}">
+                <StackPanel Grid.Row="1" Orientation="Horizontal">
+                    <GroupBox Header="Breakpoints">
+                        <ListBox ItemsSource="{Binding Breakpoints}" Width="100">
                             <ListBox.ItemTemplate>
                                 <DataTemplate>
                                     <TextBlock Text="{Binding StringFormat=Address: {0:X4}}">
@@ -114,8 +114,12 @@
                                 </DataTemplate>
                             </ListBox.ItemTemplate>
                         </ListBox>
-                    </TabItem>
-                </TabControl>
+                    </GroupBox>
+                    <GroupBox Header="Labels">
+                        <ListBox Width="200">
+                        </ListBox>
+                    </GroupBox>
+                </StackPanel>
             </Grid>
             <GroupBox Header="Processor" DockPanel.Dock="Bottom" x:Name="cpuBox" Visibility="Collapsed"/>
             <ctl:ListingEditor x:Name="listingEditor"/>
