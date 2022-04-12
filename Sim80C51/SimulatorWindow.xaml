@@ -7,7 +7,7 @@
         xmlns:cpuctl="clr-namespace:Sim80C51.Controls.CPU"
         xmlns:ctl="clr-namespace:Sim80C51.Controls"
         mc:Ignorable="d"
-        Title="80C51 Simulator" Height="800" Width="1200" WindowStartupLocation="CenterScreen" Loaded="Window_Loaded">
+        Title="80C51 Simulator" Height="700" Width="1200" WindowStartupLocation="CenterScreen" Loaded="Window_Loaded">
     <Window.DataContext>
         <local:SimulatorWindowContext/>
     </Window.DataContext>
