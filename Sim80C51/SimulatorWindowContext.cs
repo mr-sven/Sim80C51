@@ -8,6 +8,7 @@ using System.IO.Compression;
 using System.Reflection;
 using System.Windows;
 using System.Windows.Controls;
+using System.Windows.Data;
 using System.Windows.Input;
 using System.Windows.Threading;
 using YamlDotNet.Serialization;
@@ -53,8 +54,12 @@ namespace Sim80C51
 
         public bool ProcessorActivated { get => processorActivated; set { processorActivated = value; DoPropertyChanged(); } }
         private bool processorActivated = false;
+
         public ObservableCollection<ushort> Breakpoints { get => breakpoints; }
         private readonly ObservableCollection<ushort> breakpoints = new();
+
+        public ICollectionView? LabelView { get => labelView; set { labelView = value; DoPropertyChanged(); } }
+        private ICollectionView? labelView;
         #endregion
 
         #region Init functions
@@ -123,6 +128,8 @@ namespace Sim80C51
             listingCtx!.AddBreakPoint = AddBreakPoint;
             stepTimer.Tick += new EventHandler(StepTimer_Tick);
             stepTimer.Interval = new TimeSpan(0, 0, 0, 0, 10);
+            LabelView = new CollectionViewSource() { Source = listingCtx.Listing }.View;
+            LabelView.Filter = (entry) => !string.IsNullOrEmpty((entry as ListingEntry)?.Label);
         }
         #endregion
 

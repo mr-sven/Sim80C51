@@ -11,6 +11,22 @@
     <Window.DataContext>
         <local:SimulatorWindowContext/>
     </Window.DataContext>
+    <Window.Resources>
+        <DataTemplate x:Key="HeaderTemplateArrowUp">
+            <DockPanel LastChildFill="True" Width="{Binding ActualWidth, RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type GridViewColumnHeader}}}">
+                <Path x:Name="arrowUp" StrokeThickness="1" Fill="Gray" Data="M 5,10 L 15,10 L 10,5 L 5,10" DockPanel.Dock="Right" Width="20" HorizontalAlignment="Right" Margin="5,0,5,0" SnapsToDevicePixels="True"/>
+                <TextBlock Text="{Binding }" />
+            </DockPanel>
+        </DataTemplate>
+
+        <DataTemplate x:Key="HeaderTemplateArrowDown">
+            <DockPanel LastChildFill="True" Width="{Binding ActualWidth, RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type GridViewColumnHeader}}}">
+                <Path x:Name="arrowDown" StrokeThickness="1" Fill="Gray"  Data="M 5,5 L 10,10 L 15,5 L 5,5" DockPanel.Dock="Right" Width="20" HorizontalAlignment="Right" Margin="5,0,5,0" SnapsToDevicePixels="True"/>
+                <TextBlock Text="{Binding }" />
+            </DockPanel>
+        </DataTemplate>
+
+    </Window.Resources>
     <DockPanel LastChildFill="True">
         <Menu DockPanel.Dock="Top">
             <MenuItem Header="_File" Height="25">
@@ -116,8 +132,27 @@
                         </ListBox>
                     </GroupBox>
                     <GroupBox Header="Labels">
-                        <ListBox Width="200">
-                        </ListBox>
+                        <ListView Width="200" ItemsSource="{Binding LabelView}" GridViewColumnHeader.Click="LabelView_Click">
+                            <ListView.View>
+                                <GridView>
+                                    <GridViewColumn DisplayMemberBinding="{Binding Address, StringFormat={}{0:X4}}">
+                                        <GridViewColumn.Header>
+                                            <GridViewColumnHeader Content="Addr." Padding="5,0,0,0" HorizontalContentAlignment="Left" MinWidth="60" Name="Address" />
+                                        </GridViewColumn.Header>
+                                    </GridViewColumn>
+                                    <GridViewColumn DisplayMemberBinding="{Binding Label}">
+                                        <GridViewColumn.Header>
+                                            <GridViewColumnHeader Content="Label" Padding="5,0,0,0" HorizontalContentAlignment="Left" MinWidth="90" Name="Label" />
+                                        </GridViewColumn.Header>
+                                    </GridViewColumn>
+                                </GridView>
+                            </ListView.View>
+                            <ListView.ItemContainerStyle>
+                                <Style TargetType="ListViewItem">
+                                    <EventSetter Event="MouseDoubleClick" Handler="LabelView_MouseDoubleClick" />
+                                </Style>
+                            </ListView.ItemContainerStyle>
+                        </ListView>
                     </GroupBox>
                 </StackPanel>
             </Grid>
