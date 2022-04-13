@@ -17,25 +17,28 @@ namespace Sim80C51.Controls
 
         private void ListView_KeyUp(object sender, KeyEventArgs e)
         {
-            if (e.Key == Key.C)
+            switch (e.Key)
             {
-                (DataContext as ListingEditorContext)?.CreateCode();
-            }
-            else if (e.Key == Key.L)
-            {
-                (DataContext as ListingEditorContext)?.UpdateLabel();
-            }
-            else if (e.Key == Key.K)
-            {
-                (DataContext as ListingEditorContext)?.UpdateComment();
-            }
-            else if (e.Key == Key.J)
-            {
-                (DataContext as ListingEditorContext)?.Jump();
-            }
-            else if (e.Key == Key.B)
-            {
-                (DataContext as ListingEditorContext)?.BreakPoint();
+                case Key.C:
+                    (DataContext as ListingEditorContext)?.CreateCode();
+                    break;
+                case Key.L:
+                    (DataContext as ListingEditorContext)?.UpdateLabel();
+                    break;
+                case Key.K:
+                    (DataContext as ListingEditorContext)?.UpdateComment();
+                    break;
+                case Key.J:
+                    (DataContext as ListingEditorContext)?.Jump();
+                    break;
+                case Key.B:
+                    (DataContext as ListingEditorContext)?.BreakPoint();
+                    break;
+                case Key.X:
+                    (DataContext as ListingEditorContext)?.ShowXRefs();
+                    break;
+                default:
+                    break;
             }
         }
 
@@ -48,6 +51,7 @@ namespace Sim80C51.Controls
                 Key.J,
                 Key.K,
                 Key.L,
+                Key.X,
             };
 
             if (ignore.Contains(e.Key))

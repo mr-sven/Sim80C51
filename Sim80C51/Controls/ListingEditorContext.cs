@@ -144,6 +144,17 @@ namespace Sim80C51.Controls
 
             AddBreakPoint?.Invoke(SelectedListingEntry.Address);
         }
+
+        public void ShowXRefs()
+        {
+            if (SelectedListingEntry == null || string.IsNullOrEmpty(SelectedListingEntry.Label))
+            {
+                return;
+            }
+
+            List<ListingEntry> xrefs = Listing.Where(e => e.Arguments.Count > 0 && e.Arguments.Last() == SelectedListingEntry.Label).ToList();
+            //TODO: Show xref window
+        }
         #endregion
 
         public ListingEntry? GetFromAddress(ushort address)
