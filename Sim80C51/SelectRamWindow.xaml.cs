@@ -38,9 +38,9 @@ namespace Sim80C51
             }
         }
 
-        public bool EnableMT48
+        public bool EnableM48T
         {
-            get { return MT48Enabled.IsChecked == true; }
+            get { return M48TEnabled.IsChecked == true; }
         }
 
         public int RamSize

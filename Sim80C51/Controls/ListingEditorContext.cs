@@ -153,6 +153,7 @@ namespace Sim80C51.Controls
             }
 
             List<ListingEntry> xrefs = Listing.Where(e => e.Arguments.Count > 0 && e.Arguments.Last() == SelectedListingEntry.Label).ToList();
+
             //TODO: Show xref window
         }
         #endregion

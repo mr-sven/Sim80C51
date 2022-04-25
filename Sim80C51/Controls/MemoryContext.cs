@@ -9,18 +9,18 @@ namespace Sim80C51.Controls
 {
     public class MemoryContext : NotifyPropertyChanged
     {
-        public const int MT48_ADDRESS_YEAR = -1;
-        public const int MT48_ADDRESS_MONTH = -2;
-        public const int MT48_ADDRESS_DATE = -3;
-        public const int MT48_ADDRESS_DAY = -4;
-        public const int MT48_ADDRESS_HOURS = -5;
-        public const int MT48_ADDRESS_MINUTES = -6;
-        public const int MT48_ADDRESS_SECONDS = -7;
-        public const int MT48_ADDRESS_CONTROL = -8;
+        public const int M48T_ADDRESS_YEAR = -1;
+        public const int M48T_ADDRESS_MONTH = -2;
+        public const int M48T_ADDRESS_DATE = -3;
+        public const int M48T_ADDRESS_DAY = -4;
+        public const int M48T_ADDRESS_HOURS = -5;
+        public const int M48T_ADDRESS_MINUTES = -6;
+        public const int M48T_ADDRESS_SECONDS = -7;
+        public const int M48T_ADDRESS_CONTROL = -8;
 
-        public const byte MT48_MASK_STOP = 0x80;
-        public const byte MT48_MASK_WRITE = 0x80;
-        public const byte MT48_MASK_READ = 0x40;
+        public const byte M48T_MASK_STOP = 0x80;
+        public const byte M48T_MASK_WRITE = 0x80;
+        public const byte M48T_MASK_READ = 0x40;
 
         public ObservableCollection<ByteRow>? Memory { get; set; }
 
@@ -31,7 +31,7 @@ namespace Sim80C51.Controls
         private readonly System.Windows.Threading.DispatcherTimer dispatcherTimer;
         private int memorySize = 0;
 
-        public bool MT48Mode => dispatcherTimer.IsEnabled;
+        public bool M48TMode => dispatcherTimer.IsEnabled;
 
         public ICommand SaveMemoryCommand { get; }
 
@@ -89,23 +89,23 @@ namespace Sim80C51.Controls
                 return;
             }
 
-            if ((this[memorySize + MT48_ADDRESS_SECONDS] & MT48_MASK_STOP) == MT48_MASK_STOP ||
-                (this[memorySize + MT48_ADDRESS_CONTROL] & MT48_MASK_READ) == MT48_MASK_READ ||
-                (this[memorySize + MT48_ADDRESS_CONTROL] & MT48_MASK_WRITE) == MT48_MASK_WRITE)
+            if ((this[memorySize + M48T_ADDRESS_SECONDS] & M48T_MASK_STOP) == M48T_MASK_STOP ||
+                (this[memorySize + M48T_ADDRESS_CONTROL] & M48T_MASK_READ) == M48T_MASK_READ ||
+                (this[memorySize + M48T_ADDRESS_CONTROL] & M48T_MASK_WRITE) == M48T_MASK_WRITE)
             {
                 return;
             }
 
-            CheckSetDateAddress(MT48_ADDRESS_YEAR, SplitDateValue(DateTime.Now.Year % 100));
-            CheckSetDateAddress(MT48_ADDRESS_MONTH, SplitDateValue(DateTime.Now.Month));
-            CheckSetDateAddress(MT48_ADDRESS_DATE, SplitDateValue(DateTime.Now.Day));
-            CheckSetDateAddress(MT48_ADDRESS_DAY, (byte)DateTime.Now.DayOfWeek);
-            CheckSetDateAddress(MT48_ADDRESS_HOURS, SplitDateValue(DateTime.Now.Hour));
-            CheckSetDateAddress(MT48_ADDRESS_MINUTES, SplitDateValue(DateTime.Now.Minute));
-            CheckSetDateAddress(MT48_ADDRESS_SECONDS, SplitDateValue(DateTime.Now.Second));
+            CheckSetDateAddress(M48T_ADDRESS_YEAR, SplitDateValue(DateTime.Now.Year % 100));
+            CheckSetDateAddress(M48T_ADDRESS_MONTH, SplitDateValue(DateTime.Now.Month));
+            CheckSetDateAddress(M48T_ADDRESS_DATE, SplitDateValue(DateTime.Now.Day));
+            CheckSetDateAddress(M48T_ADDRESS_DAY, (byte)DateTime.Now.DayOfWeek);
+            CheckSetDateAddress(M48T_ADDRESS_HOURS, SplitDateValue(DateTime.Now.Hour));
+            CheckSetDateAddress(M48T_ADDRESS_MINUTES, SplitDateValue(DateTime.Now.Minute));
+            CheckSetDateAddress(M48T_ADDRESS_SECONDS, SplitDateValue(DateTime.Now.Second));
         }
 
-        public void StartMT48Mode()
+        public void StartM48TMode()
         {
             if (Memory == null)
             {

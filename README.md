@@ -10,9 +10,9 @@ The current workspace state, including memories and CPU state can be saved and l
 
 You can add multiple external RAM spaces direct empty or load a binary to a definded XRAM address. 
 
-You can also enable MT48 Timekeeper function on every RAM block, it uses a `DispatcherTimer` to update the time in the MT48 time registers. It supports stop functionalities via the control registers. Write is not supported it will always update the time from current system clock.
+You can also enable M48T Timekeeper function on every RAM block, it uses a `DispatcherTimer` to update the time in the M48T time registers. It supports stop functionalities via the control registers. Write is not supported it will always update the time from current system clock.
 
-Empty RAMs are initialized with `0x00`, if using the MT48 mode the second half of the RAM is initialized with `0xff` which is default by my analysis.
+Empty RAMs are initialized with `0x00`, if using the M48T mode the second half of the RAM is initialized with `0xff` which is default by my analysis.
 
 At the moment it is possible to Single Step the CPU and to Play/Pause the execution.
 

@@ -7,6 +7,6 @@ namespace Sim80C51.WSpace
     {
         [YamlMember(ScalarStyle = ScalarStyle.Literal)]
         public string Memory { get; set; } = string.Empty;
-        public bool MT48Enabled { get; set; } = false;
+        public bool M48TEnabled { get; set; } = false;
     }
 }

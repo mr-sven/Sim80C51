@@ -165,7 +165,7 @@ namespace Sim80C51
                 wsp.XMem.Add(address, new WSpace.XMemConfig()
                 {
                     Memory = DataToBase64(xmemCtx[address].Memory!),
-                    MT48Enabled = xmemCtx[address].MT48Mode
+                    M48TEnabled = xmemCtx[address].M48TMode
                 });
             }
 
@@ -245,9 +245,9 @@ namespace Sim80C51
             foreach (ushort address in wsp.XMem.Keys)
             {
                 xmemCtx.Add(address, LoadXMemFromCompBase64(wsp.XMem[address].Memory));
-                if (wsp.XMem[address].MT48Enabled)
+                if (wsp.XMem[address].M48TEnabled)
                 {
-                    xmemCtx[address].StartMT48Mode();
+                    xmemCtx[address].StartM48TMode();
                 }
 
                 AddXMemTab(address, $"XMem at 0x{address:X4} size 0x{xmemCtx[address].Size:X4}");
@@ -350,14 +350,14 @@ namespace Sim80C51
 
             xmemCtx.Add(wnd.RamStartAddress, new()
             {
-                Memory = new(ByteRow.InitRows(size, wnd.EnableMT48)),
+                Memory = new(ByteRow.InitRows(size, wnd.EnableM48T)),
                 MarkUpperInternalRam = false,
                 Size = size
             });
 
-            if (wnd.EnableMT48)
+            if (wnd.EnableM48T)
             {
-                xmemCtx[wnd.RamStartAddress].StartMT48Mode();
+                xmemCtx[wnd.RamStartAddress].StartM48TMode();
             }
 
             AddXMemTab(wnd.RamStartAddress, $"XMem at 0x{wnd.RamStartAddress:X4} size 0x{size:X4}");
@@ -416,9 +416,9 @@ namespace Sim80C51
                 Size = file.Length
             });
 
-            if (wnd.EnableMT48)
+            if (wnd.EnableM48T)
             {
-                xmemCtx[wnd.RamStartAddress].StartMT48Mode();
+                xmemCtx[wnd.RamStartAddress].StartM48TMode();
             }
 
             AddXMemTab(wnd.RamStartAddress, $"XMem at 0x{wnd.RamStartAddress:X4} size 0x{file.Length:X4}");
