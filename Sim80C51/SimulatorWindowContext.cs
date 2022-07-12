@@ -43,6 +43,8 @@ namespace Sim80C51
 
         public ICommand NavToAddressCommand { get; }
 
+        public ICommand ExecIRQCommand { get; }
+
         #endregion
 
         #region Property Bindings
@@ -60,6 +62,9 @@ namespace Sim80C51
 
         public ICollectionView? LabelView { get => labelView; set { labelView = value; DoPropertyChanged(); } }
         private ICollectionView? labelView;
+
+        public ObservableCollection<Controls.IRQMenuItem> IRQMenuItems { get => irqMenuItems; set { irqMenuItems = value; DoPropertyChanged(); } }
+        private ObservableCollection<Controls.IRQMenuItem> irqMenuItems = new ();
         #endregion
 
         #region Init functions
@@ -81,7 +86,18 @@ namespace Sim80C51
 
             NavToAddressCommand = new RelayCommand(NavToAddressCommandExecute);
             GotoPcCommand = new RelayCommand(GotoPcCommandExecute);
+
+            ExecIRQCommand = new RelayCommand(ExecIRQCommandExecute);
             LoadDeviceList();
+        }
+
+        private void ExecIRQCommandExecute(object? obj)
+        {
+            if (obj is not Controls.IRQMenuItem irqItem || CPU == null)
+            {
+                return;
+            }
+            irqItem.Method!.Invoke(CPU, null);
         }
 
         private void NavToAddressCommandExecute(object? obj)
@@ -535,6 +551,33 @@ namespace Sim80C51
                     MarkUpperInternalRam = true,
                 }
             });
+
+            IEnumerable<MethodInfo> list = CPU.GetType().GetMethods().Where(m => m.GetCustomAttributes<Processors.IVAttribute>().Count() > 0);
+            foreach (MethodInfo mi in list)
+            {
+                byte priority = mi.GetCustomAttribute<Processors.IVAttribute>()?.Priority ?? 0;
+                string title = mi.Name.Substring("Interrupt_".Length);
+
+                InsertIRQSorted(new()
+                {
+                    Title = $"{title} ({priority})",
+                    Method = mi,
+                    Priority = priority
+                });
+            }
+        }
+
+        private void InsertIRQSorted(Controls.IRQMenuItem iItem)
+        {
+            for (int i = 0; i < IRQMenuItems.Count; i++)
+            {
+                if (iItem.Priority < IRQMenuItems[i].Priority)
+                {
+                    IRQMenuItems.Insert(i, iItem);
+                    return;
+                }
+            }
+            IRQMenuItems.Add(iItem);
         }
 
         private static string DataToBase64(ObservableCollection<ByteRow> data)
