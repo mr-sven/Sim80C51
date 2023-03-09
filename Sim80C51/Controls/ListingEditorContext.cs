@@ -30,8 +30,7 @@ namespace Sim80C51.Controls
         private ListingFactory? factory;
         private BinaryReader? reader;
 
-        public ListingCollection Listing { get => listing; }
-        private readonly ListingCollection listing = new();
+        public ListingCollection Listing { get; } = new();
 
         public ListingEntry? SelectedListingEntry { get => selectedListingEntry; set { selectedListingEntry = value; DoPropertyChanged(); } }
         private ListingEntry? selectedListingEntry;
@@ -172,7 +171,7 @@ namespace Sim80C51.Controls
         public void SetProcessorType(Type processorType)
         {
             factory = new(processorType);
-            factory.WithListing(listing);
+            factory.WithListing(Listing);
         }
 
         #region Load and save Listing or binary
@@ -304,7 +303,7 @@ namespace Sim80C51.Controls
         {
             byte[] buffer = Enumerable.Repeat((byte)0xff, memsize).ToArray();
 
-            foreach (ListingEntry entry in listing)
+            foreach (ListingEntry entry in Listing)
             {
                 Array.Copy(entry.Data.ToArray(), 0, buffer, entry.Address, entry.Data.Count);
             }
@@ -315,7 +314,7 @@ namespace Sim80C51.Controls
         public void SaveListingToStream(Stream stream)
         {
             using StreamWriter sw = new(stream, leaveOpen: true);
-            foreach (ListingEntry entry in listing.OrderBy(l => l.Address))
+            foreach (ListingEntry entry in Listing.OrderBy(l => l.Address))
             {
                 sw.WriteLine(entry.ToString());
             }

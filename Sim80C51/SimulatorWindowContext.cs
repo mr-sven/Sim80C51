@@ -25,191 +25,21 @@ namespace Sim80C51
         private readonly DispatcherTimer stepTimer = new();
         #endregion
 
-        #region Command Bindings
-        public ICommand LoadWorkspaceCommand { get; }
-        public ICommand SaveWorkspaceCommand { get; }
-        public ICommand ExitCommand { get; }
-        public ICommand ActivateDeviceConfigCommand { get; }
-
-        public ICommand ListingLoadCommand { get; }
-        public ICommand ListingSaveCommand { get; }
-
-        public ICommand AddExternalMemoryCommand { get; }
-        public ICommand LoadExternalMemoryCommand { get; }
-
-        public ICommand OneStepCommand { get; }
-        public ICommand PlayCommand { get; }
-        public ICommand GotoPcCommand { get; }        
-
-        public ICommand NavToAddressCommand { get; }
-
-        public ICommand ExecIRQCommand { get; }
-
-        #endregion
-
-        #region Property Bindings
-        public Dictionary<string, Type> ProcessorList { get => processorList; }
-        private readonly Dictionary<string, Type> processorList = new();
-
-        public Type? SelectedProcessor { get => selectedProcessor; set { selectedProcessor = value; DoPropertyChanged(); } }
-        private Type? selectedProcessor;
-
-        public bool ProcessorActivated { get => processorActivated; set { processorActivated = value; DoPropertyChanged(); } }
-        private bool processorActivated = false;
-
-        public ObservableCollection<ushort> Breakpoints { get => breakpoints; }
-        private readonly ObservableCollection<ushort> breakpoints = new();
-
-        public ICollectionView? LabelView { get => labelView; set { labelView = value; DoPropertyChanged(); } }
-        private ICollectionView? labelView;
-
-        public ObservableCollection<Controls.IRQMenuItem> IRQMenuItems { get => irqMenuItems; set { irqMenuItems = value; DoPropertyChanged(); } }
-        private ObservableCollection<Controls.IRQMenuItem> irqMenuItems = new ();
-        #endregion
-
-        #region Init functions
-        public SimulatorWindowContext()
-        {
-            LoadWorkspaceCommand = new RelayCommand(LoadWorkspaceCommandExecute);
-            SaveWorkspaceCommand = new RelayCommand(SaveWorkspaceCommandExecute);
-            ExitCommand = new RelayCommand((o) => Application.Current.Shutdown());
-            ActivateDeviceConfigCommand = new RelayCommand(ActivateDeviceConfigCommandExecute);
-
-            ListingLoadCommand = new RelayCommand(ListingLoadCommandExecute);
-            ListingSaveCommand = new RelayCommand(ListingSaveCommandExecute);
-
-            AddExternalMemoryCommand = new RelayCommand(AddExternalMemoryCommandExecute);
-            LoadExternalMemoryCommand = new RelayCommand(LoadExternalMemoryCommandExecute);
-
-            OneStepCommand = new RelayCommand(OneStepCommandExecute);
-            PlayCommand = new RelayCommand(PlayCommandExecute);
-
-            NavToAddressCommand = new RelayCommand(NavToAddressCommandExecute);
-            GotoPcCommand = new RelayCommand(GotoPcCommandExecute);
-
-            ExecIRQCommand = new RelayCommand(ExecIRQCommandExecute);
-            LoadDeviceList();
-        }
-
-        private void ExecIRQCommandExecute(object? obj)
-        {
-            if (obj is not Controls.IRQMenuItem irqItem || CPU == null)
-            {
-                return;
-            }
-            irqItem.Method!.Invoke(CPU, null);
-        }
-
-        private void NavToAddressCommandExecute(object? obj)
-        {
-            if (obj is ushort address && listingCtx?.GetFromAddress(address) is ListingEntry entry)
-            {
-                listingCtx.SelectedListingEntry = entry;
-            }
-        }
-
-        private void GotoPcCommandExecute(object? obj)
-        {
-            if (listingCtx?.GetFromAddress(CPU!.PC) is ListingEntry entry)
-            {
-                listingCtx.SelectedListingEntry = entry;
-            }
-        }
-
-        private void LoadDeviceList()
-        {
-            foreach (Type procType in Assembly.GetExecutingAssembly().GetTypes().Where(mytype => mytype.GetInterfaces().Contains(typeof(Processors.I80C51))))
-            {
-                if (procType.GetCustomAttribute<DisplayNameAttribute>() is DisplayNameAttribute nameAttr)
-                {
-                    ProcessorList.Add(nameAttr.DisplayName, procType);
-                }
-            }
-
-            /*
-            string filepath = Path.Combine(AppContext.BaseDirectory, "device");
-            DirectoryInfo deviceDataDir = new(filepath);
-            IDeserializer serializer = new DeserializerBuilder().Build();
-
-            foreach (FileInfo file in deviceDataDir.GetFiles("*.yml"))
-            {
-                deviceConfigList.Add(serializer.Deserialize<DeviceConfig>(File.ReadAllText(Path.Combine(filepath, file.Name))));
-            }*/
-        }
-
-        public void Loaded(SimulatorWindow simulatorWindow)
-        {
-            owner = simulatorWindow;
-            listingCtx = simulatorWindow.listingEditor.DataContext as Controls.ListingEditorContext;
-            listingCtx!.AddBreakPoint = AddBreakPoint;
-            stepTimer.Tick += new EventHandler(StepTimer_Tick);
-            stepTimer.Interval = new TimeSpan(0, 0, 0, 0, 10);
-            LabelView = new CollectionViewSource() { Source = listingCtx.Listing }.View;
-            LabelView.Filter = (entry) => !string.IsNullOrEmpty((entry as ListingEntry)?.Label);
-        }
-        #endregion
-
-        #region Command executor
-        private void SaveWorkspaceCommandExecute(object? obj)
-        {
-            if (listingCtx == null || CPU == null || SelectedProcessor == null)
-            {
-                return;
-            }
-
-            SaveFileDialog saveFileDialog = new();
-            saveFileDialog.DefaultExt = "s80c51.yml";
-            saveFileDialog.Filter = "Workspace Files (*.s80c51.yml)|*.s80c51.yml";
-            saveFileDialog.Title = "Save Workspace";
-            saveFileDialog.CheckPathExists = true;
-            saveFileDialog.OverwritePrompt = true;
-            if (saveFileDialog.ShowDialog(owner) == false)
-            {
-                return;
-            }
-
-            WSpace.Workspace wsp = new();
-            wsp.ProgramCounter = CPU.PC;
-            if (SelectedProcessor.GetCustomAttribute<DisplayNameAttribute>() is DisplayNameAttribute nameAttr)
-            {
-                wsp.ProcessorType = nameAttr.DisplayName;
-            }
-            wsp.InternalMemory = DataToBase64(CPU.CoreMemory);
-
-            foreach (ushort address in xmemCtx.Keys)
-            {
-                wsp.XMem.Add(address, new WSpace.XMemConfig()
-                {
-                    Memory = DataToBase64(xmemCtx[address].Memory!),
-                    M48TEnabled = xmemCtx[address].M48TMode
-                });
-            }
-
-            using (MemoryStream ms = new())
-            {
-                listingCtx.SaveListingToStream(ms);
-                ms.Position = 0;
-                wsp.Listing = StreamToCompressedBase64(ms);
-            }
-
-            wsp.Breakpoints.AddRange(Breakpoints);
-            using StreamWriter writer = File.CreateText(saveFileDialog.FileName);
-            Serializer serializer = new();
-            serializer.Serialize(writer, wsp);
-        }
-
-        private void LoadWorkspaceCommandExecute(object? obj)
+        #region Workspace commands
+        public ICommand LoadWorkspaceCommand => new RelayCommand((o) =>
         {
             if (ProcessorActivated)
             {
                 return;
             }
 
-            OpenFileDialog openFileDialog = new();
-            openFileDialog.DefaultExt = "s80c51.yml";
-            openFileDialog.Filter = "Workspace Files (*.s80c51.yml)|*.s80c51.yml";
-            openFileDialog.Title = "Load Workspace";
-            openFileDialog.CheckFileExists = true;
+            OpenFileDialog openFileDialog = new()
+            {
+                DefaultExt = "s80c51.yml",
+                Filter = "Workspace Files (*.s80c51.yml)|*.s80c51.yml",
+                Title = "Load Workspace",
+                CheckFileExists = true
+            };
             if (openFileDialog.ShowDialog(owner) == false)
             {
                 return;
@@ -256,7 +86,7 @@ namespace Sim80C51
             foreach (ushort address in wsp.Breakpoints)
             {
                 Breakpoints.Add(address);
-            }               
+            }
 
             foreach (ushort address in wsp.XMem.Keys)
             {
@@ -268,26 +98,79 @@ namespace Sim80C51
 
                 AddXMemTab(address, $"XMem at 0x{address:X4} size 0x{xmemCtx[address].Size:X4}");
             }
-        }
+        });
+        public ICommand SaveWorkspaceCommand => new RelayCommand((o) =>
+        {
+            if (listingCtx == null || CPU == null || SelectedProcessor == null)
+            {
+                return;
+            }
 
-        private void ActivateDeviceConfigCommandExecute(object? obj)
+            SaveFileDialog saveFileDialog = new()
+            {
+                DefaultExt = "s80c51.yml",
+                Filter = "Workspace Files (*.s80c51.yml)|*.s80c51.yml",
+                Title = "Save Workspace",
+                CheckPathExists = true,
+                OverwritePrompt = true
+            };
+            if (saveFileDialog.ShowDialog(owner) == false)
+            {
+                return;
+            }
+
+            WSpace.Workspace wsp = new()
+            {
+                ProgramCounter = CPU.PC,
+                InternalMemory = DataToBase64(CPU.CoreMemory)
+            };
+            if (SelectedProcessor.GetCustomAttribute<DisplayNameAttribute>() is DisplayNameAttribute nameAttr)
+            {
+                wsp.ProcessorType = nameAttr.DisplayName;
+            }
+
+            foreach (ushort address in xmemCtx.Keys)
+            {
+                wsp.XMem.Add(address, new WSpace.XMemConfig()
+                {
+                    Memory = DataToBase64(xmemCtx[address].Memory!),
+                    M48TEnabled = xmemCtx[address].M48TMode
+                });
+            }
+
+            using (MemoryStream ms = new())
+            {
+                listingCtx.SaveListingToStream(ms);
+                ms.Position = 0;
+                wsp.Listing = StreamToCompressedBase64(ms);
+            }
+
+            wsp.Breakpoints.AddRange(Breakpoints);
+            using StreamWriter writer = File.CreateText(saveFileDialog.FileName);
+            Serializer serializer = new();
+            serializer.Serialize(writer, wsp);
+        });
+        public static ICommand ExitCommand => new RelayCommand((o) => Application.Current.Shutdown());
+        public ICommand ActivateDeviceConfigCommand => new RelayCommand((o) =>
         {
             ProcessorActivated = true;
             InitCPU();
-        }
+        });
 
-        private void ListingLoadCommandExecute(object? obj)
+        public ICommand ListingLoadCommand => new RelayCommand((o) =>
         {
             if (SelectedProcessor == null || listingCtx == null)
             {
                 return;
             }
 
-            OpenFileDialog openFileDialog = new();
-            openFileDialog.DefaultExt = "l51";
-            openFileDialog.Filter = "Listing File or Binary (*.l51,*.bin,*.hex,*.h51)|*.l51;*.bin;*.hex;*.h51|Listing File (*.l51)|*.l51|Binary File (*.bin)|*.bin|Intel HEX File (*.hex;*.h51)|*.hex;*.h51";
-            openFileDialog.Title = "Load Listing or ROM Binary";
-            openFileDialog.CheckFileExists = true;
+            OpenFileDialog openFileDialog = new()
+            {
+                DefaultExt = "l51",
+                Filter = "Listing File or Binary (*.l51,*.bin,*.hex,*.h51)|*.l51;*.bin;*.hex;*.h51|Listing File (*.l51)|*.l51|Binary File (*.bin)|*.bin|Intel HEX File (*.hex;*.h51)|*.hex;*.h51",
+                Title = "Load Listing or ROM Binary",
+                CheckFileExists = true
+            };
             if (openFileDialog.ShowDialog(owner) == false)
             {
                 return;
@@ -295,7 +178,7 @@ namespace Sim80C51
 
             listingCtx.SetProcessorType(SelectedProcessor);
             string ext = Path.GetExtension(openFileDialog.FileName);
-            switch(ext)
+            switch (ext)
             {
                 case ".l51":
                     listingCtx.LoadFromListingStream(File.OpenRead(openFileDialog.FileName));
@@ -308,30 +191,31 @@ namespace Sim80C51
                     listingCtx.LoadRomHexFile(openFileDialog.FileName);
                     break;
             }
-        }
-
-        private void ListingSaveCommandExecute(object? obj)
+        });
+        public ICommand ListingSaveCommand => new RelayCommand((o) =>
         {
             if (listingCtx == null)
             {
                 return;
             }
 
-            SaveFileDialog saveFileDialog = new();
-            saveFileDialog.DefaultExt = "l51";
-            saveFileDialog.Filter = "Listing Files (*.l51)|*.l51";
-            saveFileDialog.Title = "Save Listing";
-            saveFileDialog.CheckPathExists = true;
-            saveFileDialog.OverwritePrompt = true;
+            SaveFileDialog saveFileDialog = new()
+            {
+                DefaultExt = "l51",
+                Filter = "Listing Files (*.l51)|*.l51",
+                Title = "Save Listing",
+                CheckPathExists = true,
+                OverwritePrompt = true
+            };
             if (saveFileDialog.ShowDialog(owner) == false)
             {
                 return;
             }
 
             listingCtx.SaveListingToStream(File.OpenWrite(saveFileDialog.FileName));
-        }
+        });
 
-        private void AddExternalMemoryCommandExecute(object? obj)
+        public ICommand AddExternalMemoryCommand => new RelayCommand((o) =>
         {
             if (owner == null)
             {
@@ -377,9 +261,8 @@ namespace Sim80C51
             }
 
             AddXMemTab(wnd.RamStartAddress, $"XMem at 0x{wnd.RamStartAddress:X4} size 0x{size:X4}");
-        }
-
-        private void LoadExternalMemoryCommandExecute(object? obj)
+        });
+        public ICommand LoadExternalMemoryCommand => new RelayCommand((o) =>
         {
             if (owner == null)
             {
@@ -438,21 +321,20 @@ namespace Sim80C51
             }
 
             AddXMemTab(wnd.RamStartAddress, $"XMem at 0x{wnd.RamStartAddress:X4} size 0x{file.Length:X4}");
-
-        }
+        });
         #endregion
 
         #region Simulator commands
-        private void OneStepCommandExecute(object? obj)
+        public ICommand OneStepCommand => new RelayCommand((o) =>
         {
             if (listingCtx?.GetFromAddress(CPU!.PC) is ListingEntry entry)
             {
                 CPU.Process(entry);
                 listingCtx.HighlightAddress = CPU.PC;
             }
-        }
+        });
 
-        private void PlayCommandExecute(object? obj)
+        public ICommand PlayCommand => new RelayCommand((o) =>
         {
             if (stepTimer.IsEnabled)
             {
@@ -462,7 +344,91 @@ namespace Sim80C51
             {
                 stepTimer.Start();
             }
+        });
+
+        public ICommand ExecIRQCommand => new RelayCommand((o) =>
+        {
+            if (o is not Controls.IRQMenuItem irqItem || CPU == null)
+            {
+                return;
+            }
+            irqItem.Method!.Invoke(CPU, null);
+        });
+        #endregion
+
+        #region Navigate Commands
+        public ICommand GotoPcCommand => new RelayCommand((o) =>
+        {
+            if (listingCtx?.GetFromAddress(CPU!.PC) is ListingEntry entry)
+            {
+                listingCtx.SelectedListingEntry = entry;
+            }
+        });
+
+        public ICommand NavToAddressCommand => new RelayCommand((o) =>
+        {
+            if (o is ushort address && listingCtx?.GetFromAddress(address) is ListingEntry entry)
+            {
+                listingCtx.SelectedListingEntry = entry;
+            }
+        });
+        #endregion
+
+        #region Property Bindings
+        public Dictionary<string, Type> ProcessorList { get; } = new();
+
+        public Type? SelectedProcessor { get => selectedProcessor; set { selectedProcessor = value; DoPropertyChanged(); } }
+        private Type? selectedProcessor;
+
+        public bool ProcessorActivated { get => processorActivated; set { processorActivated = value; DoPropertyChanged(); } }
+        private bool processorActivated = false;
+
+        public ObservableCollection<ushort> Breakpoints { get; } = new();
+
+        public ICollectionView? LabelView { get => labelView; set { labelView = value; DoPropertyChanged(); } }
+        private ICollectionView? labelView;
+
+        public ObservableCollection<Controls.IRQMenuItem> IRQMenuItems { get; } = new ();
+        #endregion
+
+        #region Init functions
+        public SimulatorWindowContext()
+        {
+            LoadDeviceList();
         }
+
+        private void LoadDeviceList()
+        {
+            foreach (Type procType in Assembly.GetExecutingAssembly().GetTypes().Where(mytype => mytype.GetInterfaces().Contains(typeof(Processors.I80C51))))
+            {
+                if (procType.GetCustomAttribute<DisplayNameAttribute>() is DisplayNameAttribute nameAttr)
+                {
+                    ProcessorList.Add(nameAttr.DisplayName, procType);
+                }
+            }
+
+            /*
+            string filepath = Path.Combine(AppContext.BaseDirectory, "device");
+            DirectoryInfo deviceDataDir = new(filepath);
+            IDeserializer serializer = new DeserializerBuilder().Build();
+
+            foreach (FileInfo file in deviceDataDir.GetFiles("*.yml"))
+            {
+                deviceConfigList.Add(serializer.Deserialize<DeviceConfig>(File.ReadAllText(Path.Combine(filepath, file.Name))));
+            }*/
+        }
+
+        public void Loaded(SimulatorWindow simulatorWindow)
+        {
+            owner = simulatorWindow;
+            listingCtx = simulatorWindow.listingEditor.DataContext as Controls.ListingEditorContext;
+            listingCtx!.AddBreakPoint = AddBreakPoint;
+            stepTimer.Tick += new EventHandler(StepTimer_Tick);
+            stepTimer.Interval = new TimeSpan(0, 0, 0, 0, 10);
+            LabelView = new CollectionViewSource() { Source = listingCtx.Listing }.View;
+            LabelView.Filter = (entry) => !string.IsNullOrEmpty((entry as ListingEntry)?.Label);
+        }
+        #endregion
 
         private void StepTimer_Tick(object? sender, EventArgs e)
         {
@@ -477,7 +443,6 @@ namespace Sim80C51
             }
             stepTimer.Stop();
         }
-        #endregion
 
         private void AddBreakPoint(ushort address)
         {
@@ -552,11 +517,11 @@ namespace Sim80C51
                 }
             });
 
-            IEnumerable<MethodInfo> list = CPU.GetType().GetMethods().Where(m => m.GetCustomAttributes<Processors.IVAttribute>().Count() > 0);
+            IEnumerable<MethodInfo> list = CPU.GetType().GetMethods().Where(m => m.GetCustomAttributes<Processors.IVAttribute>().Any());
             foreach (MethodInfo mi in list)
             {
                 byte priority = mi.GetCustomAttribute<Processors.IVAttribute>()?.Priority ?? 0;
-                string title = mi.Name.Substring("Interrupt_".Length);
+                string title = mi.Name["Interrupt_".Length..];
 
                 InsertIRQSorted(new()
                 {

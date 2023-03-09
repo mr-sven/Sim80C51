@@ -24,7 +24,7 @@ namespace Sim80C51.Toolbox.Wpf
         const int SWP_NOMOVE = 0x0002;
         const int SWP_NOZORDER = 0x0004;
         const int SWP_FRAMECHANGED = 0x0020;
-        const uint WM_SETICON = 0x0080;
+        //const uint WM_SETICON = 0x0080;
 
         public static void RemoveIcon(Window window)
         {

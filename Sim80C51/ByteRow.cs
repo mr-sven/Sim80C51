@@ -8,8 +8,7 @@ namespace Sim80C51
     {
         public const int ROW_WIDTH = 16;
 
-        public ObservableCollection<byte> Row { get => row; }
-        private readonly ObservableCollection<byte> row;
+        public ObservableCollection<byte> Row { get; }
 
         public int Index { get; }
 
@@ -31,7 +30,7 @@ namespace Sim80C51
         public ByteRow(int index, byte initValue = 0x00)
         {
             Index = index;
-            row = new(Enumerable.Repeat(initValue, ROW_WIDTH).ToArray());
+            Row = new(Enumerable.Repeat(initValue, ROW_WIDTH).ToArray());
             Row.CollectionChanged += Row_CollectionChanged;
         }
 
@@ -40,14 +39,14 @@ namespace Sim80C51
             Index = index;
             if (data.Length >= ROW_WIDTH)
             {
-                row = new(data[..ROW_WIDTH]);
+                Row = new(data[..ROW_WIDTH]);
             }
             else
             {
-                row = new(data);
-                while (row.Count < ROW_WIDTH)
+                Row = new(data);
+                while (Row.Count < ROW_WIDTH)
                 {
-                    row.Add(0x00);
+                    Row.Add(0x00);
                 }
             }
             Row.CollectionChanged += Row_CollectionChanged;
