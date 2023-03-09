@@ -145,10 +145,7 @@ namespace Sim80C51.Common
 
         public ListingCollection Build(BinaryReader br, string? label = "RESET")
         {
-            if (listing == null)
-            {
-                listing = new();
-            }
+            listing ??= new();
 
             Stack<ListingEntry> branches = new();
 

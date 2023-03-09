@@ -6,14 +6,11 @@
     <ImplicitUsings>enable</ImplicitUsings>
     <Nullable>enable</Nullable>
     <UseWPF>true</UseWPF>
+    <Authors>Sven Fabricius</Authors>
   </PropertyGroup>
 
   <ItemGroup>
     <PackageReference Include="YamlDotNet" Version="11.2.1" />
-  </ItemGroup>
-
-  <ItemGroup>
-    <ProjectReference Include="..\Sim80C51.Toolbox.Wpf\Sim80C51.Toolbox.Wpf.csproj" />
   </ItemGroup>
 
   <ItemGroup>

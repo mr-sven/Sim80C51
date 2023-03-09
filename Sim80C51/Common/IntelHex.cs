@@ -90,10 +90,13 @@ namespace Sim80C51.Common
 				return null;
 			}
 
-			IntelHexStructure irec = new();
-			irec.type = type;
-			irec.address = address;
-			if (data != null)
+            IntelHexStructure irec = new()
+            {
+                type = type,
+                address = address,
+                dataLen = dataLen
+            };
+            if (data != null)
             {
                 Array.Copy(data, irec.data, (long)dataLen);
             }

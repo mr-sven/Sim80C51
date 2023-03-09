@@ -466,7 +466,7 @@ namespace Sim80C51
 
         private void StepTimer_Tick(object? sender, EventArgs e)
         {
-            if (listingCtx?.GetFromAddress(CPU!.PC) is ListingEntry entry)
+            if (listingCtx?.GetFromAddress(CPU!.PC) is ListingEntry entry && entry.Instruction != InstructionType.DB)
             {
                 CPU.Process(entry);
                 listingCtx.HighlightAddress = CPU.PC;

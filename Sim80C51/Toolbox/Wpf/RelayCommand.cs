@@ -54,10 +54,7 @@ namespace Sim80C51.Toolbox.Wpf
         public void OnCanExecuteChanged()
         {
             EventHandler? handler = CanExecuteChangedInternal;
-            if (handler != null)
-            {
-                handler.Invoke(this, EventArgs.Empty);
-            }
+            handler?.Invoke(this, EventArgs.Empty);
         }
 
         public void Destroy()
