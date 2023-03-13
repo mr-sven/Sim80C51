@@ -10,6 +10,7 @@ namespace Sim80C51.Controls
     /// </summary>
     public partial class ListingEditor : UserControl
     {
+        public ListingEditorContext Model => (DataContext as ListingEditorContext)!;
         public ListingEditor()
         {
             InitializeComponent();
@@ -19,23 +20,26 @@ namespace Sim80C51.Controls
         {
             switch (e.Key)
             {
+                case Key.B:
+                    Model.BreakPoint();
+                    break;
                 case Key.C:
-                    (DataContext as ListingEditorContext)?.CreateCode();
-                    break;
-                case Key.L:
-                    (DataContext as ListingEditorContext)?.UpdateLabel();
-                    break;
-                case Key.K:
-                    (DataContext as ListingEditorContext)?.UpdateComment();
+                    Model.CreateCode();
                     break;
                 case Key.J:
-                    (DataContext as ListingEditorContext)?.Jump();
+                    Model.Jump();
                     break;
-                case Key.B:
-                    (DataContext as ListingEditorContext)?.BreakPoint();
+                case Key.K:
+                    Model.UpdateComment();
+                    break;
+                case Key.L:
+                    Model.UpdateLabel();
+                    break;
+                case Key.S:
+                    Model.CreateString();
                     break;
                 case Key.X:
-                    (DataContext as ListingEditorContext)?.ShowXRefs();
+                    Model.ShowXRefs();
                     break;
                 default:
                     break;
@@ -51,6 +55,7 @@ namespace Sim80C51.Controls
                 Key.J,
                 Key.K,
                 Key.L,
+                Key.S,
                 Key.X,
             };
 

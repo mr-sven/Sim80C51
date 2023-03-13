@@ -44,6 +44,11 @@ namespace Sim80C51.Processors
         /// <param name="entry">the listing entry</param>
         void Process(ListingEntry entry);
 
+        void Reset();
+
         void RefreshUIProperies();
+
+        void SaveAdditionalSettings(Dictionary<string, object> additionalSettings);
+        void LoadAdditionalSettings(Dictionary<string, object> additionalSettings);
     }
 }

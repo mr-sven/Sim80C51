@@ -1,4 +1,5 @@
-﻿using System.Diagnostics;
+﻿using Sim80C51.Toolbox;
+using System.Diagnostics;
 using System.IO;
 using System.Reflection;
 
@@ -302,58 +303,7 @@ namespace Sim80C51.Common
                     }
                 }
 
-                // scan for data
-                int dataAddress = 0;
-                while (dataAddress < br.BaseStream.Length)
-                {
-                    ushort address = (ushort)dataAddress;
-
-                    // step over next listing
-                    if (listing.GetByAddress(address) is ListingEntry listingEntry)
-                    {
-                        dataAddress += listingEntry.Data.Count;
-                        continue;
-                    }
-
-
-                    int next = (int)br.BaseStream.Length;
-
-                    try
-                    {
-                        next = listing.Where(l => l.Address > address).Select(l => l.Address).Min();
-                    }
-                    catch 
-                    {
-                    }
-
-                    // read gap
-                    br.BaseStream.Position = address;
-                    byte[] data = br.ReadBytes(next - address);
-
-                    int dataPos = 0;
-                    while (dataPos < data.Length)
-                    {
-                        int length = Math.Min(DB_DEFAULT_SIZE, data.Length - dataPos);
-
-                        byte[] buffer = data[dataPos..(dataPos + length)];
-
-                        entry = new ListingEntry()
-                        {
-                            Address = address,
-                            Instruction = InstructionType.DB,
-                            Data = buffer.ToList(),
-                            Comment = ToAnsiString(buffer),
-                            Arguments = buffer.Select(c => c.ToString("x2") + 'h').ToList()
-                        };
-                        entry.UpdateStrings();
-                        listing.Add(entry);                        
-
-                        address += (ushort)length;
-                        dataPos += length;
-                    }
-
-                    dataAddress = next;
-                }
+                RestoreDbEntries(br);
             }
             catch (Exception ex)
             {
@@ -1385,10 +1335,82 @@ namespace Sim80C51.Common
             return (ushort)int.Parse(value[1..]);
         }
 
-        public static string ToAnsiString(byte[] data)
+        public void CreateString(BinaryReader br, ushort startAddress, List<byte> entryData)
         {
-            string str = System.Text.Encoding.Default.GetString(data);
-            return new string(str.Select(c => c < 0x20 ? '.' : c > 0x7f ? '.' : c).ToArray());
+            ListingEntry entry = new()
+            {
+                Address = startAddress,
+                Instruction = InstructionType.DB,
+                Data = entryData,
+                Comment = entryData.ToAnsiString(),
+                Arguments = new() { "'" + entryData.ToEscapedAnsiString() + "'" }
+            };
+            entry.UpdateStrings();
+
+            RemoveOverlappingDbEntries(entry.Address, (ushort)(entry.Address + entry.Data.Count));
+
+            if (!listing!.Contains(entry.Address))
+            {
+                listing.Add(entry);
+            }
+
+            RestoreDbEntries(br);
+        }
+
+        private void RestoreDbEntries(BinaryReader br)
+        {
+            // scan for data
+            int dataAddress = 0;
+            while (dataAddress < br.BaseStream.Length)
+            {
+                ushort address = (ushort)dataAddress;
+
+                // step over next listing
+                if (listing!.GetByAddress(address) is ListingEntry listingEntry)
+                {
+                    dataAddress += listingEntry.Data.Count;
+                    continue;
+                }
+
+
+                int next = (int)br.BaseStream.Length;
+
+                try
+                {
+                    next = listing.Where(l => l.Address > address).Select(l => l.Address).Min();
+                }
+                catch
+                {
+                }
+
+                // read gap
+                br.BaseStream.Position = address;
+                byte[] data = br.ReadBytes(next - address);
+
+                int dataPos = 0;
+                while (dataPos < data.Length)
+                {
+                    int length = Math.Min(DB_DEFAULT_SIZE, data.Length - dataPos);
+
+                    byte[] buffer = data[dataPos..(dataPos + length)];
+
+                    ListingEntry entry = new()
+                    {
+                        Address = address,
+                        Instruction = InstructionType.DB,
+                        Data = buffer.ToList(),
+                        Comment = buffer.ToAnsiString(),
+                        Arguments = buffer.Select(c => c.ToString("x2") + 'h').ToList()
+                    };
+                    entry.UpdateStrings();
+                    listing.Add(entry);
+
+                    address += (ushort)length;
+                    dataPos += length;
+                }
+
+                dataAddress = next;
+            }
         }
     }
 }

@@ -98,8 +98,9 @@
                         </Style.Triggers>
                     </Style>
                 </ToolBar.Style>
-                <Button Command="{Binding OneStepCommand}">Step</Button>
-                <Button Command="{Binding PlayCommand}">Play</Button>
+                <Button Command="{Binding OneStepCommand}" Width="50">Step</Button>
+                <Button Command="{Binding PlayCommand}" Width="50">Play</Button>
+                <Button Command="{Binding ResetCommand}" Width="50" >Reset</Button>
                 <Separator/>
                 <Button Command="{Binding GotoPcCommand}">Goto PC</Button>
             </ToolBar>
@@ -131,10 +132,16 @@
                         <ListBox ItemsSource="{Binding Breakpoints}" Width="100">
                             <ListBox.ItemTemplate>
                                 <DataTemplate>
-                                    <TextBlock Text="{Binding StringFormat=Address: {0:X4}}">
+                                    <TextBlock Text="{Binding StringFormat=Address: {0:X4}}" Tag="{Binding DataContext, RelativeSource={RelativeSource AncestorType=Window}}">
                                         <TextBlock.InputBindings>
                                             <MouseBinding MouseAction="LeftDoubleClick" Command="{Binding DataContext.NavToAddressCommand, RelativeSource={RelativeSource AncestorType=Window}}" CommandParameter="{Binding}" />
                                         </TextBlock.InputBindings>
+                                        <TextBlock.ContextMenu>
+                                            <ContextMenu>
+                                                <MenuItem Header="Nav To" Command="{Binding PlacementTarget.Tag.NavToAddressCommand, RelativeSource={RelativeSource AncestorType=ContextMenu}}" CommandParameter="{Binding}"/>
+                                                <MenuItem Header="Delete" Command="{Binding PlacementTarget.Tag.DeleteBpCommand, RelativeSource={RelativeSource AncestorType=ContextMenu}}" CommandParameter="{Binding}"/>
+                                            </ContextMenu>
+                                        </TextBlock.ContextMenu>
                                     </TextBlock>
                                 </DataTemplate>
                             </ListBox.ItemTemplate>

@@ -313,5 +313,8 @@ namespace Sim80C51.Processors
         [SFRBit(nameof(PCON), 7)]
         public bool SMOD { get => GetBitFromProp(); set { SetBitFromProp(value); } }
         #endregion PCON
+
+        public virtual void SaveAdditionalSettings(Dictionary<string, object> additionalSettings) { }
+        public virtual void LoadAdditionalSettings(Dictionary<string, object> additionalSettings) { }
     }
 }

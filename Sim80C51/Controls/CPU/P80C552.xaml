@@ -7,7 +7,7 @@
              xmlns:proc="clr-namespace:Sim80C51.Processors" 
              xmlns:tbx="clr-namespace:Sim80C51.Toolbox.Wpf"
              mc:Ignorable="d" 
-             d:DesignHeight="250" d:DesignWidth="1000">
+             d:DesignHeight="250" d:DesignWidth="1200">
     <d:DesignerProperties.DesignStyle>
         <Style TargetType="UserControl">
             <Setter Property="Background" Value="White"/>
@@ -256,6 +256,26 @@
                     </StackPanel>
                 </GroupBox>
             </StackPanel>
+            <GroupBox Header="ADC Input">
+                <tbx:TwoColumnGrid RowSpacing="2" ColumnSpacing="4" Margin="5">
+                    <TextBlock VerticalAlignment="Center">ADC0:</TextBlock>
+                    <TextBox Width="35" Text="{Binding ADC0Value}"/>
+                    <TextBlock VerticalAlignment="Center">ADC1:</TextBlock>
+                    <TextBox Width="35" Text="{Binding ADC1Value}"/>
+                    <TextBlock VerticalAlignment="Center">ADC2:</TextBlock>
+                    <TextBox Width="35" Text="{Binding ADC2Value}"/>
+                    <TextBlock VerticalAlignment="Center">ADC3:</TextBlock>
+                    <TextBox Width="35" Text="{Binding ADC3Value}"/>
+                    <TextBlock VerticalAlignment="Center">ADC4:</TextBlock>
+                    <TextBox Width="35" Text="{Binding ADC4Value}"/>
+                    <TextBlock VerticalAlignment="Center">ADC5:</TextBlock>
+                    <TextBox Width="35" Text="{Binding ADC5Value}"/>
+                    <TextBlock VerticalAlignment="Center">ADC6:</TextBlock>
+                    <TextBox Width="35" Text="{Binding ADC6Value}"/>
+                    <TextBlock VerticalAlignment="Center">ADC7:</TextBlock>
+                    <TextBox Width="35" Text="{Binding ADC7Value}"/>
+                </tbx:TwoColumnGrid>
+            </GroupBox>
             <!--#endregion-->
         </StackPanel>
     </ScrollViewer>

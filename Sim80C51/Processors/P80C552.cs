@@ -1,4 +1,5 @@
-﻿using System.ComponentModel;
+﻿using Sim80C51.Toolbox;
+using System.ComponentModel;
 
 namespace Sim80C51.Processors
 {
@@ -45,7 +46,19 @@ namespace Sim80C51.Processors
 
         #region ADCON
         [SFR(0xC5)]
-        public byte ADCON { get => GetMemFromProp(); set { SetMemFromProp(value); } }
+        public byte ADCON
+        {
+            get => GetMemFromProp(); 
+            set
+            {
+                bool oldAdcs = ADCS;
+                SetMemFromProp(value);
+                if (!oldAdcs && ADCS)
+                {
+                    StartAdcConversion();
+                }
+            }
+        }
         [SFRBit(nameof(ADCON), 0)]
         public bool AADR0 { get => GetBitFromProp(); set { SetBitFromProp(value); } }
         [SFRBit(nameof(ADCON), 1)]
@@ -569,6 +582,97 @@ namespace Sim80C51.Processors
         {
             base.CpuCycle();
             StepWatchdog();
+            if (adcCycle > 0)
+            {
+                adcCycle--;
+                if (adcCycle == 0)
+                {
+                    EndAdcConversation();
+                }
+            }
+        }
+
+        public ushort ADC0Value { get => adc0Value; set { adc0Value = value; DoPropertyChanged(); } }
+        private ushort adc0Value = 0;
+
+        public ushort ADC1Value { get => adc1Value; set { adc1Value = value; DoPropertyChanged(); } }
+        private ushort adc1Value = 0;
+
+        public ushort ADC2Value { get => adc2Value; set { adc2Value = value; DoPropertyChanged(); } }
+        private ushort adc2Value = 0;
+
+        public ushort ADC3Value { get => adc3Value; set { adc3Value = value; DoPropertyChanged(); } }
+        private ushort adc3Value = 0;
+
+        public ushort ADC4Value { get => adc4Value; set { adc4Value = value; DoPropertyChanged(); } }
+        private ushort adc4Value = 0;
+
+        public ushort ADC5Value { get => adc5Value; set { adc5Value = value; DoPropertyChanged(); } }
+        private ushort adc5Value = 0;
+
+        public ushort ADC6Value { get => adc6Value; set { adc6Value = value; DoPropertyChanged(); } }
+        private ushort adc6Value = 0;
+
+        public ushort ADC7Value { get => adc7Value; set { adc7Value = value; DoPropertyChanged(); } }
+        private ushort adc7Value = 0;
+
+        public override void SaveAdditionalSettings(Dictionary<string, object> additionalSettings) 
+        {
+            additionalSettings.Add("ADC0", ADC0Value);
+            additionalSettings.Add("ADC1", ADC1Value);
+            additionalSettings.Add("ADC2", ADC2Value);
+            additionalSettings.Add("ADC3", ADC3Value);
+            additionalSettings.Add("ADC4", ADC4Value);
+            additionalSettings.Add("ADC5", ADC5Value);
+            additionalSettings.Add("ADC6", ADC6Value);
+            additionalSettings.Add("ADC7", ADC7Value);
+        }
+
+        public override void LoadAdditionalSettings(Dictionary<string, object> additionalSettings)
+        {
+            ADC0Value = additionalSettings.TryGet("ADC0", 0);
+            ADC1Value = additionalSettings.TryGet("ADC1", 0);
+            ADC2Value = additionalSettings.TryGet("ADC2", 0);
+            ADC3Value = additionalSettings.TryGet("ADC3", 0);
+            ADC4Value = additionalSettings.TryGet("ADC4", 0);
+            ADC5Value = additionalSettings.TryGet("ADC5", 0);
+            ADC6Value = additionalSettings.TryGet("ADC6", 0);
+            ADC7Value = additionalSettings.TryGet("ADC7", 0);
+        }
+
+        private int adcCycle = 0;
+
+        private void StartAdcConversion()
+        {
+            // 8XC552 requires 50 cycles
+            adcCycle = 50;
+        }
+
+        private void EndAdcConversation()
+        {
+            ushort adcValue = (ADCON & 0x07) switch
+            {
+                0 => ADC0Value,
+                1 => ADC1Value,
+                2 => ADC2Value,
+                3 => ADC3Value,
+                4 => ADC4Value,
+                5 => ADC5Value,
+                6 => ADC6Value,
+                7 => ADC7Value,
+                _ => 0,
+            };
+
+            // save upper 8 bit
+            ADCH = (byte)(adcValue >> 2);
+            // save lower 2 bit to ADCON[6,7]
+            ADCON |= (byte)(adcValue << 6);
+            ADCI = true;
+            ADCS = false;
+            if (EA && EAD)
+            {
+                Interrupt_AD();
+            }
         }
     }
 }

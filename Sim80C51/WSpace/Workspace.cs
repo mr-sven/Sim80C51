@@ -14,5 +14,6 @@ namespace Sim80C51.WSpace
         public string Listing { get; set; } = string.Empty;
         public Dictionary<ushort, XMemConfig> XMem { get; set; } = new();
         public List<ushort> Breakpoints { get; set; } = new();
+        public Dictionary<string, object> AdditionalSettings { get; set; } = new();
     }
 }

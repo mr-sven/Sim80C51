@@ -1,4 +1,5 @@
 ﻿using Sim80C51.Common;
+using Sim80C51.Toolbox;
 using Sim80C51.Toolbox.Wpf;
 using System.IO;
 using System.Text.RegularExpressions;
@@ -53,18 +54,14 @@ namespace Sim80C51.Controls
             }
 
             string? label = factory.TryGetIVLabel(SelectedListingEntry.Address);
-
             if (label == null)
             {
                 InputDialog dlg = new("Set Label", "New Label:", $"code_{SelectedListingEntry.Address:X4}") { Owner = Application.Current.MainWindow };
-                if (dlg.ShowDialog() == false)
+                if (dlg.ShowDialog() == false || string.IsNullOrEmpty(dlg.Answer))
                 {
                     return;
                 }
-                if (!string.IsNullOrEmpty(dlg.Answer))
-                {
-                    label = dlg.Answer;
-                }
+                label = dlg.Answer;
             }
 
             ushort currentAddress = SelectedListingEntry.Address;
@@ -155,6 +152,55 @@ namespace Sim80C51.Controls
 
             //TODO: Show xref window
         }
+
+        public void CreateString()
+        {
+            if (SelectedListingEntry?.Instruction != InstructionType.DB || reader == null || factory == null)
+            {
+                return;
+            }
+
+            ushort currentAddress = SelectedListingEntry.Address;
+            int currentIndex = Listing.IndexOf(SelectedListingEntry);
+            string displayText = string.Empty;
+            List<byte> bytes = new();
+
+            List<ListingEntry> entries = new();
+            while (currentIndex < Listing.Count) 
+            {
+                if (Listing[currentIndex].Instruction != InstructionType.DB)
+                {
+                    break;
+                }
+                entries.Add(Listing[currentIndex]);
+                displayText += Listing[currentIndex].Data.ToAnsiString();
+                bytes.AddRange(Listing[currentIndex].Data);
+                currentIndex++;
+            }
+
+            int startIdx = bytes.FindIndex(b => b >= 0x20 && b <= 0x7f);
+            int endIdx = bytes.FindIndex(startIdx, b => (b < 0x20 || b == 0x7f) && b != 0x09 && b != 0x0a && b != 0x0d);
+
+            // extend string end zero
+            if (endIdx + 1 < bytes.Count && bytes[endIdx + 1] == 0)
+            {
+                endIdx++;
+            }
+
+            StringBuilderDialog dlg = new(displayText, startIdx, endIdx, currentAddress) { Owner = Application.Current.MainWindow };
+            if (dlg.ShowDialog() == false || dlg.StartIndex == dlg.EndIndex)
+            {
+                return;
+            }
+            startIdx = dlg.StartIndex;
+            endIdx = dlg.EndIndex;
+
+            factory.CreateString(reader, (ushort)(currentAddress + startIdx), bytes.ToArray()[startIdx..(endIdx+1)].ToList());
+
+            Application.Current.Dispatcher.Invoke(DispatcherPriority.Background, new Action(delegate { }));
+
+            SelectedListingEntry = Listing.GetByAddress(currentAddress);
+        }
         #endregion
 
         public ListingEntry? GetFromAddress(ushort address)
@@ -210,7 +256,7 @@ namespace Sim80C51.Controls
                     }
                     if (match.Groups.ContainsKey("comment"))
                     {
-                        entry.Comment = match.Groups["comment"].Value.Trim();
+                        entry.Comment = match.Groups["comment"].Value.TrimEnd();
                     }
                     entry.UpdateStrings();
 
@@ -311,9 +357,9 @@ namespace Sim80C51.Controls
             return new(new MemoryStream(buffer));
         }
 
-        public void SaveListingToStream(Stream stream)
+        public void SaveListingToStream(Stream stream, bool leaveOpen = false)
         {
-            using StreamWriter sw = new(stream, leaveOpen: true);
+            using StreamWriter sw = new(stream, leaveOpen: leaveOpen);
             foreach (ListingEntry entry in Listing.OrderBy(l => l.Address))
             {
                 sw.WriteLine(entry.ToString());

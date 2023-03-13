@@ -12,6 +12,11 @@ namespace Sim80C51.Processors
     {
         private static readonly string[] regNames = new string[] { nameof(R0), nameof(R1), nameof(R2), nameof(R3), nameof(R4), nameof(R5), nameof(R6), nameof(R7) };
 
+        protected bool instructionInProgress = false;
+
+        // TODO: Handle multiple IRQ Prio 
+        private Action? pendingIrq = null;
+
         private void Push(byte data)
         {
             SetMem(++SP, data);
@@ -44,6 +49,7 @@ namespace Sim80C51.Processors
         /// <param name="entry">the listing entry</param>
         public void Process(ListingEntry entry)
         {
+            instructionInProgress = true;
             CpuCycle(); // first process cycle
             PC += (ushort)entry.Data.Count;
             byte tmpByte;
@@ -562,6 +568,25 @@ namespace Sim80C51.Processors
                 case InstructionType.ORG:
                     throw new NotImplementedException(entry.Instruction + " " + entry.ArgumentString);
             }
+            instructionInProgress = false;
+            // TODO: Handle multiple IRQ Prio 
+            pendingIrq?.Invoke();
+        }
+
+        private void ExecuteIrq(ushort address)
+        {
+            pendingIrq = null;
+
+            // Execute a virtual LCALL (2 cyles)
+            CpuCycle();
+            CpuCycle();
+
+            // save current PC to stack
+            Push((byte)(PC & 0xff));
+            Push((byte)(PC >> 8 & 0xff));
+
+            // set PC to IV Address
+            PC = address;
         }
 
         protected void Interrupt([CallerMemberName] string irqName = "")
@@ -576,22 +601,22 @@ namespace Sim80C51.Processors
                 throw new ArgumentException("IV Attribute missing", irqName);
             }
 
-            // Execute a virtual LCALL (2 cyles)
-            CpuCycle();
-            CpuCycle();
-
-            // save current PC to stack
-            Push((byte)(PC & 0xff));
-            Push((byte)(PC >> 8 & 0xff));
-
-            // set PC to IV Address
-            PC = ivAttr.Address;
+            // TODO: Handle multiple IRQ Prio 
+            if (instructionInProgress)
+            {
+                pendingIrq = () => { ExecuteIrq(ivAttr.Address); };
+            }
+            else
+            {
+                ExecuteIrq(ivAttr.Address);
+            }
         }
 
         protected virtual void CpuCycle()
         {
             Cycles++;
             StepTimer0(true);
+            StepTimer1(true);
         }
 
         private void StepTimer0(bool fromCpu)
@@ -600,6 +625,9 @@ namespace Sim80C51.Processors
             {
                 return;
             }
+
+            bool oldTF0 = TF0;
+            bool oldTF1 = TF1;
 
             if (M0_0 && M0_1) // mode 3
             {
@@ -651,6 +679,72 @@ namespace Sim80C51.Processors
                         TF0 = true;
                     }
                 }
+            }
+            if (EA && ET1 && TF1 && !oldTF1)
+            {
+                TF1 = false;
+                Interrupt_T1();
+            }
+            else if (EA && ET0 && TF0 && !oldTF0)
+            {
+                TF0 = false;
+                Interrupt_T0();
+            }
+        }
+
+        private void StepTimer1(bool fromCpu)
+        {
+            if ((!TR1) || (GATE_1 && (!INT1)))
+            {
+                return;
+            }
+
+            if (M1_0 && M1_1) // mode 3
+            {
+                return;
+            }
+
+            bool oldTF1 = TF1;
+
+            if (!C_T_1 || !fromCpu)
+            {
+                TL1++;
+                if (!M1_0 && !M1_1) // mode 0
+                {
+                    if (TL1 == 32)
+                    {
+                        TL1 = 0;
+                        TH1++;
+                        if (TH1 == 0)
+                        {
+                            TF1 = true;
+                        }
+                    }
+                }
+                else if (M1_0 && !M1_1) // mode 1
+                {
+                    if (TL1 == 0)
+                    {
+                        TH1++;
+                        if (TH1 == 0)
+                        {
+                            TF1 = true;
+                        }
+                    }
+                }
+                else if (!M1_0 && M1_1) // mode 2
+                {
+                    if (TL1 == 0)
+                    {
+                        TL1 = TH1;
+                        TF1 = true;
+                    }
+                }
+            }
+            if (EA && ET1 && TF1 && !oldTF1)
+            {
+                TF1 = false;
+                Interrupt_T1();
             }
         }
 

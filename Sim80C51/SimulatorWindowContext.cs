@@ -98,6 +98,8 @@ namespace Sim80C51
 
                 AddXMemTab(address, $"XMem at 0x{address:X4} size 0x{xmemCtx[address].Size:X4}");
             }
+
+            CPU.LoadAdditionalSettings(wsp.AdditionalSettings);
         });
         public ICommand SaveWorkspaceCommand => new RelayCommand((o) =>
         {
@@ -140,12 +142,13 @@ namespace Sim80C51
 
             using (MemoryStream ms = new())
             {
-                listingCtx.SaveListingToStream(ms);
+                listingCtx.SaveListingToStream(ms, true);
                 ms.Position = 0;
                 wsp.Listing = StreamToCompressedBase64(ms);
             }
 
             wsp.Breakpoints.AddRange(Breakpoints);
+            CPU.SaveAdditionalSettings(wsp.AdditionalSettings);
             using StreamWriter writer = File.CreateText(saveFileDialog.FileName);
             Serializer serializer = new();
             serializer.Serialize(writer, wsp);
@@ -331,6 +334,7 @@ namespace Sim80C51
             {
                 CPU.Process(entry);
                 listingCtx.HighlightAddress = CPU.PC;
+                GotoPcCommand?.Execute(null);
             }
         });
 
@@ -354,6 +358,8 @@ namespace Sim80C51
             }
             irqItem.Method!.Invoke(CPU, null);
         });
+
+        public ICommand ResetCommand => new RelayCommand((o) => { CPU?.Reset(); GotoPcCommand?.Execute(null); });
         #endregion
 
         #region Navigate Commands
@@ -370,6 +376,14 @@ namespace Sim80C51
             if (o is ushort address && listingCtx?.GetFromAddress(address) is ListingEntry entry)
             {
                 listingCtx.SelectedListingEntry = entry;
+            }
+        });
+
+        public ICommand DeleteBpCommand => new RelayCommand((o) =>
+        {
+            if (o is ushort address && Breakpoints.Contains(address))
+            {
+                Breakpoints.Remove(address);
             }
         });
         #endregion
