@@ -438,6 +438,8 @@ namespace Sim80C51
         private ICollectionView? labelView;
 
         public ObservableCollection<Controls.IRQMenuItem> IRQMenuItems { get; } = new ();
+
+        public ObservableCollection<ushort>? CallStack => CPU?.CallStack;
         #endregion
 
         #region Init functions
@@ -593,6 +595,8 @@ namespace Sim80C51
                     Priority = priority
                 });
             }
+
+            DoPropertyChanged(nameof(CallStack));
         }
 
         private void InsertIRQSorted(Controls.IRQMenuItem iItem)

@@ -16,6 +16,11 @@ namespace Sim80C51.Processors
         ushort PC { get; set; }
 
         /// <summary>
+        /// Call Stack
+        /// </summary>
+        ObservableCollection<ushort> CallStack { get; }
+
+        /// <summary>
         /// Cycle Counter
         /// </summary>
         ulong Cycles { get; set; }

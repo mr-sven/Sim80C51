@@ -72,6 +72,7 @@ namespace Sim80C51.Processors
                     CpuCycle();
                     Push((byte)(PC & 0xff));
                     Push((byte)(PC >> 8 & 0xff));
+                    CallStack.Add(PC);
                     PC = entry.TargetAddress;
                     break;
 
@@ -80,6 +81,7 @@ namespace Sim80C51.Processors
                     CpuCycle();
                     PC = (ushort)(Pop() << 8);
                     PC += Pop();
+                    CallStack.RemoveAt(CallStack.Count - 1);
                     break;
 
                 case InstructionType.MUL:
@@ -584,6 +586,7 @@ namespace Sim80C51.Processors
             // save current PC to stack
             Push((byte)(PC & 0xff));
             Push((byte)(PC >> 8 & 0xff));
+            CallStack.Add(PC);
 
             // set PC to IV Address
             PC = address;

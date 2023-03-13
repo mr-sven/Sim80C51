@@ -23,8 +23,12 @@ namespace Sim80C51.Processors
         /// <summary>
         /// Internal RAM Address space
         /// </summary>
-        public ObservableCollection<ByteRow> CoreMemory { get => coreMemory; }
-        private readonly ObservableCollection<ByteRow> coreMemory;
+        public ObservableCollection<ByteRow> CoreMemory { get; }
+
+        /// <summary>
+        /// Call Stack
+        /// </summary>
+        public ObservableCollection<ushort> CallStack { get; } = new();
 
         public byte R0 { get => GetRegister(); set { SetRegister(value); } }
         public byte R1 { get => GetRegister(); set { SetRegister(value); } }

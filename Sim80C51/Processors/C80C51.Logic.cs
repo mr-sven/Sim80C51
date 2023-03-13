@@ -30,7 +30,7 @@ namespace Sim80C51.Processors
         /// <param name="size">Size of the core memory</param>
         protected C80C51(ushort size)
         {
-            coreMemory = new(ByteRow.InitRows(size));
+            CoreMemory = new(ByteRow.InitRows(size));
 
             // build map tables
             foreach (PropertyInfo pInfo in GetType().GetProperties())
@@ -59,6 +59,7 @@ namespace Sim80C51.Processors
         /// </summary>
         public virtual void Reset()
         {
+            CallStack.Clear();
             Cycles = 0;
             PC = 0x0000;
             ACC = 0x00;

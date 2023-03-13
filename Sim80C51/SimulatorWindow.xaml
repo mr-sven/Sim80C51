@@ -192,6 +192,24 @@
                             </ListBox>
                         </DockPanel>
                     </GroupBox>
+                    <GroupBox Header="Call Stack">
+                        <ListBox ItemsSource="{Binding CallStack}" Width="100">
+                            <ListBox.ItemTemplate>
+                                <DataTemplate>
+                                    <TextBlock Text="{Binding StringFormat=Address: {0:X4}}" Tag="{Binding DataContext, RelativeSource={RelativeSource AncestorType=Window}}">
+                                        <TextBlock.InputBindings>
+                                            <MouseBinding MouseAction="LeftDoubleClick" Command="{Binding DataContext.NavToAddressCommand, RelativeSource={RelativeSource AncestorType=Window}}" CommandParameter="{Binding}" />
+                                        </TextBlock.InputBindings>
+                                        <TextBlock.ContextMenu>
+                                            <ContextMenu>
+                                                <MenuItem Header="Nav To" Command="{Binding PlacementTarget.Tag.NavToAddressCommand, RelativeSource={RelativeSource AncestorType=ContextMenu}}" CommandParameter="{Binding}"/>
+                                            </ContextMenu>
+                                        </TextBlock.ContextMenu>
+                                    </TextBlock>
+                                </DataTemplate>
+                            </ListBox.ItemTemplate>
+                        </ListBox>
+                    </GroupBox>
                 </StackPanel>
             </Grid>
             <GroupBox Header="Processor" DockPanel.Dock="Bottom" x:Name="cpuBox" Visibility="Collapsed"/>
