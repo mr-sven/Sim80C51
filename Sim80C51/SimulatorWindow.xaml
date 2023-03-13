@@ -170,6 +170,28 @@
                             </ListView.ItemContainerStyle>
                         </ListView>
                     </GroupBox>
+                    <GroupBox Header="Memory Monitor">
+                        <DockPanel>
+                            <StackPanel Orientation="Horizontal" DockPanel.Dock="Top">
+                                <TextBlock Margin="2" VerticalAlignment="Center">DPTR:</TextBlock>
+                                <TextBox Width="40" Margin="2" Text="{Binding DptrAddValue}"/>
+                                <Button Margin="2" Command="{Binding AddDptrCommand}">Add</Button>
+                            </StackPanel>
+                            <ListBox ItemsSource="{Binding MemoryPointer}">
+                                <ListBox.ItemTemplate>
+                                    <DataTemplate>
+                                        <TextBlock Text="{Binding StringFormat=Address: {0:X4}}" Tag="{Binding DataContext, RelativeSource={RelativeSource AncestorType=Window}}">
+                                            <TextBlock.ContextMenu>
+                                                <ContextMenu>
+                                                     <MenuItem Header="Delete" Command="{Binding PlacementTarget.Tag.DeleteDptrCommand, RelativeSource={RelativeSource AncestorType=ContextMenu}}" CommandParameter="{Binding}"/>
+                                                </ContextMenu>
+                                            </TextBlock.ContextMenu>
+                                        </TextBlock>
+                                    </DataTemplate>
+                                </ListBox.ItemTemplate>
+                            </ListBox>
+                        </DockPanel>
+                    </GroupBox>
                 </StackPanel>
             </Grid>
             <GroupBox Header="Processor" DockPanel.Dock="Bottom" x:Name="cpuBox" Visibility="Collapsed"/>

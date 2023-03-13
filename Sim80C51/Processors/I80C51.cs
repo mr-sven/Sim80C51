@@ -20,6 +20,11 @@ namespace Sim80C51.Processors
         /// </summary>
         ulong Cycles { get; set; }
 
+        /// <summary>
+        /// Data Pointer
+        /// </summary>
+        ushort DPTR { get; set; }
+
         // TODO: add more registers as required
 
         /// <summary>

@@ -4,6 +4,7 @@ using Sim80C51.Toolbox.Wpf;
 using System.IO;
 using System.Text.RegularExpressions;
 using System.Windows;
+using System.Windows.Input;
 using System.Windows.Threading;
 
 namespace Sim80C51.Controls
@@ -41,166 +42,146 @@ namespace Sim80C51.Controls
 
         public Action<ushort>? AddBreakPoint { get ; set; }
 
-        public ListingEditorContext()
+        #region Commands
+        public ICommand JumpCommand => new RelayCommand((o) =>
         {
-        }
-
-        #region UI Calls
-        public void CreateCode()
-        {
-            if (SelectedListingEntry?.Instruction != InstructionType.DB || reader == null || factory == null)
+            if (o is ListingEntry entry && jumpInstructions.Contains(entry.Instruction))
             {
-                return;
+                string targetLabel = entry.Arguments.Last();
+                SelectedListingEntry = Listing.GetByLabel(targetLabel);
             }
+        }, (o) => { return o is ListingEntry entry && jumpInstructions.Contains(entry.Instruction); });
 
-            string? label = factory.TryGetIVLabel(SelectedListingEntry.Address);
-            if (label == null)
+        public ICommand CreateCodeCommand => new RelayCommand((o) =>
+        {
+            if (o is ListingEntry entry && entry.Instruction == InstructionType.DB && reader != null && factory != null)
             {
-                InputDialog dlg = new("Set Label", "New Label:", $"code_{SelectedListingEntry.Address:X4}") { Owner = Application.Current.MainWindow };
-                if (dlg.ShowDialog() == false || string.IsNullOrEmpty(dlg.Answer))
+                string? label = factory.TryGetIVLabel(entry.Address);
+                if (label == null)
+                {
+                    InputDialog dlg = new("Set Label", "New Label:", $"code_{entry.Address:X4}") { Owner = Application.Current.MainWindow };
+                    if (dlg.ShowDialog() == false || string.IsNullOrEmpty(dlg.Answer))
+                    {
+                        return;
+                    }
+                    label = dlg.Answer;
+                }
+
+                ushort currentAddress = entry.Address;
+                SelectedListingEntry = null;
+                reader.BaseStream.Position = currentAddress;
+                factory.Build(reader, label);
+
+                Application.Current.Dispatcher.Invoke(DispatcherPriority.Background, new Action(delegate { }));
+
+                SelectedListingEntry = Listing.GetByAddress(currentAddress);
+            }
+        }, (o) => { return o is ListingEntry entry && entry.Instruction == InstructionType.DB; });
+
+        public ICommand UpdateLabelCommand => new RelayCommand((o) =>
+        {
+            if (o is ListingEntry entry)
+            {
+                InputDialog dlg = new("Update Label", "Label:", entry.Label ?? string.Empty) { Owner = Application.Current.MainWindow };
+                if (dlg.ShowDialog() == false)
                 {
                     return;
                 }
-                label = dlg.Answer;
-            }
 
-            ushort currentAddress = SelectedListingEntry.Address;
-            SelectedListingEntry = null;
-            reader.BaseStream.Position = currentAddress;
-            factory.Build(reader, label);
-
-            Application.Current.Dispatcher.Invoke(DispatcherPriority.Background, new Action(delegate { }));
-
-            SelectedListingEntry = Listing.GetByAddress(currentAddress);
-        }
-
-        public void UpdateLabel()
-        {
-            if (SelectedListingEntry == null)
-            {
-                return;
-            }
-
-            InputDialog dlg = new("Update Label", "Label:", SelectedListingEntry.Label ?? string.Empty) { Owner = Application.Current.MainWindow };
-            if (dlg.ShowDialog() == false)
-            {
-                return;
-            }
-
-            // check updates
-            if (string.IsNullOrEmpty(dlg.Answer) || dlg.Answer == SelectedListingEntry.Label)
-            {
-                return;
-            }
-
-            // check if exists
-            if (Listing.GetByLabel(dlg.Answer) != null)
-            {
-                MessageBox.Show($"Label '{dlg.Answer}' exists!", "Error", MessageBoxButton.OK, MessageBoxImage.Error);
-                return;
-            }
-
-            Listing.SetLabel(SelectedListingEntry, dlg.Answer);
-        }
-
-        public void UpdateComment()
-        {
-            if (SelectedListingEntry == null)
-            {
-                return;
-            }
-            InputDialog dlg = new("Update Comment", "Comment:", SelectedListingEntry.Comment ?? string.Empty) { Owner = Application.Current.MainWindow };
-            if (dlg.ShowDialog() == false)
-            {
-                return;
-            }
-            SelectedListingEntry.Comment = dlg.Answer;
-        }
-
-        public void Jump()
-        {
-            if (SelectedListingEntry == null)
-            {
-                return;
-            }
-
-            if (jumpInstructions.Contains(SelectedListingEntry.Instruction))
-            {
-                string targetLabel = SelectedListingEntry.Arguments.Last();
-                SelectedListingEntry = Listing.GetByLabel(targetLabel);
-            }
-        }
-
-        public void BreakPoint()
-        {
-            if (SelectedListingEntry == null)
-            {
-                return;
-            }
-
-            AddBreakPoint?.Invoke(SelectedListingEntry.Address);
-        }
-
-        public void ShowXRefs()
-        {
-            if (SelectedListingEntry == null || string.IsNullOrEmpty(SelectedListingEntry.Label))
-            {
-                return;
-            }
-
-            List<ListingEntry> xrefs = Listing.Where(e => e.Arguments.Count > 0 && e.Arguments.Last() == SelectedListingEntry.Label).ToList();
-
-            //TODO: Show xref window
-        }
-
-        public void CreateString()
-        {
-            if (SelectedListingEntry?.Instruction != InstructionType.DB || reader == null || factory == null)
-            {
-                return;
-            }
-
-            ushort currentAddress = SelectedListingEntry.Address;
-            int currentIndex = Listing.IndexOf(SelectedListingEntry);
-            string displayText = string.Empty;
-            List<byte> bytes = new();
-
-            List<ListingEntry> entries = new();
-            while (currentIndex < Listing.Count) 
-            {
-                if (Listing[currentIndex].Instruction != InstructionType.DB)
+                // check updates
+                if (string.IsNullOrEmpty(dlg.Answer) || dlg.Answer == entry.Label)
                 {
-                    break;
+                    return;
                 }
-                entries.Add(Listing[currentIndex]);
-                displayText += Listing[currentIndex].Data.ToAnsiString();
-                bytes.AddRange(Listing[currentIndex].Data);
-                currentIndex++;
+
+                // check if exists
+                if (Listing.GetByLabel(dlg.Answer) != null)
+                {
+                    MessageBox.Show($"Label '{dlg.Answer}' exists!", "Error", MessageBoxButton.OK, MessageBoxImage.Error);
+                    return;
+                }
+
+                Listing.SetLabel(entry, dlg.Answer);
             }
+        }, (o) => { return o is ListingEntry entry; });
 
-            int startIdx = bytes.FindIndex(b => b >= 0x20 && b <= 0x7f);
-            int endIdx = bytes.FindIndex(startIdx, b => (b < 0x20 || b == 0x7f) && b != 0x09 && b != 0x0a && b != 0x0d);
-
-            // extend string end zero
-            if (endIdx + 1 < bytes.Count && bytes[endIdx + 1] == 0)
+        public ICommand UpdateCommentCommand => new RelayCommand((o) =>
+        {
+            if (o is ListingEntry entry)
             {
-                endIdx++;
+                InputDialog dlg = new("Update Comment", "Comment:", entry.Comment ?? string.Empty) { Owner = Application.Current.MainWindow };
+                if (dlg.ShowDialog() == false)
+                {
+                    return;
+                }
+                entry.Comment = dlg.Answer;
             }
+        }, (o) => { return o is ListingEntry entry; });
 
-            StringBuilderDialog dlg = new(displayText, startIdx, endIdx, currentAddress) { Owner = Application.Current.MainWindow };
-            if (dlg.ShowDialog() == false || dlg.StartIndex == dlg.EndIndex)
+        public ICommand BreakPointCommand => new RelayCommand((o) =>
+        {
+            if (o is ListingEntry entry)
             {
-                return;
+                AddBreakPoint?.Invoke(entry.Address);
             }
-            startIdx = dlg.StartIndex;
-            endIdx = dlg.EndIndex;
+        }, (o) => { return o is ListingEntry entry; });
 
-            factory.CreateString(reader, (ushort)(currentAddress + startIdx), bytes.ToArray()[startIdx..(endIdx+1)].ToList());
+        public ICommand ShowXRefsCommand => new RelayCommand((o) =>
+        {
+            if (o is ListingEntry entry)
+            {
+                List<ListingEntry> xrefs = Listing.Where(e => e.Arguments.Count > 0 && e.Arguments.Last() == entry.Label).ToList();
 
-            Application.Current.Dispatcher.Invoke(DispatcherPriority.Background, new Action(delegate { }));
+                //TODO: Show xref window
+            }
+        }, (o) => { return o is ListingEntry entry; });
 
-            SelectedListingEntry = Listing.GetByAddress(currentAddress);
-        }
+        public ICommand CreateStringCommand => new RelayCommand((o) =>
+        {
+            if (o is ListingEntry entry && entry.Instruction == InstructionType.DB && reader != null && factory != null)
+            {
+                ushort currentAddress = entry.Address;
+                int currentIndex = Listing.IndexOf(entry);
+                string displayText = string.Empty;
+                List<byte> bytes = new();
+
+                List<ListingEntry> entries = new();
+                while (currentIndex < Listing.Count)
+                {
+                    if (Listing[currentIndex].Instruction != InstructionType.DB)
+                    {
+                        break;
+                    }
+                    entries.Add(Listing[currentIndex]);
+                    displayText += Listing[currentIndex].Data.ToAnsiString();
+                    bytes.AddRange(Listing[currentIndex].Data);
+                    currentIndex++;
+                }
+
+                int startIdx = bytes.FindIndex(b => b >= 0x20 && b <= 0x7f);
+                int endIdx = bytes.FindIndex(startIdx, b => (b < 0x20 || b == 0x7f) && b != 0x09 && b != 0x0a && b != 0x0d);
+
+                // extend string end zero
+                if (endIdx + 1 < bytes.Count && bytes[endIdx + 1] == 0)
+                {
+                    endIdx++;
+                }
+
+                StringBuilderDialog dlg = new(displayText, startIdx, endIdx, currentAddress) { Owner = Application.Current.MainWindow };
+                if (dlg.ShowDialog() == false || dlg.StartIndex == dlg.EndIndex)
+                {
+                    return;
+                }
+                startIdx = dlg.StartIndex;
+                endIdx = dlg.EndIndex;
+
+                factory.CreateString(reader, (ushort)(currentAddress + startIdx), bytes.ToArray()[startIdx..(endIdx + 1)].ToList());
+
+                Application.Current.Dispatcher.Invoke(DispatcherPriority.Background, new Action(delegate { }));
+
+                SelectedListingEntry = Listing.GetByAddress(currentAddress);
+            }
+        }, (o) => { return o is ListingEntry entry && entry.Instruction == InstructionType.DB; });
         #endregion
 
         public ListingEntry? GetFromAddress(ushort address)

@@ -35,7 +35,22 @@
                     </DataTrigger>
                 </Style.Triggers>
             </Style>
+            <ContextMenu x:Key="ItemContextMenu" Opened="ContextMenu_Opened">
+                <MenuItem Header="Create Code" Command="{Binding PlacementTarget.Tag.CreateCodeCommand, RelativeSource={RelativeSource AncestorType=ContextMenu}}" CommandParameter="{Binding}" InputGestureText="C" />
+                <MenuItem Header="Jump to" Command="{Binding PlacementTarget.Tag.JumpCommand, RelativeSource={RelativeSource AncestorType=ContextMenu}}" CommandParameter="{Binding}" InputGestureText="J" />
+                <MenuItem Header="Update Label" Command="{Binding PlacementTarget.Tag.UpdateLabelCommand, RelativeSource={RelativeSource AncestorType=ContextMenu}}" CommandParameter="{Binding}" InputGestureText="L" />
+                <MenuItem Header="Update Comment" Command="{Binding PlacementTarget.Tag.UpdateCommentCommand, RelativeSource={RelativeSource AncestorType=ContextMenu}}" CommandParameter="{Binding}" InputGestureText="K" />
+                <MenuItem Header="Add Breakpoint" Command="{Binding PlacementTarget.Tag.BreakPointCommand, RelativeSource={RelativeSource AncestorType=ContextMenu}}" CommandParameter="{Binding}" InputGestureText="B" />
+                <MenuItem Header="Show XRef" Command="{Binding PlacementTarget.Tag.ShowXRefsCommand, RelativeSource={RelativeSource AncestorType=ContextMenu}}" CommandParameter="{Binding}" InputGestureText="X" />
+                <MenuItem Header="Create String" Command="{Binding PlacementTarget.Tag.CreateStringCommand, RelativeSource={RelativeSource AncestorType=ContextMenu}}" CommandParameter="{Binding}" InputGestureText="S" />
+            </ContextMenu>
         </ListView.Resources>
+        <ListView.ItemContainerStyle>
+            <Style TargetType="{x:Type ListViewItem}">
+                <Setter Property="ContextMenu" Value="{StaticResource ItemContextMenu}"/>
+                <Setter Property="Tag" Value="{Binding DataContext, RelativeSource={RelativeSource AncestorType=UserControl}}"/>
+            </Style>
+        </ListView.ItemContainerStyle>
         <ListView.View>
             <GridView>
                 <GridViewColumn Header="Addr." Width="45" DisplayMemberBinding="{Binding Address, StringFormat={}{0:X4}}" />

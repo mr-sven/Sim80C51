@@ -23,6 +23,7 @@ namespace Sim80C51
         private Controls.ListingEditorContext? listingCtx;
         private readonly SortedDictionary<ushort, Controls.MemoryContext> xmemCtx = new();
         private readonly DispatcherTimer stepTimer = new();
+        private ushort lastDptr = 0;
         #endregion
 
         #region Workspace commands
@@ -88,6 +89,12 @@ namespace Sim80C51
                 Breakpoints.Add(address);
             }
 
+            MemoryPointer.Clear();
+            foreach (ushort address in wsp.MemoryWatches)
+            {
+                MemoryPointer.Add(address);
+            }
+
             foreach (ushort address in wsp.XMem.Keys)
             {
                 xmemCtx.Add(address, LoadXMemFromCompBase64(wsp.XMem[address].Memory));
@@ -148,6 +155,7 @@ namespace Sim80C51
             }
 
             wsp.Breakpoints.AddRange(Breakpoints);
+            wsp.MemoryWatches.AddRange(MemoryPointer);
             CPU.SaveAdditionalSettings(wsp.AdditionalSettings);
             using StreamWriter writer = File.CreateText(saveFileDialog.FileName);
             Serializer serializer = new();
@@ -386,6 +394,28 @@ namespace Sim80C51
                 Breakpoints.Remove(address);
             }
         });
+
+        public ICommand AddDptrCommand => new RelayCommand((o) =>
+        {
+            if (System.Text.RegularExpressions.Regex.IsMatch(DptrAddValue, @"\A\b[0-9a-fA-F]+\b\Z"))
+            {
+                ushort value = Convert.ToUInt16(DptrAddValue, 16);
+                if (!MemoryPointer.Contains(value))
+                {
+                    MemoryPointer.Add(value);
+                }
+                DptrAddValue = string.Empty;
+            }
+        });
+
+        public ICommand DeleteDptrCommand => new RelayCommand((o) =>
+        {
+            if (o is ushort address && MemoryPointer.Contains(address))
+            {
+                MemoryPointer.Remove(address);
+            }
+        });       
+
         #endregion
 
         #region Property Bindings
@@ -398,6 +428,11 @@ namespace Sim80C51
         private bool processorActivated = false;
 
         public ObservableCollection<ushort> Breakpoints { get; } = new();
+
+        public ObservableCollection<ushort> MemoryPointer { get; } = new();
+
+        public string DptrAddValue { get => dptrAddValue; set { dptrAddValue = value; DoPropertyChanged(); } }
+        private string dptrAddValue = string.Empty;
 
         public ICollectionView? LabelView { get => labelView; set { labelView = value; DoPropertyChanged(); } }
         private ICollectionView? labelView;
@@ -446,16 +481,30 @@ namespace Sim80C51
 
         private void StepTimer_Tick(object? sender, EventArgs e)
         {
-            if (listingCtx?.GetFromAddress(CPU!.PC) is ListingEntry entry && entry.Instruction != InstructionType.DB)
+            if (listingCtx?.GetFromAddress(CPU!.PC) is not ListingEntry entry || entry.Instruction == InstructionType.DB)
             {
-                CPU.Process(entry);
-                listingCtx.HighlightAddress = CPU.PC;
-                if (!Breakpoints.Contains(CPU.PC))
+                stepTimer.Stop();
+                return;
+            }
+
+            CPU.Process(entry);
+            listingCtx.HighlightAddress = CPU.PC;
+
+            if (Breakpoints.Contains(CPU.PC))
+            {
+                stepTimer.Stop();
+                return;
+            }
+
+            if (lastDptr != CPU.DPTR)
+            {
+                lastDptr = CPU.DPTR;
+                if (MemoryPointer.Contains(lastDptr))
                 {
+                    stepTimer.Stop();
                     return;
                 }
             }
-            stepTimer.Stop();
         }
 
         private void AddBreakPoint(ushort address)

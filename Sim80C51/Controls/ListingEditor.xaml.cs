@@ -1,4 +1,5 @@
-﻿using System.Windows;
+﻿using Sim80C51.Toolbox.Wpf;
+using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Input;
 using System.Windows.Media;
@@ -21,25 +22,25 @@ namespace Sim80C51.Controls
             switch (e.Key)
             {
                 case Key.B:
-                    Model.BreakPoint();
+                    Model.BreakPointCommand.Execute(Model.SelectedListingEntry);
                     break;
                 case Key.C:
-                    Model.CreateCode();
+                    Model.CreateCodeCommand.Execute(Model.SelectedListingEntry);
                     break;
                 case Key.J:
-                    Model.Jump();
+                    Model.JumpCommand.Execute(Model.SelectedListingEntry);
                     break;
                 case Key.K:
-                    Model.UpdateComment();
+                    Model.UpdateCommentCommand.Execute(Model.SelectedListingEntry);
                     break;
                 case Key.L:
-                    Model.UpdateLabel();
+                    Model.UpdateLabelCommand.Execute(Model.SelectedListingEntry);
                     break;
                 case Key.S:
-                    Model.CreateString();
+                    Model.CreateStringCommand.Execute(Model.SelectedListingEntry);
                     break;
                 case Key.X:
-                    Model.ShowXRefs();
+                    Model.ShowXRefsCommand.Execute(Model.SelectedListingEntry);
                     break;
                 default:
                     break;
@@ -96,6 +97,20 @@ namespace Sim80C51.Controls
             }
 
             return false;
+        }
+
+        private void ContextMenu_Opened(object sender, RoutedEventArgs e)
+        {
+            if (sender is ContextMenu contextMenu)
+            {
+                foreach (object? item in contextMenu.Items)
+                {
+                    if (item is MenuItem menuItem)
+                    {
+                        (menuItem.Command as RelayCommand)?.OnCanExecuteChanged();
+                    }
+                }
+            }
         }
 
         /*
