@@ -95,6 +95,12 @@ namespace Sim80C51
                 MemoryPointer.Add(address);
             }
 
+            CPU.CallStack.Clear();
+            foreach (ushort address in wsp.CallStack)
+            {
+                CPU.CallStack.Add(address);
+            }
+
             foreach (ushort address in wsp.XMem.Keys)
             {
                 xmemCtx.Add(address, LoadXMemFromCompBase64(wsp.XMem[address].Memory));
@@ -156,6 +162,7 @@ namespace Sim80C51
 
             wsp.Breakpoints.AddRange(Breakpoints);
             wsp.MemoryWatches.AddRange(MemoryPointer);
+            wsp.CallStack.AddRange(CPU.CallStack);
             CPU.SaveAdditionalSettings(wsp.AdditionalSettings);
             using StreamWriter writer = File.CreateText(saveFileDialog.FileName);
             Serializer serializer = new();
