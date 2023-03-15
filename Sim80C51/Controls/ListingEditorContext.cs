@@ -1,6 +1,7 @@
 ﻿using Sim80C51.Common;
 using Sim80C51.Toolbox;
 using Sim80C51.Toolbox.Wpf;
+using System;
 using System.IO;
 using System.Text.RegularExpressions;
 using System.Windows;
@@ -182,6 +183,20 @@ namespace Sim80C51.Controls
                 SelectedListingEntry = Listing.GetByAddress(currentAddress);
             }
         }, (o) => { return o is ListingEntry entry && entry.Instruction == InstructionType.DB; });
+
+        public ICommand UndefineCommand => new RelayCommand((o) =>
+        {
+            if (o is ListingEntry entry && reader != null && factory != null)
+            {
+                ushort currentAddress = entry.Address;
+
+                factory.Undefine(reader, currentAddress);
+
+                Application.Current.Dispatcher.Invoke(DispatcherPriority.Background, new Action(delegate { }));
+
+                SelectedListingEntry = Listing.GetByAddress(currentAddress);
+            }
+        }, (o) => { return o is ListingEntry entry; });
         #endregion
 
         public ListingEntry? GetFromAddress(ushort address)
@@ -344,6 +359,19 @@ namespace Sim80C51.Controls
             foreach (ListingEntry entry in Listing.OrderBy(l => l.Address))
             {
                 sw.WriteLine(entry.ToString());
+            }
+        }
+
+        public void CheckOverlap()
+        {
+            for (int i = 0; i < Listing.Count; i++)
+            {
+                ushort nextAddr = (ushort)(Listing[i].Address + Listing[i].Data.Count);
+                if (i + 1 < Listing.Count && Listing[i + 1].Address < nextAddr)
+                {
+                    SelectedListingEntry = Listing[i + 1];
+                    return;
+                }
             }
         }
         #endregion

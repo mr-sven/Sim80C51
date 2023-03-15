@@ -340,6 +340,11 @@ namespace Sim80C51
 
             AddXMemTab(wnd.RamStartAddress, $"XMem at 0x{wnd.RamStartAddress:X4} size 0x{file.Length:X4}");
         });
+
+        public ICommand CheckOverlapCommand => new RelayCommand((o) =>
+        {
+            listingCtx?.CheckOverlap();
+        });
         #endregion
 
         #region Simulator commands

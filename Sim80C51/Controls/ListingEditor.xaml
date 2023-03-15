@@ -43,6 +43,7 @@
                 <MenuItem Header="Add Breakpoint" Command="{Binding PlacementTarget.Tag.BreakPointCommand, RelativeSource={RelativeSource AncestorType=ContextMenu}}" CommandParameter="{Binding}" InputGestureText="B" />
                 <MenuItem Header="Show XRef" Command="{Binding PlacementTarget.Tag.ShowXRefsCommand, RelativeSource={RelativeSource AncestorType=ContextMenu}}" CommandParameter="{Binding}" InputGestureText="X" />
                 <MenuItem Header="Create String" Command="{Binding PlacementTarget.Tag.CreateStringCommand, RelativeSource={RelativeSource AncestorType=ContextMenu}}" CommandParameter="{Binding}" InputGestureText="S" />
+                <MenuItem Header="Undefine" Command="{Binding PlacementTarget.Tag.UndefineCommand, RelativeSource={RelativeSource AncestorType=ContextMenu}}" CommandParameter="{Binding}" InputGestureText="U" />
             </ContextMenu>
         </ListView.Resources>
         <ListView.ItemContainerStyle>

@@ -48,6 +48,7 @@
             <MenuItem Header="_Listing" Height="25" IsEnabled="{Binding ProcessorActivated}">
                 <MenuItem Header="_Load" Command="{Binding ListingLoadCommand}"/>
                 <MenuItem Header="_Save" Command="{Binding ListingSaveCommand}"/>
+                <MenuItem Header="_Check entry overlap" Command="{Binding CheckOverlapCommand}"/>
             </MenuItem>
             <MenuItem Header="_Memory" Height="25" IsEnabled="{Binding ProcessorActivated}">
                 <MenuItem Header="_Add" Command="{Binding AddExternalMemoryCommand}"/>

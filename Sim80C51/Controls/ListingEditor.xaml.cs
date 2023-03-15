@@ -39,6 +39,9 @@ namespace Sim80C51.Controls
                 case Key.S:
                     Model.CreateStringCommand.Execute(Model.SelectedListingEntry);
                     break;
+                case Key.U:
+                    Model.UndefineCommand.Execute(Model.SelectedListingEntry);
+                    break;
                 case Key.X:
                     Model.ShowXRefsCommand.Execute(Model.SelectedListingEntry);
                     break;
@@ -57,6 +60,7 @@ namespace Sim80C51.Controls
                 Key.K,
                 Key.L,
                 Key.S,
+                Key.U,
                 Key.X,
             };
 

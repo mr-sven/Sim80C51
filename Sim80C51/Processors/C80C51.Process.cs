@@ -783,10 +783,14 @@ namespace Sim80C51.Processors
         private void SetByteFromInstructionArgument(string arg, byte data)
         {
             // Indirect RAM access
-            if (arg == "@R0")
+            switch (arg)
             {
-                SetIndirectRam(R0, data);
-                return;
+                case "@R0":
+                    SetIndirectRam(R0, data);
+                    return;
+                case "@R1":
+                    SetIndirectRam(R1, data);
+                    return;
             }
 
             SetDirectRam(arg, data);

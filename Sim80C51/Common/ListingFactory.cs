@@ -1,6 +1,7 @@
 ﻿using Sim80C51.Toolbox;
 using System.Diagnostics;
 using System.IO;
+using System.Net;
 using System.Reflection;
 
 namespace Sim80C51.Common
@@ -1411,6 +1412,28 @@ namespace Sim80C51.Common
 
                 dataAddress = next;
             }
+        }
+
+        public void Undefine(BinaryReader reader, ushort currentAddress)
+        {
+            if (listing!.GetByAddress(currentAddress) is not ListingEntry listingEntry)
+            {
+                return;
+            }
+            int index = listing.IndexOf(listingEntry);
+
+            if (index > 0)
+            {
+                ListingEntry prevListingEntry = listing[index - 1];
+                if (prevListingEntry.Instruction == InstructionType.DB && 
+                    !prevListingEntry.ArgumentString.Contains('\'') &&
+                    prevListingEntry.Arguments.Count < DB_DEFAULT_SIZE)
+                {
+                    listing.Remove(prevListingEntry);
+                }
+            }
+            listing.Remove(listingEntry);
+            RestoreDbEntries(reader);
         }
     }
 }
