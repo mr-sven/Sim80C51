@@ -19,6 +19,7 @@
     <UserControl.ContextMenu>
         <ContextMenu>
             <MenuItem Header="Save" Command="{Binding SaveMemoryCommand}"/>
+            <MenuItem Header="Reset" Command="{Binding ResetMemoryCommand}"/>
         </ContextMenu>
     </UserControl.ContextMenu>
     <DataGrid AutoGenerateColumns="False" ItemsSource="{Binding Memory}" CanUserAddRows="False" CanUserSortColumns="False" FontFamily="Lucida Console"

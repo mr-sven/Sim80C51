@@ -33,18 +33,7 @@ namespace Sim80C51.Controls
 
         public bool M48TMode => dispatcherTimer.IsEnabled;
 
-        public ICommand SaveMemoryCommand { get; }
-
-        public MemoryContext()
-        {
-            dispatcherTimer = new System.Windows.Threading.DispatcherTimer();
-            dispatcherTimer.Tick += new EventHandler(DispatcherTimer_Tick);
-            dispatcherTimer.Interval = new TimeSpan(0, 0, 1);
-
-            SaveMemoryCommand = new RelayCommand(SaveMemoryCommandExecute);
-        }
-
-        private void SaveMemoryCommandExecute(object? obj)
+        public ICommand SaveMemoryCommand => new RelayCommand((o) =>
         {
             SaveFileDialog saveFileDialog = new()
             {
@@ -64,6 +53,28 @@ namespace Sim80C51.Controls
             {
                 file.Write(row.Row.ToArray());
             }
+        });
+
+        public ICommand ResetMemoryCommand => new RelayCommand((o) =>
+        {
+            for (int i = 0; i < Size; i++)
+            {
+                this[i] = (i < Size / 2 || !M48TMode) ? (byte)0x00 : (byte)0xff;
+            }
+            if (M48TMode)
+            {
+                for (int i = (int)(Size - ByteRow.ROW_WIDTH / 2); i < Size; i++)
+                {
+                    this[i] = 0x00;
+                }
+            }
+        }, (o) => !MarkUpperInternalRam);
+
+        public MemoryContext()
+        {
+            dispatcherTimer = new System.Windows.Threading.DispatcherTimer();
+            dispatcherTimer.Tick += new EventHandler(DispatcherTimer_Tick);
+            dispatcherTimer.Interval = new TimeSpan(0, 0, 1);
         }
 
         public byte this[int i]
