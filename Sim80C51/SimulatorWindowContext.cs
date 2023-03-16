@@ -383,6 +383,14 @@ namespace Sim80C51
             }
         });
 
+        public ICommand GotoDptrCommand => new RelayCommand((o) =>
+        {
+            if (listingCtx?.GetFromAddress(CPU!.DPTR) is ListingEntry entry)
+            {
+                listingCtx.SelectedListingEntry = entry;
+            }
+        });        
+
         public ICommand NavToAddressCommand => new RelayCommand((o) =>
         {
             if (o is ushort address && listingCtx?.GetFromAddress(address) is ListingEntry entry)
@@ -492,6 +500,7 @@ namespace Sim80C51
             if (listingCtx?.GetFromAddress(CPU!.PC) is not ListingEntry entry || entry.Instruction == InstructionType.DB)
             {
                 stepTimer.Stop();
+                GotoPcCommand.Execute(null);
                 return;
             }
 
@@ -501,6 +510,7 @@ namespace Sim80C51
             if (Breakpoints.Contains(CPU.PC))
             {
                 stepTimer.Stop();
+                GotoPcCommand.Execute(null);
                 return;
             }
 
@@ -510,6 +520,7 @@ namespace Sim80C51
                 if (MemoryPointer.Contains(lastDptr))
                 {
                     stepTimer.Stop();
+                    GotoPcCommand.Execute(null);
                     return;
                 }
             }

@@ -1,7 +1,6 @@
 ﻿using Sim80C51.Common;
 using Sim80C51.Toolbox.Wpf;
 using System.Reflection;
-using System.Runtime.CompilerServices;
 
 namespace Sim80C51.Processors
 {
