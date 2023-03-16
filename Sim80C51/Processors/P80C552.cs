@@ -4,40 +4,20 @@ using System.ComponentModel;
 namespace Sim80C51.Processors
 {
     [DisplayName("Philips 80C552")]
+    [IV(0x002B, 2, "S1")]
+    [IV(0x0033, 5, "CT0")]
+    [IV(0x003B, 8, "CT1")]
+    [IV(0x0043, 11, "CT2")]
+    [IV(0x004B, 14, "CT3")]
+    [IV(0x0053, 3, "AD")]
+    [IV(0x005B, 6, "CM0")]
+    [IV(0x0063, 9, "CM1")]
+    [IV(0x006B, 12, "CM2")]
+    [IV(0x0073, 15, "T2")]
     public class P80C552 : C80C51, I80C51
     {
         public const int RAM_SIZE = 256;
         public const int SFR_SIZE = 128;
-
-        [IV(0x002B, 2)]
-        public void Interrupt_S1() { Interrupt(); }
-
-        [IV(0x0033, 5)]
-        public void Interrupt_CT0() { Interrupt(); }
-
-        [IV(0x003B, 8)]
-        public void Interrupt_CT1() { Interrupt(); }
-
-        [IV(0x0043, 11)]
-        public void Interrupt_CT2() { Interrupt(); }
-
-        [IV(0x004B, 14)]
-        public void Interrupt_CT3() { Interrupt(); }
-
-        [IV(0x0053, 3)]
-        public void Interrupt_AD() { Interrupt(); }
-
-        [IV(0x005B, 6)]
-        public void Interrupt_CM0() { Interrupt(); }
-
-        [IV(0x0063, 9)]
-        public void Interrupt_CM1() { Interrupt(); }
-
-        [IV(0x006B, 12)]
-        public void Interrupt_CM2() { Interrupt(); }
-
-        [IV(0x0073, 15)]
-        public void Interrupt_T2() { Interrupt(); }
 
         #region ADCH
         [SFR(0xC6)]
@@ -190,9 +170,9 @@ namespace Sim80C51.Processors
         #endregion IEN1
 
         #region IP0
-        [SFRBit(nameof(IP0), 6, true)]
+        [SFRBit(nameof(IP0), 5, true)]
         public bool PS1 { get => GetBitFromProp(); set { SetBitFromProp(value); } }
-        [SFRBit(nameof(IP0), 7, true)]
+        [SFRBit(nameof(IP0), 6, true)]
         public bool PAD { get => GetBitFromProp(); set { SetBitFromProp(value); } }
         #endregion IP0
 
@@ -531,6 +511,16 @@ namespace Sim80C51.Processors
 
         public P80C552() : base(SFR_SIZE + RAM_SIZE)
         {
+            AddIv("S1", () => PS1, () => ENS1 && SI);
+            AddIv("CT0", () => PCT0, () => ECT0 && CTI0);
+            AddIv("CT1", () => PCT1, () => ECT1 && CTI1);
+            AddIv("CT2", () => PCT2, () => ECT2 && CTI2);
+            AddIv("CT3", () => PCT3, () => ECT3 && CTI3);
+            AddIv("AD", () => PAD, () => EAD && ADCI);
+            AddIv("CM0", () => PCM0, () => ECM0 && CMI0);
+            AddIv("CM1", () => PCM1, () => ECM1 && CMI1);
+            AddIv("CM2", () => PCM2, () => ECM2 && CMI2);
+            AddIv("T2", () => PT2, () => ET2 && ((T2IS1 && T20V) || (T2IS0 && T2B0)));
         }
 
         public override void Reset()
@@ -669,10 +659,6 @@ namespace Sim80C51.Processors
             ADCON |= (byte)(adcValue << 6);
             ADCI = true;
             ADCS = false;
-            if (EA && EAD)
-            {
-                Interrupt_AD();
-            }
         }
     }
 }

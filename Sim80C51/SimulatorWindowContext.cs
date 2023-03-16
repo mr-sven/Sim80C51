@@ -371,15 +371,6 @@ namespace Sim80C51
             }
         });
 
-        public ICommand ExecIRQCommand => new RelayCommand((o) =>
-        {
-            if (o is not Controls.IRQMenuItem irqItem || CPU == null)
-            {
-                return;
-            }
-            irqItem.Method!.Invoke(CPU, null);
-        });
-
         public ICommand ResetCommand => new RelayCommand((o) => { CPU?.Reset(); GotoPcCommand?.Execute(null); });
         #endregion
 
@@ -453,8 +444,6 @@ namespace Sim80C51
 
         public ICollectionView? LabelView { get => labelView; set { labelView = value; DoPropertyChanged(); } }
         private ICollectionView? labelView;
-
-        public ObservableCollection<Controls.IRQMenuItem> IRQMenuItems { get; } = new ();
 
         public ObservableCollection<CallStackEntry>? CallStack => CPU?.CallStack;
         #endregion
@@ -599,34 +588,7 @@ namespace Sim80C51
                 }
             });
 
-            IEnumerable<MethodInfo> list = CPU.GetType().GetMethods().Where(m => m.GetCustomAttributes<Processors.IVAttribute>().Any());
-            foreach (MethodInfo mi in list)
-            {
-                byte priority = mi.GetCustomAttribute<Processors.IVAttribute>()?.Priority ?? 0;
-                string title = mi.Name["Interrupt_".Length..];
-
-                InsertIRQSorted(new()
-                {
-                    Title = $"{title} ({priority})",
-                    Method = mi,
-                    Priority = priority
-                });
-            }
-
             DoPropertyChanged(nameof(CallStack));
-        }
-
-        private void InsertIRQSorted(Controls.IRQMenuItem iItem)
-        {
-            for (int i = 0; i < IRQMenuItems.Count; i++)
-            {
-                if (iItem.Priority < IRQMenuItems[i].Priority)
-                {
-                    IRQMenuItems.Insert(i, iItem);
-                    return;
-                }
-            }
-            IRQMenuItems.Add(iItem);
         }
 
         private static string DataToBase64(ObservableCollection<ByteRow> data)

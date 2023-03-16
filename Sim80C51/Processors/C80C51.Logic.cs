@@ -24,6 +24,8 @@ namespace Sim80C51.Processors
         /// </summary>
         private readonly Dictionary<string, SFR16Attribute> sfr16Map = new();
 
+        protected readonly SortedList<byte, IV> ivList = new();
+
         /// <summary>
         /// Constructor
         /// </summary>
@@ -51,7 +53,23 @@ namespace Sim80C51.Processors
                 }
             }
 
+            AddIv("X0", () => PX0, () => EX0 && IE0);
+            AddIv("T0", () => PT0, () => ET0 && TF0, () => TF0 = false);
+            AddIv("X1", () => PX1, () => EX1 && IE1);
+            AddIv("T1", () => PT1, () => ET1 && TF1, () => TF1 = false);
+            AddIv("S0", () => PS0, () => ES0 && (RI || TI));
+
             Reset();
+        }
+
+        protected void AddIv(string name, Func<bool> priorityBit, Func<bool> check, Action? clear = null)
+        {
+            if (GetType().GetCustomAttributes<IVAttribute>().FirstOrDefault((iva) => iva.Name == name) is not IVAttribute ivAttr)
+            {
+                return;
+            }
+
+            ivList.Add(ivAttr.Priority, new(ivAttr.Address, priorityBit, check, clear));
         }
 
         /// <summary>

@@ -62,15 +62,6 @@
                 <MenuItem Header="_Add" Command="{Binding AddExternalMemoryCommand}"/>
                 <MenuItem Header="_Load" Command="{Binding LoadExternalMemoryCommand}"/>
             </MenuItem>
-            <MenuItem Header="_Interrupt" Height="25" IsEnabled="{Binding ProcessorActivated}" ItemsSource="{Binding Path=IRQMenuItems}">
-                <MenuItem.ItemContainerStyle>
-                    <Style TargetType="{x:Type MenuItem}">
-                        <Setter Property="Command" Value="{Binding Path=DataContext.ExecIRQCommand, RelativeSource={RelativeSource AncestorType=Window, Mode=FindAncestor}}" />
-                        <Setter Property="CommandParameter" Value="{Binding}" />
-                        <Setter Property="Header" Value="{Binding Title}"/>
-                    </Style>
-                </MenuItem.ItemContainerStyle>
-            </MenuItem>
         </Menu>
         <ToolBarTray DockPanel.Dock="Top">
             <ToolBar>

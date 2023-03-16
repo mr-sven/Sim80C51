@@ -1,7 +1,6 @@
 ﻿using Sim80C51.Toolbox;
 using System.Diagnostics;
 using System.IO;
-using System.Net;
 using System.Reflection;
 
 namespace Sim80C51.Common
@@ -121,12 +120,9 @@ namespace Sim80C51.Common
             }
 
             // build IV Map
-            foreach (MethodInfo mInfo in processorType.GetMethods())
+            foreach (Processors.IVAttribute attr in processorType.GetCustomAttributes<Processors.IVAttribute>())
             {
-                if (mInfo.GetCustomAttribute<Processors.IVAttribute>() is Processors.IVAttribute ivAttr)
-                {
-                    ivMap.Add(mInfo.Name["Interrupt_".Length..], ivAttr.Address);
-                }
+                ivMap.Add(attr.Name, attr.Address);
             }
         }
 

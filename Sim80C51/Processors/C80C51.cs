@@ -6,6 +6,11 @@ namespace Sim80C51.Processors
     /// <summary>
     /// Core register class, contains base 80C51 Regsiters
     /// </summary>
+    [IV(0x0003, 1, "X0")]
+    [IV(0x000B, 4, "T0")]
+    [IV(0x0013, 7, "X1")]
+    [IV(0x001B, 10, "T1")]
+    [IV(0x0023, 13, "S0")]
     public abstract partial class C80C51 : NotifyPropertyChanged
     {
         /// <summary>
@@ -38,22 +43,6 @@ namespace Sim80C51.Processors
         public byte R5 { get => GetRegister(); set { SetRegister(value); } }
         public byte R6 { get => GetRegister(); set { SetRegister(value); } }
         public byte R7 { get => GetRegister(); set { SetRegister(value); } }
-
-
-        [IV(0x0003, 1)]
-        public void Interrupt_X0() { Interrupt(); }
-
-        [IV(0x000B, 4)]
-        public void Interrupt_T0() { Interrupt(); }
-
-        [IV(0x0013, 7)]
-        public void Interrupt_X1() { Interrupt(); }
-
-        [IV(0x001B, 10)]
-        public void Interrupt_T1() { Interrupt(); }
-
-        [IV(0x0023, 13)]
-        public void Interrupt_S0() { Interrupt(); }
 
         #region ACC
         [SFR(0xE0)]

@@ -12,10 +12,8 @@ namespace Sim80C51.Processors
     {
         private static readonly string[] regNames = new string[] { nameof(R0), nameof(R1), nameof(R2), nameof(R3), nameof(R4), nameof(R5), nameof(R6), nameof(R7) };
 
-        protected bool instructionInProgress = false;
-
-        // TODO: Handle multiple IRQ Prio 
-        private Action? pendingIrq = null;
+        private bool irqHighInProgress = false;
+        private bool irqLowInProgress = false;
 
         private void Push(byte data)
         {
@@ -56,7 +54,6 @@ namespace Sim80C51.Processors
         /// <param name="entry">the listing entry</param>
         public void Process(ListingEntry entry)
         {
-            instructionInProgress = true;
             CpuCycle(); // first process cycle
             PC += (ushort)entry.Data.Count;
             byte tmpByte;
@@ -83,8 +80,17 @@ namespace Sim80C51.Processors
                     PC = entry.TargetAddress;
                     break;
 
-                case InstructionType.RET:
                 case InstructionType.RETI:
+                    if (irqHighInProgress)
+                    {
+                        irqHighInProgress = false;
+                    }
+                    else if (irqLowInProgress)
+                    {
+                        irqLowInProgress = false;
+                    }
+                    goto case InstructionType.RET;
+                case InstructionType.RET:
                     CpuCycle();
                     PC = (ushort)(Pop() << 8);
                     PC += Pop();
@@ -576,23 +582,55 @@ namespace Sim80C51.Processors
                 case InstructionType.ORG:
                     throw new NotImplementedException(entry.Instruction + " " + entry.ArgumentString);
             }
-            instructionInProgress = false;
-            // TODO: Handle multiple IRQ Prio 
-            pendingIrq?.Invoke();
 
             CheckInterruptFlags();
         }
 
         private void CheckInterruptFlags()
         {
+            // Global EA
             if (!EA) { return; }
-            //if (EX0 && IE0) { Interrupt_X0(); }
+            
+            // check if highest execution is in progress
+            if (irqHighInProgress) { return; }
+
+            if (irqLowInProgress)
+            {
+                // if low irq is in progress only high prio irq can interrupt
+                foreach (IV iv in ivList.Values.Where((iv) => iv.PriorityBit()))
+                {
+                    if (iv.Check())
+                    {
+                        irqHighInProgress = true;
+                        iv.Clear?.Invoke();
+                        ExecuteIrq(iv.VectorAddress);
+                        return;
+                    }
+                }
+                return;
+            }
+
+            foreach (IV iv in ivList.Values)
+            {
+                if (iv.Check())
+                {
+                    if (iv.PriorityBit())
+                    {
+                        irqHighInProgress = true;
+                    }
+                    else
+                    {
+                        irqLowInProgress = true;
+                    }
+                    iv.Clear?.Invoke();
+                    ExecuteIrq(iv.VectorAddress);
+                    return;
+                }
+            }
         }
 
         private void ExecuteIrq(ushort address)
         {
-            pendingIrq = null;
-
             // Execute a virtual LCALL (2 cyles)
             CpuCycle();
             CpuCycle();
@@ -604,29 +642,6 @@ namespace Sim80C51.Processors
 
             // set PC to IV Address
             PC = address;
-        }
-
-        protected void Interrupt([CallerMemberName] string irqName = "")
-        {
-            if (GetType().GetMethod(irqName) is not MethodInfo mInfo)
-            {
-                throw new ArgumentException("Invalid IV Call", irqName);
-            }
-
-            if (mInfo.GetCustomAttribute<IVAttribute>() is not IVAttribute ivAttr)
-            {
-                throw new ArgumentException("IV Attribute missing", irqName);
-            }
-
-            // TODO: Handle multiple IRQ Prio 
-            if (instructionInProgress)
-            {
-                pendingIrq = () => { ExecuteIrq(ivAttr.Address); };
-            }
-            else
-            {
-                ExecuteIrq(ivAttr.Address);
-            }
         }
 
         protected virtual void CpuCycle()
@@ -642,9 +657,6 @@ namespace Sim80C51.Processors
             {
                 return;
             }
-
-            bool oldTF0 = TF0;
-            bool oldTF1 = TF1;
 
             if (M0_0 && M0_1) // mode 3
             {
@@ -697,16 +709,6 @@ namespace Sim80C51.Processors
                     }
                 }
             }
-            if (EA && ET1 && TF1 && !oldTF1)
-            {
-                TF1 = false;
-                Interrupt_T1();
-            }
-            else if (EA && ET0 && TF0 && !oldTF0)
-            {
-                TF0 = false;
-                Interrupt_T0();
-            }
         }
 
         private void StepTimer1(bool fromCpu)
@@ -720,8 +722,6 @@ namespace Sim80C51.Processors
             {
                 return;
             }
-
-            bool oldTF1 = TF1;
 
             if (!C_T_1 || !fromCpu)
             {
@@ -757,11 +757,6 @@ namespace Sim80C51.Processors
                         TF1 = true;
                     }
                 }
-            }
-            if (EA && ET1 && TF1 && !oldTF1)
-            {
-                TF1 = false;
-                Interrupt_T1();
             }
         }
 
