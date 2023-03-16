@@ -24,7 +24,14 @@ namespace Sim80C51.Processors
 
         private byte Pop()
         {
-            return GetMem(SP--);
+            byte res = GetMem(SP--);
+            CallStackEntry[] rmCallStack = CallStack.Where(cs => cs.StackPointer >= SP).ToArray();
+            foreach (CallStackEntry cs in rmCallStack)
+            {
+                CallStack.Remove(cs);
+            }
+
+            return res;
         }
 
         /// <summary>
@@ -70,9 +77,9 @@ namespace Sim80C51.Processors
                 case InstructionType.LCALL:
                 case InstructionType.ACALL:
                     CpuCycle();
+                    CallStack.Add(new(PC, SP));
                     Push((byte)(PC & 0xff));
                     Push((byte)(PC >> 8 & 0xff));
-                    CallStack.Add(PC);
                     PC = entry.TargetAddress;
                     break;
 
@@ -81,7 +88,6 @@ namespace Sim80C51.Processors
                     CpuCycle();
                     PC = (ushort)(Pop() << 8);
                     PC += Pop();
-                    CallStack.RemoveAt(CallStack.Count - 1);
                     break;
 
                 case InstructionType.MUL:
@@ -573,6 +579,14 @@ namespace Sim80C51.Processors
             instructionInProgress = false;
             // TODO: Handle multiple IRQ Prio 
             pendingIrq?.Invoke();
+
+            CheckInterruptFlags();
+        }
+
+        private void CheckInterruptFlags()
+        {
+            if (!EA) { return; }
+            //if (EX0 && IE0) { Interrupt_X0(); }
         }
 
         private void ExecuteIrq(ushort address)
@@ -584,9 +598,9 @@ namespace Sim80C51.Processors
             CpuCycle();
 
             // save current PC to stack
+            CallStack.Add(new(PC, SP));
             Push((byte)(PC & 0xff));
             Push((byte)(PC >> 8 & 0xff));
-            CallStack.Add(PC);
 
             // set PC to IV Address
             PC = address;

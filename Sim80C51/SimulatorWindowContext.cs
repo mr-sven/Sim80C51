@@ -1,5 +1,6 @@
 ﻿using Microsoft.Win32;
 using Sim80C51.Common;
+using Sim80C51.Processors;
 using Sim80C51.Toolbox.Wpf;
 using System.Collections.ObjectModel;
 using System.ComponentModel;
@@ -96,9 +97,9 @@ namespace Sim80C51
             }
 
             CPU.CallStack.Clear();
-            foreach (ushort address in wsp.CallStack)
+            foreach (CallStackEntry cs in wsp.CallStack)
             {
-                CPU.CallStack.Add(address);
+                CPU.CallStack.Add(cs);
             }
 
             foreach (ushort address in wsp.XMem.Keys)
@@ -397,6 +398,10 @@ namespace Sim80C51
             {
                 listingCtx.SelectedListingEntry = entry;
             }
+            else if (o is CallStackEntry csEntry && listingCtx?.GetFromAddress(csEntry.Address) is ListingEntry listingEntry)
+            {
+                listingCtx.SelectedListingEntry = listingEntry;
+            }
         });
 
         public ICommand DeleteBpCommand => new RelayCommand((o) =>
@@ -451,7 +456,7 @@ namespace Sim80C51
 
         public ObservableCollection<Controls.IRQMenuItem> IRQMenuItems { get; } = new ();
 
-        public ObservableCollection<ushort>? CallStack => CPU?.CallStack;
+        public ObservableCollection<CallStackEntry>? CallStack => CPU?.CallStack;
         #endregion
 
         #region Init functions
@@ -487,7 +492,7 @@ namespace Sim80C51
             listingCtx = simulatorWindow.listingEditor.DataContext as Controls.ListingEditorContext;
             listingCtx!.AddBreakPoint = AddBreakPoint;
             stepTimer.Tick += new EventHandler(StepTimer_Tick);
-            stepTimer.Interval = new TimeSpan(0, 0, 0, 0, 10);
+            stepTimer.Interval = new TimeSpan(0, 0, 0, 0, 5);
             LabelView = new CollectionViewSource() { Source = listingCtx.Listing }.View;
             LabelView.Filter = (entry) => !string.IsNullOrEmpty((entry as ListingEntry)?.Label);
         }

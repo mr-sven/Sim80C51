@@ -1,8 +1,9 @@
 ﻿using System.Windows;
 using System.Windows.Documents;
 using System.Windows.Media;
+using Sim80C51.Toolbox.Wpf;
 
-namespace Sim80C51.Toolbox.Wpf
+namespace Sim80C51
 {
     /// <summary>
     /// Interaction logic for StringBuilderDialog.xaml
@@ -27,7 +28,7 @@ namespace Sim80C51.Toolbox.Wpf
             endIndex.Text = $"{baseAddress + endIdx:X4}";
 
             TextPointer text = textBox.Document.ContentStart;
-            while(text.GetPointerContext(LogicalDirection.Forward) != TextPointerContext.Text)
+            while (text.GetPointerContext(LogicalDirection.Forward) != TextPointerContext.Text)
             {
                 text = text.GetNextContextPosition(LogicalDirection.Forward);
             }

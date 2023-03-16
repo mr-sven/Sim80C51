@@ -28,7 +28,7 @@ namespace Sim80C51.Processors
         /// <summary>
         /// Call Stack
         /// </summary>
-        public ObservableCollection<ushort> CallStack { get; } = new();
+        public ObservableCollection<CallStackEntry> CallStack { get; } = new();
 
         public byte R0 { get => GetRegister(); set { SetRegister(value); } }
         public byte R1 { get => GetRegister(); set { SetRegister(value); } }

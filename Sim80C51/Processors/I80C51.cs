@@ -18,7 +18,7 @@ namespace Sim80C51.Processors
         /// <summary>
         /// Call Stack
         /// </summary>
-        ObservableCollection<ushort> CallStack { get; }
+        ObservableCollection<CallStackEntry> CallStack { get; }
 
         /// <summary>
         /// Cycle Counter

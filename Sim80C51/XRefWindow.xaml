@@ -1,0 +1,23 @@
+﻿<Window x:Class="Sim80C51.XRefWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:local="clr-namespace:Sim80C51"
+        mc:Ignorable="d"
+        Title="Show XRef" Height="250" Width="150" WindowStartupLocation="CenterOwner" ShowInTaskbar="False" ResizeMode="NoResize">
+    <Grid Margin="15">
+        <ListBox ItemsSource="{Binding XRefs}">
+            <ListBox.ItemContainerStyle>
+                <Style TargetType="{x:Type ListBoxItem}" BasedOn="{StaticResource {x:Type ListBoxItem}}">
+                    <EventSetter Event="MouseDoubleClick" Handler="Listbox_MouseDoubleClick"/>
+                </Style>
+            </ListBox.ItemContainerStyle>
+            <ListBox.ItemTemplate>
+                <DataTemplate>
+                    <TextBlock Text="{Binding StringFormat={}{0:X4}}"/>
+                </DataTemplate>
+            </ListBox.ItemTemplate>
+        </ListBox>
+    </Grid>
+</Window>

@@ -27,6 +27,14 @@
         </DataTemplate>
 
     </Window.Resources>
+
+    <Window.InputBindings>
+        <KeyBinding Key="F11" Command="{Binding OneStepCommand}" />
+        <KeyBinding Key="F5" Command="{Binding PlayCommand}" />
+        <KeyBinding Key="R" Modifiers="Ctrl" Command="{Binding ResetCommand}" />
+        <KeyBinding Key="P" Modifiers="Ctrl" Command="{Binding GotoPcCommand}" />
+    </Window.InputBindings>
+
     <DockPanel LastChildFill="True">
         <Menu DockPanel.Dock="Top">
             <MenuItem Header="_File" Height="25">
@@ -99,11 +107,11 @@
                         </Style.Triggers>
                     </Style>
                 </ToolBar.Style>
-                <Button Command="{Binding OneStepCommand}" Width="50">Step</Button>
-                <Button Command="{Binding PlayCommand}" Width="50">Play</Button>
-                <Button Command="{Binding ResetCommand}" Width="50" >Reset</Button>
+                <Button Command="{Binding OneStepCommand}" Width="70">Step (F11)</Button>
+                <Button Command="{Binding PlayCommand}" Width="70">Play (F5)</Button>
+                <Button Command="{Binding ResetCommand}" Width="100" >Reset (Ctrl + R)</Button>
                 <Separator/>
-                <Button Command="{Binding GotoPcCommand}">Goto PC</Button>
+                <Button Command="{Binding GotoPcCommand}">Goto PC (Ctrl + P)</Button>
             </ToolBar>
         </ToolBarTray>
         <DockPanel LastChildFill="True">
@@ -197,7 +205,7 @@
                         <ListBox ItemsSource="{Binding CallStack}" Width="100">
                             <ListBox.ItemTemplate>
                                 <DataTemplate>
-                                    <TextBlock Text="{Binding StringFormat=Address: {0:X4}}" Tag="{Binding DataContext, RelativeSource={RelativeSource AncestorType=Window}}">
+                                    <TextBlock Text="{Binding Address, StringFormat=Address: {0:X4}}" Tag="{Binding DataContext, RelativeSource={RelativeSource AncestorType=Window}}">
                                         <TextBlock.InputBindings>
                                             <MouseBinding MouseAction="LeftDoubleClick" Command="{Binding DataContext.NavToAddressCommand, RelativeSource={RelativeSource AncestorType=Window}}" CommandParameter="{Binding}" />
                                         </TextBlock.InputBindings>

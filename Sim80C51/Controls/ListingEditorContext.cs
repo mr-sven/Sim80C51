@@ -131,9 +131,17 @@ namespace Sim80C51.Controls
         {
             if (o is ListingEntry entry)
             {
-                List<ListingEntry> xrefs = Listing.Where(e => e.Arguments.Count > 0 && e.Arguments.Last() == entry.Label).ToList();
+                
+                XRefWindow dlg = new()
+                {
+                    Owner = Application.Current.MainWindow,
+                    XRefs = Listing.Where(e => e.Arguments.Count > 0 && e.Arguments.Last() == entry.Label).Select(x => x.Address).ToList()
+                };
 
-                //TODO: Show xref window
+                if (dlg.ShowDialog() == true)
+                {
+                    SelectedListingEntry = Listing.GetByAddress(dlg.Target);
+                }
             }
         }, (o) => { return o is ListingEntry entry; });
 
