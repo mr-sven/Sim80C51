@@ -1,10 +1,6 @@
-﻿using Sim80C51.Toolbox;
-using Sim80C51.Toolbox.Wpf;
-using System.Linq.Expressions;
-using System.Net.NetworkInformation;
+﻿using Sim80C51.Toolbox.Wpf;
 using System.Reflection;
 using System.Runtime.CompilerServices;
-using System.Windows.Controls;
 
 namespace Sim80C51.Processors
 {

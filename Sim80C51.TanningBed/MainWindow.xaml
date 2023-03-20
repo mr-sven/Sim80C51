@@ -4,22 +4,59 @@
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:Sim80C51.TanningBed"
+        xmlns:tbx="clr-namespace:Sim80C51.Toolbox.Wpf;assembly=Sim80C51.Toolbox"
         mc:Ignorable="d" Closing="Window_Closing" Loaded="Window_Loaded"
-        Title="Tanning Bed" Height="450" Width="800">
+        Title="Tanning Bed" Height="450" Width="600">
     <FrameworkElement.DataContext>
         <local:MainWindowModel/>
     </FrameworkElement.DataContext>
     <WrapPanel>
         <GroupBox Header="Left HC640 (Inputs)" Padding="5">
             <StackPanel>
-                <CheckBox>Condensation pump failure</CheckBox>
-                <CheckBox>Door Contact</CheckBox>
-                <CheckBox>DIP 3</CheckBox>
-                <CheckBox>DIP 2</CheckBox>
-                <CheckBox>MCS Fan run-on</CheckBox>
-                <CheckBox>DIP 1</CheckBox>
-                <CheckBox>MCS Sunbed on</CheckBox>
-                <CheckBox>MCS End of tanning</CheckBox>
+                <CheckBox tbx:CheckBoxBitmaskBehaviour.Mask="0x01" tbx:CheckBoxBitmaskBehaviour.Value="{Binding HC640_1}" tbx:CheckBoxBitmaskBehaviour.IsChecked="{Binding Path=IsChecked, RelativeSource={RelativeSource Self}}">Condensation pump failure</CheckBox>
+                <CheckBox tbx:CheckBoxBitmaskBehaviour.Mask="0x02" tbx:CheckBoxBitmaskBehaviour.Value="{Binding HC640_1}" tbx:CheckBoxBitmaskBehaviour.IsChecked="{Binding Path=IsChecked, RelativeSource={RelativeSource Self}}">Door Contact</CheckBox>
+                <CheckBox tbx:CheckBoxBitmaskBehaviour.Mask="0x04" tbx:CheckBoxBitmaskBehaviour.Value="{Binding HC640_1}" tbx:CheckBoxBitmaskBehaviour.IsChecked="{Binding Path=IsChecked, RelativeSource={RelativeSource Self}}">DIP 3</CheckBox>
+                <CheckBox tbx:CheckBoxBitmaskBehaviour.Mask="0x08" tbx:CheckBoxBitmaskBehaviour.Value="{Binding HC640_1}" tbx:CheckBoxBitmaskBehaviour.IsChecked="{Binding Path=IsChecked, RelativeSource={RelativeSource Self}}">DIP 2</CheckBox>
+                <CheckBox tbx:CheckBoxBitmaskBehaviour.Mask="0x10" tbx:CheckBoxBitmaskBehaviour.Value="{Binding HC640_1}" tbx:CheckBoxBitmaskBehaviour.IsChecked="{Binding Path=IsChecked, RelativeSource={RelativeSource Self}}">MCS Fan run-on</CheckBox>
+                <CheckBox tbx:CheckBoxBitmaskBehaviour.Mask="0x20" tbx:CheckBoxBitmaskBehaviour.Value="{Binding HC640_1}" tbx:CheckBoxBitmaskBehaviour.IsChecked="{Binding Path=IsChecked, RelativeSource={RelativeSource Self}}">DIP 1</CheckBox>
+                <CheckBox tbx:CheckBoxBitmaskBehaviour.Mask="0x40" tbx:CheckBoxBitmaskBehaviour.Value="{Binding HC640_1}" tbx:CheckBoxBitmaskBehaviour.IsChecked="{Binding Path=IsChecked, RelativeSource={RelativeSource Self}}">MCS Sunbed on</CheckBox>
+                <CheckBox tbx:CheckBoxBitmaskBehaviour.Mask="0x80" tbx:CheckBoxBitmaskBehaviour.Value="{Binding HC640_1}" tbx:CheckBoxBitmaskBehaviour.IsChecked="{Binding Path=IsChecked, RelativeSource={RelativeSource Self}}">MCS End of tanning</CheckBox>
+            </StackPanel>
+        </GroupBox>
+        <GroupBox Header="Right HC640 (Inputs)" Padding="5">
+            <StackPanel>
+                <CheckBox tbx:CheckBoxBitmaskBehaviour.Mask="0x01" tbx:CheckBoxBitmaskBehaviour.Value="{Binding HC640_0}" tbx:CheckBoxBitmaskBehaviour.IsChecked="{Binding Path=IsChecked, RelativeSource={RelativeSource Self}}">P1.0</CheckBox>
+                <CheckBox tbx:CheckBoxBitmaskBehaviour.Mask="0x02" tbx:CheckBoxBitmaskBehaviour.Value="{Binding HC640_0}" tbx:CheckBoxBitmaskBehaviour.IsChecked="{Binding Path=IsChecked, RelativeSource={RelativeSource Self}}">P1.1</CheckBox>
+                <CheckBox tbx:CheckBoxBitmaskBehaviour.Mask="0x04" tbx:CheckBoxBitmaskBehaviour.Value="{Binding HC640_0}" tbx:CheckBoxBitmaskBehaviour.IsChecked="{Binding Path=IsChecked, RelativeSource={RelativeSource Self}}">P4.2</CheckBox>
+                <CheckBox tbx:CheckBoxBitmaskBehaviour.Mask="0x08" tbx:CheckBoxBitmaskBehaviour.Value="{Binding HC640_0}" tbx:CheckBoxBitmaskBehaviour.IsChecked="{Binding Path=IsChecked, RelativeSource={RelativeSource Self}}">P4.3</CheckBox>
+                <CheckBox tbx:CheckBoxBitmaskBehaviour.Mask="0x10" tbx:CheckBoxBitmaskBehaviour.Value="{Binding HC640_0}" tbx:CheckBoxBitmaskBehaviour.IsChecked="{Binding Path=IsChecked, RelativeSource={RelativeSource Self}}">P4.4</CheckBox>
+                <CheckBox tbx:CheckBoxBitmaskBehaviour.Mask="0x20" tbx:CheckBoxBitmaskBehaviour.Value="{Binding HC640_0}" tbx:CheckBoxBitmaskBehaviour.IsChecked="{Binding Path=IsChecked, RelativeSource={RelativeSource Self}}">P4.5</CheckBox>
+                <CheckBox tbx:CheckBoxBitmaskBehaviour.Mask="0x40" tbx:CheckBoxBitmaskBehaviour.Value="{Binding HC640_0}" tbx:CheckBoxBitmaskBehaviour.IsChecked="{Binding Path=IsChecked, RelativeSource={RelativeSource Self}}">P4.6</CheckBox>
+                <CheckBox tbx:CheckBoxBitmaskBehaviour.Mask="0x80" tbx:CheckBoxBitmaskBehaviour.Value="{Binding HC640_0}" tbx:CheckBoxBitmaskBehaviour.IsChecked="{Binding Path=IsChecked, RelativeSource={RelativeSource Self}}">P4.7</CheckBox>
+            </StackPanel>
+        </GroupBox>
+        <GroupBox Header="Left HC273 (Outputs)" Padding="5">
+            <StackPanel>
+                <CheckBox tbx:CheckBoxBitmaskBehaviour.Mask="0x01" tbx:CheckBoxBitmaskBehaviour.Value="{Binding HC273_0}" tbx:CheckBoxBitmaskBehaviour.IsChecked="{Binding Path=IsChecked, RelativeSource={RelativeSource Self}}" IsEnabled="False">P1.0</CheckBox>
+                <CheckBox tbx:CheckBoxBitmaskBehaviour.Mask="0x02" tbx:CheckBoxBitmaskBehaviour.Value="{Binding HC273_0}" tbx:CheckBoxBitmaskBehaviour.IsChecked="{Binding Path=IsChecked, RelativeSource={RelativeSource Self}}" IsEnabled="False">P1.1</CheckBox>
+                <CheckBox tbx:CheckBoxBitmaskBehaviour.Mask="0x04" tbx:CheckBoxBitmaskBehaviour.Value="{Binding HC273_0}" tbx:CheckBoxBitmaskBehaviour.IsChecked="{Binding Path=IsChecked, RelativeSource={RelativeSource Self}}" IsEnabled="False">P4.2</CheckBox>
+                <CheckBox tbx:CheckBoxBitmaskBehaviour.Mask="0x08" tbx:CheckBoxBitmaskBehaviour.Value="{Binding HC273_0}" tbx:CheckBoxBitmaskBehaviour.IsChecked="{Binding Path=IsChecked, RelativeSource={RelativeSource Self}}" IsEnabled="False">P4.3</CheckBox>
+                <CheckBox tbx:CheckBoxBitmaskBehaviour.Mask="0x10" tbx:CheckBoxBitmaskBehaviour.Value="{Binding HC273_0}" tbx:CheckBoxBitmaskBehaviour.IsChecked="{Binding Path=IsChecked, RelativeSource={RelativeSource Self}}" IsEnabled="False">P4.4</CheckBox>
+                <CheckBox tbx:CheckBoxBitmaskBehaviour.Mask="0x20" tbx:CheckBoxBitmaskBehaviour.Value="{Binding HC273_0}" tbx:CheckBoxBitmaskBehaviour.IsChecked="{Binding Path=IsChecked, RelativeSource={RelativeSource Self}}" IsEnabled="False">P4.5</CheckBox>
+                <CheckBox tbx:CheckBoxBitmaskBehaviour.Mask="0x40" tbx:CheckBoxBitmaskBehaviour.Value="{Binding HC273_0}" tbx:CheckBoxBitmaskBehaviour.IsChecked="{Binding Path=IsChecked, RelativeSource={RelativeSource Self}}" IsEnabled="False">P4.6</CheckBox>
+                <CheckBox tbx:CheckBoxBitmaskBehaviour.Mask="0x80" tbx:CheckBoxBitmaskBehaviour.Value="{Binding HC273_0}" tbx:CheckBoxBitmaskBehaviour.IsChecked="{Binding Path=IsChecked, RelativeSource={RelativeSource Self}}" IsEnabled="False">P4.7</CheckBox>
+            </StackPanel>
+        </GroupBox>
+        <GroupBox Header="Right HC273 (Outputs)" Padding="5">
+            <StackPanel>
+                <CheckBox tbx:CheckBoxBitmaskBehaviour.Mask="0x01" tbx:CheckBoxBitmaskBehaviour.Value="{Binding HC273_1}" tbx:CheckBoxBitmaskBehaviour.IsChecked="{Binding Path=IsChecked, RelativeSource={RelativeSource Self}}" IsEnabled="False">P1.0</CheckBox>
+                <CheckBox tbx:CheckBoxBitmaskBehaviour.Mask="0x02" tbx:CheckBoxBitmaskBehaviour.Value="{Binding HC273_1}" tbx:CheckBoxBitmaskBehaviour.IsChecked="{Binding Path=IsChecked, RelativeSource={RelativeSource Self}}" IsEnabled="False">P1.1</CheckBox>
+                <CheckBox tbx:CheckBoxBitmaskBehaviour.Mask="0x04" tbx:CheckBoxBitmaskBehaviour.Value="{Binding HC273_1}" tbx:CheckBoxBitmaskBehaviour.IsChecked="{Binding Path=IsChecked, RelativeSource={RelativeSource Self}}" IsEnabled="False">P4.2</CheckBox>
+                <CheckBox tbx:CheckBoxBitmaskBehaviour.Mask="0x08" tbx:CheckBoxBitmaskBehaviour.Value="{Binding HC273_1}" tbx:CheckBoxBitmaskBehaviour.IsChecked="{Binding Path=IsChecked, RelativeSource={RelativeSource Self}}" IsEnabled="False">K7 Deco light</CheckBox>
+                <CheckBox tbx:CheckBoxBitmaskBehaviour.Mask="0x10" tbx:CheckBoxBitmaskBehaviour.Value="{Binding HC273_1}" tbx:CheckBoxBitmaskBehaviour.IsChecked="{Binding Path=IsChecked, RelativeSource={RelativeSource Self}}" IsEnabled="False">P4.4</CheckBox>
+                <CheckBox tbx:CheckBoxBitmaskBehaviour.Mask="0x20" tbx:CheckBoxBitmaskBehaviour.Value="{Binding HC273_1}" tbx:CheckBoxBitmaskBehaviour.IsChecked="{Binding Path=IsChecked, RelativeSource={RelativeSource Self}}" IsEnabled="False">P4.5</CheckBox>
+                <CheckBox tbx:CheckBoxBitmaskBehaviour.Mask="0x40" tbx:CheckBoxBitmaskBehaviour.Value="{Binding HC273_1}" tbx:CheckBoxBitmaskBehaviour.IsChecked="{Binding Path=IsChecked, RelativeSource={RelativeSource Self}}" IsEnabled="False">P4.6</CheckBox>
+                <CheckBox tbx:CheckBoxBitmaskBehaviour.Mask="0x80" tbx:CheckBoxBitmaskBehaviour.Value="{Binding HC273_1}" tbx:CheckBoxBitmaskBehaviour.IsChecked="{Binding Path=IsChecked, RelativeSource={RelativeSource Self}}" IsEnabled="False">P4.7</CheckBox>
             </StackPanel>
         </GroupBox>
     </WrapPanel>

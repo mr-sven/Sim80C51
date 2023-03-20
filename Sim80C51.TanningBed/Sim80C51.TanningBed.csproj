@@ -10,6 +10,7 @@
 
   <ItemGroup>
     <ProjectReference Include="..\Sim80C51.Interfaces\Sim80C51.Interfaces.csproj" />
+    <ProjectReference Include="..\Sim80C51.Toolbox\Sim80C51.Toolbox.csproj" />
   </ItemGroup>
 
 </Project>

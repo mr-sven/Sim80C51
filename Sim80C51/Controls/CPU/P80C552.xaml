@@ -227,7 +227,7 @@
                     <StackPanel Orientation="Horizontal">
                         <tbx:TwoColumnGrid RowSpacing="2" ColumnSpacing="4" Margin="5">
                             <TextBlock>PC:</TextBlock>
-                            <TextBlock Text="{Binding PC, StringFormat={}{0:X4}}"/>
+                            <TextBlock Width="35" Text="{Binding PC, StringFormat={}{0:X4}}"/>
                             <TextBlock>DPTR:</TextBlock>
                             <TextBlock Text="{Binding DPTR, StringFormat={}{0:X4}}"/>
                             <TextBlock>T0:</TextBlock>

@@ -1,6 +1,5 @@
 ﻿using Microsoft.Win32;
 using Sim80C51.Common;
-using Sim80C51.Interfaces;
 using Sim80C51.Toolbox.Wpf;
 using System.Collections.ObjectModel;
 using System.ComponentModel;
@@ -435,7 +434,7 @@ namespace Sim80C51
         #endregion
 
         #region Hardware Commands
-        IHardwareWindow? hardwareWindow = null;
+        Interfaces.IHardwareWindow? hardwareWindow = null;
         public ICommand EnableTanningBedCommand => new RelayCommand((o) =>
         {
             hardwareWindow ??= new TanningBed.MainWindow()
@@ -443,11 +442,11 @@ namespace Sim80C51
                 Owner = owner,
                 Model =
                 {
-                    CPU = CPU as IP80C552
+                    CPU = CPU as Interfaces.IP80C552
                 }
             };            
             hardwareWindow.Show();
-        }, (o) => (hardwareWindow == null || hardwareWindow is TanningBed.MainWindow) && CPU is IP80C552);
+        }, (o) => (hardwareWindow == null || hardwareWindow is TanningBed.MainWindow) && CPU is Interfaces.IP80C552);
         #endregion
 
         #region Property Bindings
@@ -505,7 +504,7 @@ namespace Sim80C51
             listingCtx = simulatorWindow.listingEditor.DataContext as Controls.ListingEditorContext;
             listingCtx!.AddBreakPoint = AddBreakPoint;
             stepTimer.Tick += new EventHandler(StepTimer_Tick);
-            stepTimer.Interval = new TimeSpan(0, 0, 0, 0, 5);
+            stepTimer.Interval = new TimeSpan(0, 0, 0, 0, 1);
             LabelView = new CollectionViewSource() { Source = listingCtx.Listing }.View;
             LabelView.Filter = (entry) => !string.IsNullOrEmpty((entry as ListingEntry)?.Label);
         }
