@@ -1,6 +1,10 @@
-﻿using Sim80C51.Toolbox.Wpf;
+﻿using Sim80C51.Toolbox;
+using Sim80C51.Toolbox.Wpf;
+using System.Linq.Expressions;
+using System.Net.NetworkInformation;
 using System.Reflection;
 using System.Runtime.CompilerServices;
+using System.Windows.Controls;
 
 namespace Sim80C51.Processors
 {
@@ -135,34 +139,9 @@ namespace Sim80C51.Processors
 
             byte lValue = (byte)(value & 0xff);
             byte hValue = (byte)(value >> 8 & 0xff);
-            bool updated = false;
 
-            if (GetMem(sfrMap[sfrhName]) != hValue)
-            {
-                SetMem(sfrMap[sfrhName], hValue);
-                DoPropertyChanged(sfrhName);
-                foreach (string sfrBitName in sfrBitMap.Where(sb => sb.Value.SFRName == sfrhName).Select(sb => sb.Key))
-                {
-                    DoPropertyChanged(sfrBitName);
-                }
-                updated = true;
-            }
-
-            if (GetMem(sfrMap[sfrlName]) != lValue)
-            {
-                SetMem(sfrMap[sfrlName], lValue);
-                DoPropertyChanged(sfrlName);
-                foreach (string sfrBitName in sfrBitMap.Where(sb => sb.Value.SFRName == sfrlName).Select(sb => sb.Key))
-                {
-                    DoPropertyChanged(sfrBitName);
-                }
-                updated = true;
-            }
-
-            if (updated)
-            {
-                DoPropertyChanged(sfr16Name);
-            }
+            SetMemFromProp(hValue, sfrhName);
+            SetMemFromProp(lValue, sfrlName);
         }
 
         /// <summary>
@@ -269,11 +248,14 @@ namespace Sim80C51.Processors
                 return false;
             }
 
-            SetMem(sfrMap[sfrName], value);
+            byte bitMask = SetMem(sfrMap[sfrName], value);
             DoPropertyChanged(sfrName);
-            foreach (string sfrBitName in sfrBitMap.Where(sb => sb.Value.SFRName == sfrName).Select(sb => sb.Key))
+            foreach (KeyValuePair<string, SFRBitAttribute> sfrBit in sfrBitMap.Where(sb => sb.Value.SFRName == sfrName))
             {
-                DoPropertyChanged(sfrBitName);
+                if (((1 << sfrBit.Value.Bit) & bitMask) != 0)
+                {
+                    DoPropertyChanged(sfrBit.Key);
+                }
             }
 
             foreach (string sfr16name in sfr16Map.Where(sf => sf.Value.SFRHName == sfrName || sf.Value.SFRLName == sfrName).Select(sf => sf.Key))
@@ -333,7 +315,7 @@ namespace Sim80C51.Processors
         #endregion
 
         #region direct memory setter and getter
-        protected void SetBit(ushort address, byte bit, bool value)
+        protected bool SetBit(ushort address, byte bit, bool value)
         {
             byte mask = (byte)(1 << bit);
             byte data = GetMem(address);
@@ -345,7 +327,7 @@ namespace Sim80C51.Processors
             {
                 data &= (byte)(~mask);
             }
-            SetMem(address, data);
+            return SetMem(address, data) != 0;
         }
 
         protected bool GetBit(ushort address, byte bit)
@@ -354,6 +336,11 @@ namespace Sim80C51.Processors
             return (GetMem(address) & mask) == mask;
         }
 
+        /// <summary>
+        /// Get the memory byte
+        /// </summary>
+        /// <param name="address">address of memory</param>
+        /// <returns>data</returns>
         protected byte GetMem(ushort address)
         {
             int row = address / ByteRow.ROW_WIDTH;
@@ -361,7 +348,13 @@ namespace Sim80C51.Processors
             return CoreMemory[row].Row[col];
         }
 
-        protected void SetMem(string sfrName, byte value)
+        /// <summary>
+        /// Setting memory by sfr name
+        /// </summary>
+        /// <param name="sfrName">sfr to set</param>
+        /// <param name="value">value to set</param>
+        /// <returns>Bitmask of bits updated</returns>
+        protected byte SetMem(string sfrName, byte value)
         {
             if (!sfrMap.ContainsKey(sfrName))
             {
@@ -370,17 +363,25 @@ namespace Sim80C51.Processors
 
             if (GetMem(sfrMap[sfrName]) == value)
             {
-                return;
+                return 0;
             }
 
-            SetMem(sfrMap[sfrName], value);
+            return SetMem(sfrMap[sfrName], value);
         }
 
-        protected void SetMem(ushort address, byte value)
+        /// <summary>
+        /// Setting memory by address
+        /// </summary>
+        /// <param name="address">address to set</param>
+        /// <param name="value">value to set</param>
+        /// <returns>Bitmask of bits updated</returns>
+        protected byte SetMem(ushort address, byte value)
         {
+            byte oldValue = GetMem(address);
             int row = address / ByteRow.ROW_WIDTH;
             int col = address % ByteRow.ROW_WIDTH;
             CoreMemory[row].Row[col] = value;
+            return (byte)(oldValue ^ value);
         }
         #endregion
     }

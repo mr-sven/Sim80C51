@@ -1,4 +1,7 @@
-﻿namespace Sim80C51.Toolbox
+﻿using System.Linq.Expressions;
+using System.Reflection;
+
+namespace Sim80C51.Toolbox
 {
     public static class Extensions
     {

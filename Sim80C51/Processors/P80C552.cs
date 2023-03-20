@@ -1,5 +1,6 @@
 ﻿using Sim80C51.Toolbox;
 using System.ComponentModel;
+using System.Linq.Expressions;
 
 namespace Sim80C51.Processors
 {
@@ -473,14 +474,14 @@ namespace Sim80C51.Processors
             {
                 if(!EW && WLE)
                 {
-                    T3_Prescaler = 0;
+                    t3Prescaler = 0;
                     SetMemFromProp(value);
                     WLE = false;
                 }
             }
         }
 
-        private ushort T3_Prescaler = 0;
+        private ushort t3Prescaler = 0;
 
         private void StepWatchdog()
         {
@@ -489,8 +490,8 @@ namespace Sim80C51.Processors
                 return;
             }
 
-            T3_Prescaler++;
-            if (T3_Prescaler >= 0x800) // 11-bit prescaler
+            t3Prescaler++;
+            if (t3Prescaler >= 0x800) // 11-bit prescaler
             {
                 byte oldValue = T3;
                 oldValue++;
@@ -502,7 +503,7 @@ namespace Sim80C51.Processors
 
                 SetMem(nameof(T3), oldValue);
                 DoPropertyChanged(nameof(T3));
-                T3_Prescaler = 0;
+                t3Prescaler = 0;
             }
         }
 
@@ -521,6 +522,18 @@ namespace Sim80C51.Processors
             AddIv("CM1", () => PCM1, () => ECM1 && CMI1);
             AddIv("CM2", () => PCM2, () => ECM2 && CMI2);
             AddIv("T2", () => PT2, () => ET2 && ((T2IS1 && T20V) || (T2IS0 && T2B0)));
+
+            PropertyChanged += P80C552_PropertyChanged;
+        }
+
+        private void P80C552_PropertyChanged(object? sender, PropertyChangedEventArgs e)
+        {
+            switch(e.PropertyName)
+            {
+                case "STA":
+                    S1StaUpdate(STA);
+                    break;
+            }
         }
 
         public override void Reset()
@@ -565,23 +578,106 @@ namespace Sim80C51.Processors
             // Watchdog via internal
             SetMem(nameof(T3), 0);
             DoPropertyChanged(nameof(T3));
-            T3_Prescaler = 0;
+            t3Prescaler = 0;
+        }
+
+        public override void SaveAdditionalSettings(Dictionary<string, object> additionalSettings)
+        {
+            additionalSettings.Add("ADC0", ADC0Value);
+            additionalSettings.Add("ADC1", ADC1Value);
+            additionalSettings.Add("ADC2", ADC2Value);
+            additionalSettings.Add("ADC3", ADC3Value);
+            additionalSettings.Add("ADC4", ADC4Value);
+            additionalSettings.Add("ADC5", ADC5Value);
+            additionalSettings.Add("ADC6", ADC6Value);
+            additionalSettings.Add("ADC7", ADC7Value);
+        }
+
+        public override void LoadAdditionalSettings(Dictionary<string, object> additionalSettings)
+        {
+            ADC0Value = additionalSettings.TryGet("ADC0", 0);
+            ADC1Value = additionalSettings.TryGet("ADC1", 0);
+            ADC2Value = additionalSettings.TryGet("ADC2", 0);
+            ADC3Value = additionalSettings.TryGet("ADC3", 0);
+            ADC4Value = additionalSettings.TryGet("ADC4", 0);
+            ADC5Value = additionalSettings.TryGet("ADC5", 0);
+            ADC6Value = additionalSettings.TryGet("ADC6", 0);
+            ADC7Value = additionalSettings.TryGet("ADC7", 0);
         }
 
         protected override void CpuCycle()
         {
             base.CpuCycle();
             StepWatchdog();
-            if (adcCycle > 0)
+            StepAdc();
+            StepS1();
+        }
+
+        #region S1 I2C
+        private int s1Prescaler = 0;
+
+        private void StepS1()
+        {
+            if (s1Prescaler <= 0 || !ENS1)
             {
-                adcCycle--;
-                if (adcCycle == 0)
+                return;
+            }
+
+            s1Prescaler--;
+            if (s1Prescaler == 0)
+            {
+                S1FillPrescaler();
+                if (!SI)
                 {
-                    EndAdcConversation();
+                    S1Process();
                 }
             }
         }
 
+        private void S1Process()
+        {
+            if (STA)
+            {
+                S1STA = 0x08;
+                SI = true;
+            }
+        }
+
+        private void S1FillPrescaler()
+        {
+            s1Prescaler = (S1CON & 0x83) switch
+            {
+                // fOSC / 256
+                0x00 => 43,
+                // fOSC / 224
+                0x01 => 37,
+                // fOSC / 192
+                0x02 => 32,
+                // fOSC / 160
+                0x03 => 27,
+                // fOSC / 960
+                0x80 => 160,
+                // fOSC / 120
+                0x81 => 20,
+                // fOSC / 60
+                0x82 => 10,
+                _ => 0,
+            };
+        }
+
+        private void S1StaUpdate(bool value)
+        {
+            if (!value)
+            {
+                return;
+            }
+
+            // start S1
+            S1FillPrescaler();
+        }
+        #endregion
+
+        #region ADC Values
         public ushort ADC0Value { get => adc0Value; set { adc0Value = value; DoPropertyChanged(); } }
         private ushort adc0Value = 0;
 
@@ -606,31 +702,20 @@ namespace Sim80C51.Processors
         public ushort ADC7Value { get => adc7Value; set { adc7Value = value; DoPropertyChanged(); } }
         private ushort adc7Value = 0;
 
-        public override void SaveAdditionalSettings(Dictionary<string, object> additionalSettings) 
-        {
-            additionalSettings.Add("ADC0", ADC0Value);
-            additionalSettings.Add("ADC1", ADC1Value);
-            additionalSettings.Add("ADC2", ADC2Value);
-            additionalSettings.Add("ADC3", ADC3Value);
-            additionalSettings.Add("ADC4", ADC4Value);
-            additionalSettings.Add("ADC5", ADC5Value);
-            additionalSettings.Add("ADC6", ADC6Value);
-            additionalSettings.Add("ADC7", ADC7Value);
-        }
-
-        public override void LoadAdditionalSettings(Dictionary<string, object> additionalSettings)
-        {
-            ADC0Value = additionalSettings.TryGet("ADC0", 0);
-            ADC1Value = additionalSettings.TryGet("ADC1", 0);
-            ADC2Value = additionalSettings.TryGet("ADC2", 0);
-            ADC3Value = additionalSettings.TryGet("ADC3", 0);
-            ADC4Value = additionalSettings.TryGet("ADC4", 0);
-            ADC5Value = additionalSettings.TryGet("ADC5", 0);
-            ADC6Value = additionalSettings.TryGet("ADC6", 0);
-            ADC7Value = additionalSettings.TryGet("ADC7", 0);
-        }
-
         private int adcCycle = 0;
+
+        private void StepAdc()
+        {
+            if (adcCycle <= 0)
+            {
+                return;
+            }
+            adcCycle--;
+            if (adcCycle == 0)
+            {
+                EndAdcConversation();
+            }
+        }
 
         private void StartAdcConversion()
         {
@@ -660,5 +745,6 @@ namespace Sim80C51.Processors
             ADCI = true;
             ADCS = false;
         }
+        #endregion
     }
 }
