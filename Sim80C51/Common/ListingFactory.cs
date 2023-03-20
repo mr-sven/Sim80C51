@@ -81,7 +81,7 @@ namespace Sim80C51.Common
 
         public ListingFactory(Type processorType)
         {
-            if (!processorType.GetInterfaces().Contains(typeof(Processors.I80C51)))
+            if (!processorType.GetInterfaces().Contains(typeof(Interfaces.I80C51)))
             {
                 throw new ArgumentException("Type not implementing interface I80C51", nameof(processorType));
             }

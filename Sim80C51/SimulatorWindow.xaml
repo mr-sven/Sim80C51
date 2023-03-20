@@ -63,6 +63,9 @@
                 <MenuItem Header="_Add" Command="{Binding AddExternalMemoryCommand}"/>
                 <MenuItem Header="_Load" Command="{Binding LoadExternalMemoryCommand}"/>
             </MenuItem>
+            <MenuItem Header="_Hardware" Height="25" IsEnabled="{Binding ProcessorActivated}">
+                <MenuItem Header="Enable _Tanning Bed" Command="{Binding EnableTanningBedCommand}"/>
+            </MenuItem>
         </Menu>
         <ToolBarTray DockPanel.Dock="Top">
             <ToolBar>

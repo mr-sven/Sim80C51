@@ -11,7 +11,7 @@ namespace Sim80C51.Processors
     /// <summary>
     /// Register setter and getter logic from properties
     /// </summary>
-    public abstract partial class C80C51 : NotifyPropertyChanged
+    public abstract partial class C80C51 : NotifyPropertyChanged, I80C51Core
     {
         /// <summary>
         /// map for sfr addresses

@@ -7,7 +7,7 @@ namespace Sim80C51.Processors
     /// <summary>
     /// Debug and process logic
     /// </summary>
-    public abstract partial class C80C51 : NotifyPropertyChanged
+    public abstract partial class C80C51 : NotifyPropertyChanged, I80C51Core
     {
         private static readonly string[] regNames = new string[] { nameof(R0), nameof(R1), nameof(R2), nameof(R3), nameof(R4), nameof(R5), nameof(R6), nameof(R7) };
 

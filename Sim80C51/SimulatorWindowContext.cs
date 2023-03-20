@@ -1,6 +1,6 @@
 ﻿using Microsoft.Win32;
 using Sim80C51.Common;
-using Sim80C51.Processors;
+using Sim80C51.Interfaces;
 using Sim80C51.Toolbox.Wpf;
 using System.Collections.ObjectModel;
 using System.ComponentModel;
@@ -20,7 +20,7 @@ namespace Sim80C51
     {
         #region Private Properties
         private SimulatorWindow? owner;
-        private Processors.I80C51? CPU;
+        private Processors.I80C51Core? CPU;
         private Controls.ListingEditorContext? listingCtx;
         private readonly SortedDictionary<ushort, Controls.MemoryContext> xmemCtx = new();
         private readonly DispatcherTimer stepTimer = new();
@@ -97,7 +97,7 @@ namespace Sim80C51
             }
 
             CPU.CallStack.Clear();
-            foreach (CallStackEntry cs in wsp.CallStack)
+            foreach (Processors.CallStackEntry cs in wsp.CallStack)
             {
                 CPU.CallStack.Add(cs);
             }
@@ -397,7 +397,7 @@ namespace Sim80C51
             {
                 listingCtx.SelectedListingEntry = entry;
             }
-            else if (o is CallStackEntry csEntry && listingCtx?.GetFromAddress(csEntry.Address) is ListingEntry listingEntry)
+            else if (o is Processors.CallStackEntry csEntry && listingCtx?.GetFromAddress(csEntry.Address) is ListingEntry listingEntry)
             {
                 listingCtx.SelectedListingEntry = listingEntry;
             }
@@ -430,8 +430,24 @@ namespace Sim80C51
             {
                 MemoryPointer.Remove(address);
             }
-        });       
+        });
 
+        #endregion
+
+        #region Hardware Commands
+        IHardwareWindow? hardwareWindow = null;
+        public ICommand EnableTanningBedCommand => new RelayCommand((o) =>
+        {
+            hardwareWindow ??= new TanningBed.MainWindow()
+            {
+                Owner = owner,
+                Model =
+                {
+                    CPU = CPU as IP80C552
+                }
+            };            
+            hardwareWindow.Show();
+        }, (o) => (hardwareWindow == null || hardwareWindow is TanningBed.MainWindow) && CPU is IP80C552);
         #endregion
 
         #region Property Bindings
@@ -453,7 +469,7 @@ namespace Sim80C51
         public ICollectionView? LabelView { get => labelView; set { labelView = value; DoPropertyChanged(); } }
         private ICollectionView? labelView;
 
-        public ObservableCollection<CallStackEntry>? CallStack => CPU?.CallStack;
+        public ObservableCollection<Processors.CallStackEntry>? CallStack => CPU?.CallStack;
         #endregion
 
         #region Init functions
@@ -464,7 +480,7 @@ namespace Sim80C51
 
         private void LoadDeviceList()
         {
-            foreach (Type procType in Assembly.GetExecutingAssembly().GetTypes().Where(mytype => mytype.GetInterfaces().Contains(typeof(Processors.I80C51))))
+            foreach (Type procType in Assembly.GetExecutingAssembly().GetTypes().Where(mytype => mytype.GetInterfaces().Contains(typeof(Interfaces.I80C51))))
             {
                 if (procType.GetCustomAttribute<DisplayNameAttribute>() is DisplayNameAttribute nameAttr)
                 {

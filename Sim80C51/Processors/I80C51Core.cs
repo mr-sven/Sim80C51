@@ -1,9 +1,10 @@
 ﻿using Sim80C51.Common;
+using Sim80C51.Interfaces;
 using System.Collections.ObjectModel;
 
 namespace Sim80C51.Processors
 {
-    public interface I80C51
+    public interface I80C51Core : I80C51
     {
         /// <summary>
         /// Internal RAM Address space
@@ -11,26 +12,9 @@ namespace Sim80C51.Processors
         ObservableCollection<ByteRow> CoreMemory { get; }
 
         /// <summary>
-        /// Program Counter
-        /// </summary>
-        ushort PC { get; set; }
-
-        /// <summary>
         /// Call Stack
         /// </summary>
         ObservableCollection<CallStackEntry> CallStack { get; }
-
-        /// <summary>
-        /// Cycle Counter
-        /// </summary>
-        ulong Cycles { get; set; }
-
-        /// <summary>
-        /// Data Pointer
-        /// </summary>
-        ushort DPTR { get; set; }
-
-        // TODO: add more registers as required
 
         /// <summary>
         /// Callback for MOVC calls to get code byte

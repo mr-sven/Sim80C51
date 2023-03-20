@@ -1,0 +1,26 @@
+﻿<Window x:Class="Sim80C51.TanningBed.MainWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:local="clr-namespace:Sim80C51.TanningBed"
+        mc:Ignorable="d" Closing="Window_Closing" Loaded="Window_Loaded"
+        Title="Tanning Bed" Height="450" Width="800">
+    <FrameworkElement.DataContext>
+        <local:MainWindowModel/>
+    </FrameworkElement.DataContext>
+    <WrapPanel>
+        <GroupBox Header="Left HC640 (Inputs)" Padding="5">
+            <StackPanel>
+                <CheckBox>Condensation pump failure</CheckBox>
+                <CheckBox>Door Contact</CheckBox>
+                <CheckBox>DIP 3</CheckBox>
+                <CheckBox>DIP 2</CheckBox>
+                <CheckBox>MCS Fan run-on</CheckBox>
+                <CheckBox>DIP 1</CheckBox>
+                <CheckBox>MCS Sunbed on</CheckBox>
+                <CheckBox>MCS End of tanning</CheckBox>
+            </StackPanel>
+        </GroupBox>
+    </WrapPanel>
+</Window>

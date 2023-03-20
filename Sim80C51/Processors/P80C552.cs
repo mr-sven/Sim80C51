@@ -1,6 +1,6 @@
-﻿using Sim80C51.Toolbox;
+﻿using Sim80C51.Interfaces;
+using Sim80C51.Toolbox;
 using System.ComponentModel;
-using System.Linq.Expressions;
 
 namespace Sim80C51.Processors
 {
@@ -15,7 +15,7 @@ namespace Sim80C51.Processors
     [IV(0x0063, 9, "CM1")]
     [IV(0x006B, 12, "CM2")]
     [IV(0x0073, 15, "T2")]
-    public class P80C552 : C80C51, I80C51
+    public class P80C552 : C80C51, IP80C552
     {
         public const int RAM_SIZE = 256;
         public const int SFR_SIZE = 128;

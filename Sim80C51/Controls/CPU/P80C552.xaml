@@ -5,7 +5,7 @@
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
              xmlns:local="clr-namespace:Sim80C51.Controls.CPU"
              xmlns:proc="clr-namespace:Sim80C51.Processors" 
-             xmlns:tbx="clr-namespace:Sim80C51.Toolbox.Wpf"
+             xmlns:tbx="clr-namespace:Sim80C51.Toolbox.Wpf;assembly=Sim80C51.Toolbox"
              mc:Ignorable="d" 
              d:DesignHeight="250" d:DesignWidth="1200">
     <d:DesignerProperties.DesignStyle>

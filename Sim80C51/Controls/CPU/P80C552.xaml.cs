@@ -13,6 +13,6 @@ namespace Sim80C51.Controls.CPU
             InitializeComponent();
         }
 
-        public I80C51? CPUContext => DataContext as I80C51;
+        public I80C51Core? CPUContext => DataContext as I80C51Core;
     }
 }
