@@ -347,7 +347,7 @@ namespace Sim80C51.Processors
         #endregion S1ADR
 
         #region S1DAT
-        [SFR(0xDA)]
+        [SFR(0xDA, true)]
         public byte S1DAT { get => GetMemFromProp(); set { SetMemFromProp(value); } }
         #endregion S1DAT
 

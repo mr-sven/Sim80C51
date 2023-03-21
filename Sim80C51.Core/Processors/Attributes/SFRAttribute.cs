@@ -5,9 +5,12 @@
     {
         public ushort Address { get; }
 
-        public SFRAttribute(ushort Address)
+        public bool ForceUpdate { get; }
+
+        public SFRAttribute(ushort address, bool forceUpdate = false)
         {
-            this.Address = Address;
+            Address = address;
+            ForceUpdate = forceUpdate;
         }
     }
 }
