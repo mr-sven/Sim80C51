@@ -479,23 +479,15 @@ namespace Sim80C51
 
         private void LoadDeviceList()
         {
-            foreach (Type procType in Assembly.GetExecutingAssembly().GetTypes().Where(mytype => mytype.GetInterfaces().Contains(typeof(Interfaces.I80C51))))
+            Type cpuInterfaceType = typeof(Interfaces.I80C51);
+            IEnumerable<Type> cpuTypes = AppDomain.CurrentDomain.GetAssemblies().SelectMany(s => s.GetTypes().Where(t => t.GetInterfaces().Contains(cpuInterfaceType)));
+            foreach (Type procType in cpuTypes)
             {
                 if (procType.GetCustomAttribute<DisplayNameAttribute>() is DisplayNameAttribute nameAttr)
                 {
                     ProcessorList.Add(nameAttr.DisplayName, procType);
                 }
             }
-
-            /*
-            string filepath = Path.Combine(AppContext.BaseDirectory, "device");
-            DirectoryInfo deviceDataDir = new(filepath);
-            IDeserializer serializer = new DeserializerBuilder().Build();
-
-            foreach (FileInfo file in deviceDataDir.GetFiles("*.yml"))
-            {
-                deviceConfigList.Add(serializer.Deserialize<DeviceConfig>(File.ReadAllText(Path.Combine(filepath, file.Name))));
-            }*/
         }
 
         public void Loaded(SimulatorWindow simulatorWindow)

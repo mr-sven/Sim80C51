@@ -378,7 +378,7 @@ namespace Sim80C51.Processors
         [SFRBit(nameof(S1CON), 3, true)]
         public bool SI { get => GetBitFromProp(); set { SetBitFromProp(value); } }
         [SFRBit(nameof(S1CON), 4, true)]
-        public bool ST0 { get => GetBitFromProp(); set { SetBitFromProp(value); } }
+        public bool STO { get => GetBitFromProp(); set { SetBitFromProp(value); } }
         [SFRBit(nameof(S1CON), 5, true)]
         public bool STA { get => GetBitFromProp(); set { SetBitFromProp(value); } }
         [SFRBit(nameof(S1CON), 6, true)]
@@ -531,8 +531,11 @@ namespace Sim80C51.Processors
         {
             switch(e.PropertyName)
             {
-                case "STA":
+                case nameof(STA):
                     S1StaUpdate(STA);
+                    break;
+                case nameof(S1DAT):
+                    S1DatUpdate();
                     break;
             }
         }
@@ -615,7 +618,11 @@ namespace Sim80C51.Processors
         }
 
         #region S1 I2C
+        public Func<string, byte, byte>? I2CCommandProcessor { get; set; }
+
         private int s1Prescaler = 0;
+        private int s1DataCounter = 0;
+        private bool s1DataInternalUpdate = false;
 
         private void StepS1()
         {
@@ -639,8 +646,24 @@ namespace Sim80C51.Processors
         {
             if (STA)
             {
+                s1Prescaler = 0;
                 S1STA = 0x08;
                 SI = true;
+                I2CCommandProcessor?.Invoke("STA", 0);
+            }
+
+            if (s1DataCounter > 0)
+            {
+                s1DataCounter--;
+                if (s1DataCounter == 0)
+                {
+                    s1Prescaler = 0;
+                    S1STA = 0x18;
+                    SI = true;
+                    s1DataInternalUpdate = true;
+                    S1DAT = I2CCommandProcessor?.Invoke("DAT", S1DAT) ?? S1DAT;
+                    s1DataInternalUpdate = false;
+                }
             }
         }
 
@@ -676,6 +699,17 @@ namespace Sim80C51.Processors
             // start S1
             S1FillPrescaler();
         }
+
+        private void S1DatUpdate()
+        {
+            if (s1DataInternalUpdate)
+            {
+                return;
+            }
+            s1DataCounter = 8;
+            S1FillPrescaler();
+        }
+
         #endregion
 
         #region ADC Values

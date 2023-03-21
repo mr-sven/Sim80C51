@@ -42,6 +42,25 @@ namespace Sim80C51.TanningBed
             }
             owner = mainWindow;
             CPU!.PropertyChanged += CPU_PropertyChanged;
+            CPU!.I2CCommandProcessor = I2cCommandProcessor;
+        }
+
+        private string i2cLastState = string.Empty;
+
+        private byte I2cCommandProcessor(string command, byte data)
+        {
+            switch(command)
+            {
+                case "STA":
+                    i2cLastState = "STA";
+                    break;
+                case "DAT":
+
+
+                    break;
+            }
+
+            return data;
         }
 
         private void CPU_PropertyChanged(object? sender, PropertyChangedEventArgs e)
