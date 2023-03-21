@@ -23,7 +23,6 @@ namespace Sim80C51
         private Controls.ListingEditorContext? listingCtx;
         private readonly SortedDictionary<ushort, Controls.MemoryContext> xmemCtx = new();
         private readonly DispatcherTimer stepTimer = new();
-        private ushort lastDptr = 0;
         #endregion
 
         #region Workspace commands
@@ -90,9 +89,9 @@ namespace Sim80C51
             }
 
             MemoryPointer.Clear();
-            foreach (ushort address in wsp.MemoryWatches)
+            foreach (KeyValuePair<ushort, string> mw in wsp.MemoryWatches)
             {
-                MemoryPointer.Add(address);
+                MemoryPointer.Add(mw.Key, (MemoryAccess)mw.Value);
             }
 
             CPU.CallStack.Clear();
@@ -161,7 +160,10 @@ namespace Sim80C51
             }
 
             wsp.Breakpoints.AddRange(Breakpoints);
-            wsp.MemoryWatches.AddRange(MemoryPointer);
+            foreach (KeyValuePair<ushort, MemoryAccess> mw in MemoryPointer)
+            {
+                wsp.MemoryWatches.Add(mw.Key, mw.Value);
+            }
             wsp.CallStack.AddRange(CPU.CallStack);
             CPU.SaveAdditionalSettings(wsp.AdditionalSettings);
             using StreamWriter writer = File.CreateText(saveFileDialog.FileName);
@@ -415,9 +417,9 @@ namespace Sim80C51
             if (System.Text.RegularExpressions.Regex.IsMatch(DptrAddValue, @"\A\b[0-9a-fA-F]+\b\Z"))
             {
                 ushort value = Convert.ToUInt16(DptrAddValue, 16);
-                if (!MemoryPointer.Contains(value))
+                if (!MemoryPointer.ContainsKey(value))
                 {
-                    MemoryPointer.Add(value);
+                    MemoryPointer.Add(value, (MemoryAccess)"RW");
                 }
                 DptrAddValue = string.Empty;
             }
@@ -425,7 +427,7 @@ namespace Sim80C51
 
         public ICommand DeleteDptrCommand => new RelayCommand((o) =>
         {
-            if (o is ushort address && MemoryPointer.Contains(address))
+            if (o is ushort address && MemoryPointer.ContainsKey(address))
             {
                 MemoryPointer.Remove(address);
             }
@@ -460,7 +462,7 @@ namespace Sim80C51
 
         public ObservableCollection<ushort> Breakpoints { get; } = new();
 
-        public ObservableCollection<ushort> MemoryPointer { get; } = new();
+        public Dictionary<ushort, MemoryAccess> MemoryPointer { get; } = new();
 
         public string DptrAddValue { get => dptrAddValue; set { dptrAddValue = value; DoPropertyChanged(); } }
         private string dptrAddValue = string.Empty;
@@ -519,17 +521,6 @@ namespace Sim80C51
                 stepTimer.Stop();
                 GotoPcCommand.Execute(null);
                 return;
-            }
-
-            if (lastDptr != CPU.DPTR)
-            {
-                lastDptr = CPU.DPTR;
-                if (MemoryPointer.Contains(lastDptr))
-                {
-                    stepTimer.Stop();
-                    GotoPcCommand.Execute(null);
-                    return;
-                }
             }
         }
 
@@ -592,7 +583,7 @@ namespace Sim80C51
             CPU = cpu.CPUContext;
             CPU.SetRamByte = SetRamByte;
             CPU.GetRamByte = GetRamByte;
-            CPU.GetCodeByte = listingCtx!.GetCodeByte;
+            CPU.GetCodeByte = GetCodeByte;
 
             owner.cpuBox.Content = (UIElement)cpu;
             owner.cpuBox.Visibility = Visibility.Visible;
@@ -690,6 +681,11 @@ namespace Sim80C51
 
             ushort lastMemAddress = xmemCtx.Keys.Where(a => a <= address).Last();
             xmemCtx[lastMemAddress][address - lastMemAddress] = value;
+            if (stepTimer.IsEnabled && MemoryPointer.ContainsKey(address) && MemoryPointer[address].Write)
+            {
+                stepTimer.Stop();
+                GotoPcCommand.Execute(null);
+            }
         }
 
         private byte GetRamByte(ushort address)
@@ -699,8 +695,25 @@ namespace Sim80C51
                 return 0xff;
             }
 
+            if (stepTimer.IsEnabled && MemoryPointer.ContainsKey(address) && MemoryPointer[address].Read)
+            {
+                stepTimer.Stop();
+                GotoPcCommand.Execute(null);
+            }
+
             ushort lastMemAddress = xmemCtx.Keys.Where(a => a <= address).Last();
             return xmemCtx[lastMemAddress][address - lastMemAddress];
+        }
+
+        private byte GetCodeByte(ushort address)
+        {
+            if (stepTimer.IsEnabled && MemoryPointer.ContainsKey(address) && MemoryPointer[address].Read)
+            {
+                stepTimer.Stop();
+                GotoPcCommand.Execute(null);
+            }
+
+            return listingCtx!.GetCodeByte(address);
         }
         #endregion
     }

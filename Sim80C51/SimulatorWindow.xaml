@@ -185,12 +185,18 @@
                             <ListBox ItemsSource="{Binding MemoryPointer}">
                                 <ListBox.ItemTemplate>
                                     <DataTemplate>
-                                        <TextBlock Text="{Binding StringFormat=Address: {0:X4}}" Tag="{Binding DataContext, RelativeSource={RelativeSource AncestorType=Window}}">
+                                        <TextBlock Tag="{Binding DataContext, RelativeSource={RelativeSource AncestorType=Window}}">
                                             <TextBlock.ContextMenu>
                                                 <ContextMenu>
-                                                     <MenuItem Header="Delete" Command="{Binding PlacementTarget.Tag.DeleteDptrCommand, RelativeSource={RelativeSource AncestorType=ContextMenu}}" CommandParameter="{Binding}"/>
+                                                     <MenuItem Header="Delete" Command="{Binding PlacementTarget.Tag.DeleteDptrCommand, RelativeSource={RelativeSource AncestorType=ContextMenu}}" CommandParameter="{Binding Key}"/>
                                                 </ContextMenu>
                                             </TextBlock.ContextMenu>
+                                            <TextBlock.Text>
+                                                <MultiBinding StringFormat="{}Address: {0:X4} {1}">
+                                                    <Binding Path="Key" />
+                                                    <Binding Path="Value" />
+                                                </MultiBinding>
+                                            </TextBlock.Text>
                                         </TextBlock>
                                     </DataTemplate>
                                 </ListBox.ItemTemplate>
