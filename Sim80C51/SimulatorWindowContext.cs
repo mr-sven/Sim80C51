@@ -19,7 +19,7 @@ namespace Sim80C51
     {
         #region Private Properties
         private SimulatorWindow? owner;
-        private Processors.I80C51Core? CPU;
+        private Interfaces.I80C51? CPU;
         private Controls.ListingEditorContext? listingCtx;
         private readonly SortedDictionary<ushort, Controls.MemoryContext> xmemCtx = new();
         private readonly DispatcherTimer stepTimer = new();
@@ -47,7 +47,7 @@ namespace Sim80C51
             }
 
             using StreamReader reader = File.OpenText(openFileDialog.FileName);
-            IDeserializer deserializer = new DeserializerBuilder().WithTypeMapping<Processors.ICallStackEntry, Processors.CallStackEntry>().Build();
+            IDeserializer deserializer = new DeserializerBuilder().WithTypeMapping<Interfaces.ICallStackEntry, Processors.CallStackEntry>().Build();
             WSpace.Workspace wsp = deserializer.Deserialize<WSpace.Workspace>(reader);
 
             SelectedProcessor = ProcessorList.FirstOrDefault(p => p.Key == wsp.ProcessorType).Value;
@@ -96,7 +96,7 @@ namespace Sim80C51
             }
 
             CPU.CallStack.Clear();
-            foreach (Processors.ICallStackEntry cs in wsp.CallStack)
+            foreach (Interfaces.ICallStackEntry cs in wsp.CallStack)
             {
                 CPU.CallStack.Add(cs);
             }
@@ -468,7 +468,7 @@ namespace Sim80C51
         public ICollectionView? LabelView { get => labelView; set { labelView = value; DoPropertyChanged(); } }
         private ICollectionView? labelView;
 
-        public ObservableCollection<Processors.ICallStackEntry>? CallStack => CPU?.CallStack;
+        public ObservableCollection<Interfaces.ICallStackEntry>? CallStack => CPU?.CallStack;
         #endregion
 
         #region Init functions
@@ -617,7 +617,7 @@ namespace Sim80C51
             DoPropertyChanged(nameof(CallStack));
         }
 
-        private static string DataToBase64(ObservableCollection<Processors.IByteRow> data)
+        private static string DataToBase64(ObservableCollection<Interfaces.IByteRow> data)
         {
             return StreamToCompressedBase64(Processors.ByteRow.ToMemoryStream(data));
         }

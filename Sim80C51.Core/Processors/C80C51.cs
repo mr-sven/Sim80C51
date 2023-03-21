@@ -1,4 +1,6 @@
-﻿using Sim80C51.Toolbox.Wpf;
+﻿using Sim80C51.Interfaces;
+using Sim80C51.Processors.Attributes;
+using Sim80C51.Toolbox.Wpf;
 using System.Collections.ObjectModel;
 
 namespace Sim80C51.Processors
@@ -11,7 +13,7 @@ namespace Sim80C51.Processors
     [IV(0x0013, 7, "X1")]
     [IV(0x001B, 10, "T1")]
     [IV(0x0023, 13, "S0")]
-    public abstract partial class C80C51 : NotifyPropertyChanged, I80C51Core
+    public abstract partial class C80C51 : NotifyPropertyChanged, I80C51
     {
         /// <summary>
         /// Program Counter

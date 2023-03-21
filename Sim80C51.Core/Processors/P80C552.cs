@@ -1,4 +1,5 @@
 ﻿using Sim80C51.Interfaces;
+using Sim80C51.Processors.Attributes;
 using Sim80C51.Toolbox;
 using System.ComponentModel;
 

@@ -1,4 +1,6 @@
-﻿using Sim80C51.Toolbox.Wpf;
+﻿using Sim80C51.Interfaces;
+using Sim80C51.Processors.Attributes;
+using Sim80C51.Toolbox.Wpf;
 using System.Reflection;
 using System.Runtime.CompilerServices;
 
@@ -7,7 +9,7 @@ namespace Sim80C51.Processors
     /// <summary>
     /// Register setter and getter logic from properties
     /// </summary>
-    public abstract partial class C80C51 : NotifyPropertyChanged, I80C51Core
+    public abstract partial class C80C51 : NotifyPropertyChanged, I80C51
     {
         /// <summary>
         /// map for sfr addresses
@@ -380,5 +382,35 @@ namespace Sim80C51.Processors
             return (byte)(oldValue ^ value);
         }
         #endregion
+
+        public static byte ParseIntermediateByte(string value)
+        {
+            if (!value.StartsWith("#"))
+            {
+                throw new ArgumentOutOfRangeException(value);
+            }
+
+            if (value.EndsWith("h"))
+            {
+                return Convert.ToByte(value[1..3], 16);
+            }
+
+            return (byte)int.Parse(value[1..]);
+        }
+
+        public static ushort ParseIntermediateUShort(string value)
+        {
+            if (!value.StartsWith("#"))
+            {
+                throw new ArgumentOutOfRangeException(value);
+            }
+
+            if (value.EndsWith("h"))
+            {
+                return Convert.ToUInt16(value[1..5], 16);
+            }
+
+            return (ushort)int.Parse(value[1..]);
+        }
     }
 }

@@ -1,4 +1,4 @@
-﻿namespace Sim80C51.Processors
+﻿namespace Sim80C51.Processors.Attributes
 {
     [AttributeUsage(AttributeTargets.Class, AllowMultiple = true)]
     public class IVAttribute : Attribute

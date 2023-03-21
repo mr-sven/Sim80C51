@@ -1,4 +1,4 @@
-﻿using Sim80C51.Common;
+﻿using Sim80C51.Interfaces;
 using Sim80C51.Toolbox.Wpf;
 using System.Reflection;
 
@@ -7,7 +7,7 @@ namespace Sim80C51.Processors
     /// <summary>
     /// Debug and process logic
     /// </summary>
-    public abstract partial class C80C51 : NotifyPropertyChanged, I80C51Core
+    public abstract partial class C80C51 : NotifyPropertyChanged, I80C51
     {
         private static readonly string[] regNames = new string[] { nameof(R0), nameof(R1), nameof(R2), nameof(R3), nameof(R4), nameof(R5), nameof(R6), nameof(R7) };
 
@@ -212,7 +212,7 @@ namespace Sim80C51.Processors
                     }
                     else if (entry.Arguments[0] == "DPTR")
                     {
-                        DPTR = ListingFactory.ParseIntermediateUShort(entry.Arguments[1]);
+                        DPTR = ParseIntermediateUShort(entry.Arguments[1]);
                     }
                     else
                     {
@@ -444,7 +444,7 @@ namespace Sim80C51.Processors
                         _ => throw new Exception("Instruction Argument unknown: " + entry.Arguments[0])
                     };
 
-                    byte compSecond = entry.Arguments[1].StartsWith('#') ? ListingFactory.ParseIntermediateByte(entry.Arguments[1]) : GetDirectRam(entry.Arguments[1]);
+                    byte compSecond = entry.Arguments[1].StartsWith('#') ? ParseIntermediateByte(entry.Arguments[1]) : GetDirectRam(entry.Arguments[1]);
                     if (compFirst != compSecond)
                     {
                         PC = entry.TargetAddress;
@@ -490,7 +490,7 @@ namespace Sim80C51.Processors
                         }
                         else
                         {
-                            tmpByte ^= ListingFactory.ParseIntermediateByte(entry.Arguments[1]);
+                            tmpByte ^= ParseIntermediateByte(entry.Arguments[1]);
                         }
                         SetDirectRam(entry.Arguments[0], tmpByte);
                     }
@@ -886,7 +886,7 @@ namespace Sim80C51.Processors
             // 8-bit constant
             if (arg.StartsWith('#'))
             {
-                return ListingFactory.ParseIntermediateByte(arg);
+                return ParseIntermediateByte(arg);
             }
 
             return GetDirectRam(arg);

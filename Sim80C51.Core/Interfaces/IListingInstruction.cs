@@ -1,4 +1,6 @@
-﻿namespace Sim80C51.Processors
+﻿using Sim80C51.Processors;
+
+namespace Sim80C51.Interfaces
 {
     public interface IListingInstruction
     {

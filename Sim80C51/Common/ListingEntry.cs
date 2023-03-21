@@ -1,4 +1,5 @@
-﻿using Sim80C51.Processors;
+﻿using Sim80C51.Interfaces;
+using Sim80C51.Processors;
 using Sim80C51.Toolbox.Wpf;
 
 namespace Sim80C51.Common

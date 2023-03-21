@@ -1,4 +1,4 @@
-﻿using Sim80C51.Processors;
+﻿using Sim80C51.Interfaces;
 using System.Windows.Controls;
 
 namespace Sim80C51.Controls.CPU
@@ -13,6 +13,6 @@ namespace Sim80C51.Controls.CPU
             InitializeComponent();
         }
 
-        public I80C51Core? CPUContext => DataContext as I80C51Core;
+        public I80C51? CPUContext => DataContext as I80C51;
     }
 }

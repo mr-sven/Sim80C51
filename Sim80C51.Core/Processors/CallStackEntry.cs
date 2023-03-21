@@ -1,4 +1,6 @@
-﻿namespace Sim80C51.Processors
+﻿using Sim80C51.Interfaces;
+
+namespace Sim80C51.Processors
 {
     public class CallStackEntry : ICallStackEntry
     {

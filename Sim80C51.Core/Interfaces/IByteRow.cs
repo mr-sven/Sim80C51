@@ -1,7 +1,7 @@
 ﻿using System.Collections.ObjectModel;
 using System.ComponentModel;
 
-namespace Sim80C51.Processors
+namespace Sim80C51.Interfaces
 {
     public interface IByteRow : INotifyPropertyChanged
     {

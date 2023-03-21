@@ -1,4 +1,5 @@
 ﻿using Sim80C51.Processors;
+using Sim80C51.Processors.Attributes;
 using Sim80C51.Toolbox;
 using System.Diagnostics;
 using System.IO;
@@ -75,7 +76,7 @@ namespace Sim80C51.Common
         public ListingCollection? Listing => listing;
         private ListingCollection? listing;
 
-        private readonly Dictionary<string, Processors.SFRBitAttribute> ivBits = new();
+        private readonly Dictionary<string, SFRBitAttribute> ivBits = new();
         private readonly Dictionary<ushort, string> reverseSfrMap = new();
         private readonly Dictionary<ushort, string> reverseSfrBitMap = new();
         private readonly Dictionary<string, ushort> ivMap = new();
@@ -90,7 +91,7 @@ namespace Sim80C51.Common
             // build first register map
             foreach (PropertyInfo pInfo in processorType.GetProperties())
             {
-                if (pInfo.GetCustomAttribute<Processors.SFRAttribute>() is Processors.SFRAttribute sfrAttr)
+                if (pInfo.GetCustomAttribute<SFRAttribute>() is SFRAttribute sfrAttr)
                 {
                     reverseSfrMap.Add(sfrAttr.Address, pInfo.Name);
 
@@ -108,7 +109,7 @@ namespace Sim80C51.Common
             // build bitmap
             foreach (PropertyInfo pInfo in processorType.GetProperties())
             {
-                if (pInfo.GetCustomAttribute<Processors.SFRBitAttribute>() is Processors.SFRBitAttribute sfrBitAttr && sfrBitAttr.Addressable)
+                if (pInfo.GetCustomAttribute<SFRBitAttribute>() is SFRBitAttribute sfrBitAttr && sfrBitAttr.Addressable)
                 {
                     ushort regAddr = reverseSfrMap.FirstOrDefault(sf => sf.Value == sfrBitAttr.SFRName).Key;
                     reverseSfrBitMap.Add((ushort)(regAddr + sfrBitAttr.Bit), pInfo.Name);
@@ -121,7 +122,7 @@ namespace Sim80C51.Common
             }
 
             // build IV Map
-            foreach (Processors.IVAttribute attr in processorType.GetCustomAttributes<Processors.IVAttribute>())
+            foreach (IVAttribute attr in processorType.GetCustomAttributes<IVAttribute>())
             {
                 ivMap.Add(attr.Name, attr.Address);
             }
@@ -238,7 +239,7 @@ namespace Sim80C51.Common
                             // store last DPTR Value for code Jumps (JMP)
                             if (entry.Arguments[0] == "DPTR")
                             {
-                                lastDptr = ParseIntermediateUShort(entry.Arguments[1]);
+                                lastDptr = C80C51.ParseIntermediateUShort(entry.Arguments[1]);
                             }
                             break;
 
@@ -348,7 +349,7 @@ namespace Sim80C51.Common
 
         private void CheckAddIv(string IEN, string valueStr, int maxBits, Stack<ListingEntry> branches)
         {
-            byte value = ParseIntermediateByte(valueStr);
+            byte value = C80C51.ParseIntermediateByte(valueStr);
             for (int i = 0; i < maxBits; i++)
             {
                 string ivName = ivBits.FirstOrDefault(v => v.Value.SFRName == IEN && v.Value.Bit == i).Key;
@@ -1301,36 +1302,6 @@ namespace Sim80C51.Common
 
             byte ramAddr = (byte)(address & 0xF8);
             return string.Format("RAM_{0:X2}.{1}", ramAddr, address & 0x07);
-        }
-
-        public static byte ParseIntermediateByte(string value)
-        {
-            if (!value.StartsWith("#"))
-            {
-                throw new ArgumentOutOfRangeException(value);
-            }
-
-            if (value.EndsWith("h"))
-            {
-                return Convert.ToByte(value[1..3], 16);
-            }
-
-            return (byte)int.Parse(value[1..]);
-        }
-
-        public static ushort ParseIntermediateUShort(string value)
-        {
-            if (!value.StartsWith("#"))
-            {
-                throw new ArgumentOutOfRangeException(value);
-            }
-
-            if (value.EndsWith("h"))
-            {
-                return Convert.ToUInt16(value[1..5], 16);
-            }
-
-            return (ushort)int.Parse(value[1..]);
         }
 
         public void CreateString(BinaryReader br, ushort startAddress, List<byte> entryData)

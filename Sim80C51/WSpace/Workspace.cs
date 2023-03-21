@@ -1,4 +1,4 @@
-﻿using Sim80C51.Processors;
+﻿using Sim80C51.Interfaces;
 using YamlDotNet.Core;
 using YamlDotNet.Serialization;
 
