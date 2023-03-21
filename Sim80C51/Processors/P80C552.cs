@@ -581,7 +581,7 @@ namespace Sim80C51.Processors
             t3Prescaler = 0;
         }
 
-        public override void SaveAdditionalSettings(Dictionary<string, object> additionalSettings)
+        public override void SaveAdditionalSettings(IDictionary<string, object> additionalSettings)
         {
             additionalSettings.Add("ADC0", ADC0Value);
             additionalSettings.Add("ADC1", ADC1Value);
@@ -593,7 +593,7 @@ namespace Sim80C51.Processors
             additionalSettings.Add("ADC7", ADC7Value);
         }
 
-        public override void LoadAdditionalSettings(Dictionary<string, object> additionalSettings)
+        public override void LoadAdditionalSettings(IDictionary<string, object> additionalSettings)
         {
             ADC0Value = additionalSettings.TryGet("ADC0", 0);
             ADC1Value = additionalSettings.TryGet("ADC1", 0);

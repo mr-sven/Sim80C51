@@ -1,4 +1,5 @@
 ﻿using Microsoft.Win32;
+using Sim80C51.Processors;
 using Sim80C51.Toolbox.Wpf;
 using System.Collections.ObjectModel;
 using System.IO;
@@ -22,7 +23,7 @@ namespace Sim80C51.Controls
         public const byte M48T_MASK_WRITE = 0x80;
         public const byte M48T_MASK_READ = 0x40;
 
-        public ObservableCollection<ByteRow>? Memory { get; set; }
+        public ObservableCollection<IByteRow>? Memory { get; set; }
 
         public bool MarkUpperInternalRam { get; set; } = false;
 
@@ -49,7 +50,7 @@ namespace Sim80C51.Controls
             }
 
             using FileStream file = File.OpenWrite(saveFileDialog.FileName);
-            foreach (ByteRow row in Memory!)
+            foreach (IByteRow row in Memory!)
             {
                 file.Write(row.Row.ToArray());
             }

@@ -1,6 +1,6 @@
 ﻿namespace Sim80C51.Processors
 {
-    public class CallStackEntry
+    public class CallStackEntry : ICallStackEntry
     {
         public ushort Address { get; set; }
         public byte StackPointer { get; set; }

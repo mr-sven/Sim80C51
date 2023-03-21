@@ -2,9 +2,9 @@
 using System.Collections.ObjectModel;
 using System.IO;
 
-namespace Sim80C51
+namespace Sim80C51.Processors
 {
-    public class ByteRow : NotifyPropertyChanged
+    public class ByteRow : NotifyPropertyChanged, IByteRow
     {
         public const int ROW_WIDTH = 16;
 
@@ -12,8 +12,8 @@ namespace Sim80C51
 
         public int Index { get; }
 
-        public string Ansi 
-        { 
+        public string Ansi
+        {
             get
             {
                 string str = System.Text.Encoding.Default.GetString(Row.ToArray());
@@ -74,7 +74,7 @@ namespace Sim80C51
                 {
                     result[i] = new ByteRow(i);
                 }
-                else if(i == result.Length-1)
+                else if (i == result.Length - 1)
                 {
                     result[i] = new ByteRow(i, Enumerable.Repeat((byte)0xff, ROW_WIDTH / 2).ToArray());
                 }
@@ -101,10 +101,10 @@ namespace Sim80C51
             return res.ToArray();
         }
 
-        public static MemoryStream ToMemoryStream(IEnumerable<ByteRow> Rows)
+        public static MemoryStream ToMemoryStream(IEnumerable<IByteRow> Rows)
         {
             MemoryStream ms = new();
-            foreach (ByteRow row in Rows)
+            foreach (IByteRow row in Rows)
             {
                 ms.Write(row.Row.ToArray());
             }

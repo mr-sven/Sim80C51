@@ -5,11 +5,13 @@ VisualStudioVersion = 17.0.32126.317
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Sim80C51", "Sim80C51\Sim80C51.csproj", "{1CD8264F-17B9-43F7-99ED-4CCB9DFC1686}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Sim80C51.TanningBed", "Sim80C51.TanningBed\Sim80C51.TanningBed.csproj", "{0806D140-190C-4706-8360-FB318E043A76}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Sim80C51.TanningBed", "Sim80C51.TanningBed\Sim80C51.TanningBed.csproj", "{0806D140-190C-4706-8360-FB318E043A76}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Sim80C51.Interfaces", "Sim80C51.Interfaces\Sim80C51.Interfaces.csproj", "{B8EEAF4D-903A-4BFC-91E2-BD576A807C6F}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Sim80C51.Interfaces", "Sim80C51.Interfaces\Sim80C51.Interfaces.csproj", "{B8EEAF4D-903A-4BFC-91E2-BD576A807C6F}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Sim80C51.Toolbox", "Sim80C51.Toolbox\Sim80C51.Toolbox.csproj", "{F2C79B21-1A4F-4D1E-8447-DDC272BA00D1}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Sim80C51.Toolbox", "Sim80C51.Toolbox\Sim80C51.Toolbox.csproj", "{F2C79B21-1A4F-4D1E-8447-DDC272BA00D1}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Sim80C51.Processors", "Sim80C51.Processors\Sim80C51.Processors.csproj", "{907C65E0-72E4-46E6-AD79-895EDA55B08A}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -33,6 +35,10 @@ Global
 		{F2C79B21-1A4F-4D1E-8447-DDC272BA00D1}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{F2C79B21-1A4F-4D1E-8447-DDC272BA00D1}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{F2C79B21-1A4F-4D1E-8447-DDC272BA00D1}.Release|Any CPU.Build.0 = Release|Any CPU
+		{907C65E0-72E4-46E6-AD79-895EDA55B08A}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{907C65E0-72E4-46E6-AD79-895EDA55B08A}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{907C65E0-72E4-46E6-AD79-895EDA55B08A}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{907C65E0-72E4-46E6-AD79-895EDA55B08A}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

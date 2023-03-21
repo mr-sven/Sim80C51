@@ -22,8 +22,8 @@ namespace Sim80C51.Processors
         private byte Pop()
         {
             byte res = GetMem(SP--);
-            CallStackEntry[] rmCallStack = CallStack.Where(cs => cs.StackPointer >= SP).ToArray();
-            foreach (CallStackEntry cs in rmCallStack)
+            ICallStackEntry[] rmCallStack = CallStack.Where(cs => cs.StackPointer >= SP).ToArray();
+            foreach (ICallStackEntry cs in rmCallStack)
             {
                 CallStack.Remove(cs);
             }
@@ -51,10 +51,10 @@ namespace Sim80C51.Processors
         /// May throw exceptions in case of wrong listing entrys
         /// </summary>
         /// <param name="entry">the listing entry</param>
-        public void Process(ListingEntry entry)
+        public void Process(IListingInstruction entry)
         {
             CpuCycle(); // first process cycle
-            PC += (ushort)entry.Data.Count;
+            PC += entry.Length;
             byte tmpByte;
             ushort tmpUshort;
             int tmpInt;
@@ -73,7 +73,7 @@ namespace Sim80C51.Processors
                 case InstructionType.LCALL:
                 case InstructionType.ACALL:
                     CpuCycle();
-                    CallStack.Add(new(PC, SP));
+                    CallStack.Add(new CallStackEntry(PC, SP));
                     Push((byte)(PC & 0xff));
                     Push((byte)(PC >> 8 & 0xff));
                     PC = entry.TargetAddress;
@@ -635,7 +635,7 @@ namespace Sim80C51.Processors
             CpuCycle();
 
             // save current PC to stack
-            CallStack.Add(new(PC, SP));
+            CallStack.Add(new CallStackEntry(PC, SP));
             Push((byte)(PC & 0xff));
             Push((byte)(PC >> 8 & 0xff));
 

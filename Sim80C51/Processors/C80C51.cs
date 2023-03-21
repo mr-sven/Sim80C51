@@ -28,12 +28,12 @@ namespace Sim80C51.Processors
         /// <summary>
         /// Internal RAM Address space
         /// </summary>
-        public ObservableCollection<ByteRow> CoreMemory { get; }
+        public ObservableCollection<IByteRow> CoreMemory { get; }
 
         /// <summary>
         /// Call Stack
         /// </summary>
-        public ObservableCollection<CallStackEntry> CallStack { get; } = new();
+        public ObservableCollection<ICallStackEntry> CallStack { get; } = new();
 
         public byte R0 { get => GetRegister(); set { SetRegister(value); } }
         public byte R1 { get => GetRegister(); set { SetRegister(value); } }
@@ -307,7 +307,7 @@ namespace Sim80C51.Processors
         public bool SMOD { get => GetBitFromProp(); set { SetBitFromProp(value); } }
         #endregion PCON
 
-        public virtual void SaveAdditionalSettings(Dictionary<string, object> additionalSettings) { }
-        public virtual void LoadAdditionalSettings(Dictionary<string, object> additionalSettings) { }
+        public virtual void SaveAdditionalSettings(IDictionary<string, object> additionalSettings) { }
+        public virtual void LoadAdditionalSettings(IDictionary<string, object> additionalSettings) { }
     }
 }

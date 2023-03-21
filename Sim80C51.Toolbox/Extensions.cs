@@ -44,7 +44,7 @@ namespace Sim80C51.Toolbox
             return data.ToArray().ToEscapedAnsiString();
         }
 
-        public static ushort TryGet(this Dictionary<string, object> data, string key, ushort defaultValue)
+        public static ushort TryGet(this IDictionary<string, object> data, string key, ushort defaultValue)
         {
             if (data.TryGetValue(key, out object? valueObject) && ushort.TryParse(valueObject.ToString(), out ushort valueShort))
             {

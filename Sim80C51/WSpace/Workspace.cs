@@ -17,6 +17,6 @@ namespace Sim80C51.WSpace
         public List<ushort> Breakpoints { get; set; } = new();
         public Dictionary<string, object> AdditionalSettings { get; set; } = new();
         public List<ushort> MemoryWatches { get; set; } = new();
-        public List<CallStackEntry> CallStack { get; set; } = new();
+        public List<ICallStackEntry> CallStack { get; set; } = new();
     }
 }

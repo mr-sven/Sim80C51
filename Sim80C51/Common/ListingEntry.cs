@@ -1,8 +1,9 @@
-﻿using Sim80C51.Toolbox.Wpf;
+﻿using Sim80C51.Processors;
+using Sim80C51.Toolbox.Wpf;
 
 namespace Sim80C51.Common
 {
-    public class ListingEntry : NotifyPropertyChanged
+    public class ListingEntry : NotifyPropertyChanged, IListingInstruction
     {
         public ushort Address { get => address; set { address = value; DoPropertyChanged(); } }
         private ushort address;
@@ -31,6 +32,8 @@ namespace Sim80C51.Common
         // for call and jump
         public ushort TargetAddress { get => targetAddress; set { targetAddress = value; DoPropertyChanged(); } }
         private ushort targetAddress;
+
+        public ushort Length => (ushort)Data.Count;
 
         public void UpdateStrings()
         {

@@ -47,7 +47,7 @@ namespace Sim80C51
             }
 
             using StreamReader reader = File.OpenText(openFileDialog.FileName);
-            Deserializer deserializer = new();
+            IDeserializer deserializer = new DeserializerBuilder().WithTypeMapping<Processors.ICallStackEntry, Processors.CallStackEntry>().Build();
             WSpace.Workspace wsp = deserializer.Deserialize<WSpace.Workspace>(reader);
 
             SelectedProcessor = ProcessorList.FirstOrDefault(p => p.Key == wsp.ProcessorType).Value;
@@ -66,7 +66,7 @@ namespace Sim80C51
 
             if (!string.IsNullOrEmpty(wsp.InternalMemory))
             {
-                ByteRow[] rows = LoadByteRowsFromCompBase64(wsp.InternalMemory);
+                Processors.ByteRow[] rows = LoadByteRowsFromCompBase64(wsp.InternalMemory);
                 for (int i = 0; i < rows.Length && i < CPU.CoreMemory.Count; i++)
                 {
                     CPU.CoreMemory[i].UpdateFromBuffer(rows[i].Row.ToArray());
@@ -96,7 +96,7 @@ namespace Sim80C51
             }
 
             CPU.CallStack.Clear();
-            foreach (Processors.CallStackEntry cs in wsp.CallStack)
+            foreach (Processors.ICallStackEntry cs in wsp.CallStack)
             {
                 CPU.CallStack.Add(cs);
             }
@@ -268,7 +268,7 @@ namespace Sim80C51
 
             xmemCtx.Add(wnd.RamStartAddress, new()
             {
-                Memory = new(ByteRow.InitRows(size, wnd.EnableM48T)),
+                Memory = new(Processors.ByteRow.InitRows(size, wnd.EnableM48T)),
                 MarkUpperInternalRam = false,
                 Size = size
             });
@@ -328,7 +328,7 @@ namespace Sim80C51
             using FileStream file = File.OpenRead(openFileDialog.FileName);
             xmemCtx.Add(wnd.RamStartAddress, new()
             {
-                Memory = new(ByteRow.FromStream(file)),
+                Memory = new(Processors.ByteRow.FromStream(file)),
                 MarkUpperInternalRam = false,
                 Size = file.Length
             });
@@ -468,7 +468,7 @@ namespace Sim80C51
         public ICollectionView? LabelView { get => labelView; set { labelView = value; DoPropertyChanged(); } }
         private ICollectionView? labelView;
 
-        public ObservableCollection<Processors.CallStackEntry>? CallStack => CPU?.CallStack;
+        public ObservableCollection<Processors.ICallStackEntry>? CallStack => CPU?.CallStack;
         #endregion
 
         #region Init functions
@@ -512,7 +512,7 @@ namespace Sim80C51
 
         private void StepTimer_Tick(object? sender, EventArgs e)
         {
-            if (listingCtx?.GetFromAddress(CPU!.PC) is not ListingEntry entry || entry.Instruction == InstructionType.DB)
+            if (listingCtx?.GetFromAddress(CPU!.PC) is not ListingEntry entry || entry.Instruction == Processors.InstructionType.DB)
             {
                 stepTimer.Stop();
                 GotoPcCommand.Execute(null);
@@ -617,9 +617,9 @@ namespace Sim80C51
             DoPropertyChanged(nameof(CallStack));
         }
 
-        private static string DataToBase64(ObservableCollection<ByteRow> data)
+        private static string DataToBase64(ObservableCollection<Processors.IByteRow> data)
         {
-            return StreamToCompressedBase64(ByteRow.ToMemoryStream(data));
+            return StreamToCompressedBase64(Processors.ByteRow.ToMemoryStream(data));
         }
 
         private static string StreamToCompressedBase64(Stream stream)
@@ -643,7 +643,7 @@ namespace Sim80C51
             return result;
         }
 
-        private static ByteRow[] LoadByteRowsFromCompBase64(string mem)
+        private static Processors.ByteRow[] LoadByteRowsFromCompBase64(string mem)
         {
             using MemoryStream msComp = new();
             using (StringReader sr = new(mem))
@@ -656,7 +656,7 @@ namespace Sim80C51
             }
             msComp.Position = 0;
             using GZipStream decomp = new(msComp, CompressionMode.Decompress);
-            return ByteRow.FromStream(decomp);
+            return Processors.ByteRow.FromStream(decomp);
         }
 
         private void SetListingFromCompBase64(string mem)
@@ -677,8 +677,8 @@ namespace Sim80C51
 
         private static Controls.MemoryContext LoadXMemFromCompBase64(string mem)
         {
-            ByteRow[] rows = LoadByteRowsFromCompBase64(mem);
-            int size = rows.Length * ByteRow.ROW_WIDTH;
+            Processors.ByteRow[] rows = LoadByteRowsFromCompBase64(mem);
+            int size = rows.Length * Processors.ByteRow.ROW_WIDTH;
 
             return new()
             {

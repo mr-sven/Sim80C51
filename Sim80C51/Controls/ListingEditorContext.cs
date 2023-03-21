@@ -1,4 +1,5 @@
 ﻿using Sim80C51.Common;
+using Sim80C51.Processors;
 using Sim80C51.Toolbox;
 using Sim80C51.Toolbox.Wpf;
 using System;

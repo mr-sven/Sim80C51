@@ -20,6 +20,7 @@
 
   <ItemGroup>
     <ProjectReference Include="..\Sim80C51.Interfaces\Sim80C51.Interfaces.csproj" />
+    <ProjectReference Include="..\Sim80C51.Processors\Sim80C51.Processors.csproj" />
     <ProjectReference Include="..\Sim80C51.TanningBed\Sim80C51.TanningBed.csproj" />
     <ProjectReference Include="..\Sim80C51.Toolbox\Sim80C51.Toolbox.csproj" />
   </ItemGroup>

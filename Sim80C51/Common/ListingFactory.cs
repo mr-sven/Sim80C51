@@ -1,4 +1,5 @@
-﻿using Sim80C51.Toolbox;
+﻿using Sim80C51.Processors;
+using Sim80C51.Toolbox;
 using System.Diagnostics;
 using System.IO;
 using System.Reflection;

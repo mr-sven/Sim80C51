@@ -1,6 +1,6 @@
 ﻿using System.ComponentModel;
 
-namespace Sim80C51.Common
+namespace Sim80C51.Processors
 {
     public enum InstructionType
     {
