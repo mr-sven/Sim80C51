@@ -26,7 +26,7 @@ namespace Sim80C51.TanningBed
         /// Right HC640 (Inputs) P1.4 -> !Enable Bus
         /// </summary>
         public byte HC640_0 { get => hc640_0; set { hc640_0 = value; DoPropertyChanged(); } }
-        private byte hc640_0 = 0;
+        private byte hc640_0 = 0b00011101;
 
         /// <summary>
         /// Left HC640 (Inputs) P1.5 -> !Enable Bus
