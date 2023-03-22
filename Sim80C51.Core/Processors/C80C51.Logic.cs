@@ -1,6 +1,7 @@
 ﻿using Sim80C51.Interfaces;
 using Sim80C51.Processors.Attributes;
 using Sim80C51.Toolbox.Wpf;
+using System.ComponentModel;
 using System.Reflection;
 using System.Runtime.CompilerServices;
 
@@ -9,7 +10,7 @@ namespace Sim80C51.Processors
     /// <summary>
     /// Register setter and getter logic from properties
     /// </summary>
-    public abstract partial class C80C51 : NotifyPropertyChanged, I80C51
+    public abstract partial class C80C51 : I80C51
     {
         /// <summary>
         /// map for sfr addresses
@@ -456,5 +457,21 @@ namespace Sim80C51.Processors
 
             return (ushort)int.Parse(value[1..]);
         }
+
+        #region INotifyPropertyChanged
+        public event PropertyChangedEventHandler? PropertyChanged;
+        protected void DoPropertyChanged([CallerMemberName] string? propertyName = null)
+        {
+            PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
+        }
+
+        protected void DoPropertyChanged(params string[] propertyNames)
+        {
+            foreach (string propertyName in propertyNames)
+            {
+                PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
+            }
+        }
+        #endregion
     }
 }
