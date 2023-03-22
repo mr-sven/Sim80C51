@@ -1,6 +1,8 @@
 ﻿using Sim80C51.Interfaces;
+using Sim80C51.Toolbox.Wpf;
 using System.ComponentModel;
 using System.Runtime.CompilerServices;
+using System.Windows.Input;
 
 namespace Sim80C51.TanningBed
 {
@@ -33,6 +35,8 @@ namespace Sim80C51.TanningBed
         /// </summary>
         public byte HC640_1 { get => hc640_1; set { hc640_1 = value; DoPropertyChanged(); } }
         private byte hc640_1 = 0;
+
+        public ICommand TH0Command => new RelayCommand((o) => { CPU!.TH0 = 0xff; });
 
         public void Loaded(MainWindow mainWindow)
         {

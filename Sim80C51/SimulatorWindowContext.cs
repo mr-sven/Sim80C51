@@ -1,5 +1,6 @@
 ﻿using Microsoft.Win32;
 using Sim80C51.Common;
+using Sim80C51.Toolbox;
 using Sim80C51.Toolbox.Wpf;
 using System.Collections.ObjectModel;
 using System.ComponentModel;
@@ -414,12 +415,12 @@ namespace Sim80C51
 
         public ICommand AddDptrCommand => new RelayCommand((o) =>
         {
-            if (System.Text.RegularExpressions.Regex.IsMatch(DptrAddValue, @"\A\b[0-9a-fA-F]+\b\Z"))
+            if (System.Text.RegularExpressions.Regex.IsMatch(DptrAddValue, @"\A\b[0-9a-fA-F]+\b\Z") && o is string access)
             {
                 ushort value = Convert.ToUInt16(DptrAddValue, 16);
                 if (!MemoryPointer.ContainsKey(value))
                 {
-                    MemoryPointer.Add(value, (MemoryAccess)"RW");
+                    MemoryPointer.Add(value, (MemoryAccess)access);
                 }
                 DptrAddValue = string.Empty;
             }
@@ -462,7 +463,7 @@ namespace Sim80C51
 
         public ObservableCollection<ushort> Breakpoints { get; } = new();
 
-        public Dictionary<ushort, MemoryAccess> MemoryPointer { get; } = new();
+        public ObservableDictionary<ushort, MemoryAccess> MemoryPointer { get; } = new();
 
         public string DptrAddValue { get => dptrAddValue; set { dptrAddValue = value; DoPropertyChanged(); } }
         private string dptrAddValue = string.Empty;
@@ -680,7 +681,16 @@ namespace Sim80C51
             }
 
             ushort lastMemAddress = xmemCtx.Keys.Where(a => a <= address).Last();
-            xmemCtx[lastMemAddress][address - lastMemAddress] = value;
+            if (xmemCtx[lastMemAddress].Size > address - lastMemAddress)
+            {
+                xmemCtx[lastMemAddress][address - lastMemAddress] = value;
+            }
+            else
+            {
+                stepTimer.Stop();
+                GotoPcCommand.Execute(null);
+            }
+
             if (stepTimer.IsEnabled && MemoryPointer.ContainsKey(address) && MemoryPointer[address].Write)
             {
                 stepTimer.Stop();
@@ -701,7 +711,13 @@ namespace Sim80C51
                 GotoPcCommand.Execute(null);
             }
 
-            ushort lastMemAddress = xmemCtx.Keys.Where(a => a <= address).Last();
+            ushort lastMemAddress = xmemCtx.Keys.Where(a => a <= address).Last();            
+            if (xmemCtx[lastMemAddress].Size <= address - lastMemAddress)
+            {
+                stepTimer.Stop();
+                GotoPcCommand.Execute(null);
+                return 0xff;
+            }
             return xmemCtx[lastMemAddress][address - lastMemAddress];
         }
 

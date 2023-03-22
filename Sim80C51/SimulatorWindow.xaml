@@ -135,18 +135,25 @@
                 <StackPanel Grid.Row="1" Orientation="Horizontal">
                     <GroupBox Header="Breakpoints">
                         <ListBox ItemsSource="{Binding Breakpoints}" Width="100">
+                            <ListBox.ItemContainerStyle>
+                                <Style TargetType="ListBoxItem">
+                                    <Setter Property="Tag" Value="{Binding DataContext, RelativeSource={RelativeSource AncestorType=Window}}" />
+                                    <Setter Property="ContextMenu">
+                                        <Setter.Value>
+                                            <ContextMenu>
+                                                <MenuItem Header="Nav To" Command="{Binding PlacementTarget.Tag.NavToAddressCommand, RelativeSource={RelativeSource AncestorType=ContextMenu}}" CommandParameter="{Binding}"/>
+                                                <MenuItem Header="Delete" Command="{Binding PlacementTarget.Tag.DeleteBpCommand, RelativeSource={RelativeSource AncestorType=ContextMenu}}" CommandParameter="{Binding}"/>
+                                            </ContextMenu>
+                                        </Setter.Value>
+                                    </Setter>
+                                </Style>
+                            </ListBox.ItemContainerStyle>
                             <ListBox.ItemTemplate>
                                 <DataTemplate>
                                     <TextBlock Text="{Binding StringFormat=Address: {0:X4}}" Tag="{Binding DataContext, RelativeSource={RelativeSource AncestorType=Window}}">
                                         <TextBlock.InputBindings>
                                             <MouseBinding MouseAction="LeftDoubleClick" Command="{Binding DataContext.NavToAddressCommand, RelativeSource={RelativeSource AncestorType=Window}}" CommandParameter="{Binding}" />
                                         </TextBlock.InputBindings>
-                                        <TextBlock.ContextMenu>
-                                            <ContextMenu>
-                                                <MenuItem Header="Nav To" Command="{Binding PlacementTarget.Tag.NavToAddressCommand, RelativeSource={RelativeSource AncestorType=ContextMenu}}" CommandParameter="{Binding}"/>
-                                                <MenuItem Header="Delete" Command="{Binding PlacementTarget.Tag.DeleteBpCommand, RelativeSource={RelativeSource AncestorType=ContextMenu}}" CommandParameter="{Binding}"/>
-                                            </ContextMenu>
-                                        </TextBlock.ContextMenu>
                                     </TextBlock>
                                 </DataTemplate>
                             </ListBox.ItemTemplate>
@@ -180,17 +187,26 @@
                             <StackPanel Orientation="Horizontal" DockPanel.Dock="Top">
                                 <TextBlock Margin="2" VerticalAlignment="Center">DPTR:</TextBlock>
                                 <TextBox Width="40" Margin="2" Text="{Binding DptrAddValue}"/>
-                                <Button Margin="2" Command="{Binding AddDptrCommand}">Add</Button>
+                                <Button Margin="2" Command="{Binding AddDptrCommand}" CommandParameter="R">R</Button>
+                                <Button Margin="2" Command="{Binding AddDptrCommand}" CommandParameter="W">W</Button>
+                                <Button Margin="2" Command="{Binding AddDptrCommand}" CommandParameter="RW">RW</Button>
                             </StackPanel>
                             <ListBox ItemsSource="{Binding MemoryPointer}">
+                                <ListBox.ItemContainerStyle>
+                                    <Style TargetType="ListBoxItem">
+                                        <Setter Property="Tag" Value="{Binding DataContext, RelativeSource={RelativeSource AncestorType=Window}}" />
+                                        <Setter Property="ContextMenu">
+                                            <Setter.Value>
+                                                <ContextMenu>
+                                                    <MenuItem Header="Delete" Command="{Binding PlacementTarget.Tag.DeleteDptrCommand, RelativeSource={RelativeSource AncestorType=ContextMenu}}" CommandParameter="{Binding Key}"/>
+                                                </ContextMenu>
+                                            </Setter.Value>
+                                        </Setter>
+                                    </Style>
+                                </ListBox.ItemContainerStyle>
                                 <ListBox.ItemTemplate>
                                     <DataTemplate>
-                                        <TextBlock Tag="{Binding DataContext, RelativeSource={RelativeSource AncestorType=Window}}">
-                                            <TextBlock.ContextMenu>
-                                                <ContextMenu>
-                                                     <MenuItem Header="Delete" Command="{Binding PlacementTarget.Tag.DeleteDptrCommand, RelativeSource={RelativeSource AncestorType=ContextMenu}}" CommandParameter="{Binding Key}"/>
-                                                </ContextMenu>
-                                            </TextBlock.ContextMenu>
+                                        <TextBlock>
                                             <TextBlock.Text>
                                                 <MultiBinding StringFormat="{}Address: {0:X4} {1}">
                                                     <Binding Path="Key" />
@@ -205,17 +221,24 @@
                     </GroupBox>
                     <GroupBox Header="Call Stack">
                         <ListBox ItemsSource="{Binding CallStack}" Width="100">
+                            <ListBox.ItemContainerStyle>
+                                <Style TargetType="ListBoxItem">
+                                    <Setter Property="Tag" Value="{Binding DataContext, RelativeSource={RelativeSource AncestorType=Window}}" />
+                                    <Setter Property="ContextMenu">
+                                        <Setter.Value>
+                                            <ContextMenu>
+                                                <MenuItem Header="Nav To" Command="{Binding PlacementTarget.Tag.NavToAddressCommand, RelativeSource={RelativeSource AncestorType=ContextMenu}}" CommandParameter="{Binding}"/>
+                                            </ContextMenu>
+                                        </Setter.Value>
+                                    </Setter>
+                                </Style>
+                            </ListBox.ItemContainerStyle>
                             <ListBox.ItemTemplate>
                                 <DataTemplate>
                                     <TextBlock Text="{Binding Address, StringFormat=Address: {0:X4}}" Tag="{Binding DataContext, RelativeSource={RelativeSource AncestorType=Window}}">
                                         <TextBlock.InputBindings>
                                             <MouseBinding MouseAction="LeftDoubleClick" Command="{Binding DataContext.NavToAddressCommand, RelativeSource={RelativeSource AncestorType=Window}}" CommandParameter="{Binding}" />
                                         </TextBlock.InputBindings>
-                                        <TextBlock.ContextMenu>
-                                            <ContextMenu>
-                                                <MenuItem Header="Nav To" Command="{Binding PlacementTarget.Tag.NavToAddressCommand, RelativeSource={RelativeSource AncestorType=ContextMenu}}" CommandParameter="{Binding}"/>
-                                            </ContextMenu>
-                                        </TextBlock.ContextMenu>
                                     </TextBlock>
                                 </DataTemplate>
                             </ListBox.ItemTemplate>

@@ -24,6 +24,11 @@ namespace Sim80C51.Interfaces
         /// </summary>
         byte P1 { get; set; }
 
+        /// <summary>
+        /// Timer 0 Hight
+        /// </summary>
+        byte TH0 { get; set; }
+
         // TODO: add more registers as required
 
 

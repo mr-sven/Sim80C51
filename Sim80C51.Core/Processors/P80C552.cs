@@ -537,6 +537,9 @@ namespace Sim80C51.Processors
                 case nameof(S1DAT):
                     S1DatUpdate();
                     break;
+                case nameof(STO):
+                    S1StoUpdate(STO);
+                    break;
             }
         }
 
@@ -650,6 +653,7 @@ namespace Sim80C51.Processors
                 S1STA = 0x08;
                 SI = true;
                 I2CCommandProcessor?.Invoke("STA", 0);
+                return;
             }
 
             if (s1DataCounter > 0)
@@ -658,12 +662,27 @@ namespace Sim80C51.Processors
                 if (s1DataCounter == 0)
                 {
                     s1Prescaler = 0;
-                    S1STA = 0x18;
+                    if (S1STA == 0x08)
+                    {
+                        S1STA = 0x18;
+                    }
+                    else if (S1STA == 0x18)
+                    {
+                        S1STA = 0x28;
+                    }
                     SI = true;
                     s1DataInternalUpdate = true;
                     S1DAT = I2CCommandProcessor?.Invoke("DAT", S1DAT) ?? S1DAT;
                     s1DataInternalUpdate = false;
+                    return;
                 }
+            }
+
+            if (STO)
+            {
+                STO = false;
+                s1Prescaler = 0;
+                I2CCommandProcessor?.Invoke("STO", 0);
             }
         }
 
@@ -708,6 +727,20 @@ namespace Sim80C51.Processors
             }
             s1DataCounter = 8;
             S1FillPrescaler();
+        }
+
+        private void S1StoUpdate(bool value)
+        {
+            if (!value)
+            {
+                return;
+            }
+
+            // start S1
+            if (s1Prescaler == 0)
+            {
+                S1FillPrescaler();
+            }
         }
 
         #endregion

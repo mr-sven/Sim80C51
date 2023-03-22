@@ -59,5 +59,10 @@
                 <CheckBox tbx:CheckBoxBitmaskBehaviour.Mask="0x80" tbx:CheckBoxBitmaskBehaviour.Value="{Binding HC273_1}" tbx:CheckBoxBitmaskBehaviour.IsChecked="{Binding Path=IsChecked, RelativeSource={RelativeSource Self}}" IsEnabled="False">N.C.</CheckBox>
             </StackPanel>
         </GroupBox>
+        <GroupBox Header="Functions" Padding="5">
+            <StackPanel>
+                <Button Command="{Binding TH0Command}">Set TH0 = FF</Button>
+            </StackPanel>
+        </GroupBox>
     </WrapPanel>
 </Window>
