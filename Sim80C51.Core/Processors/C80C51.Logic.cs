@@ -28,6 +28,9 @@ namespace Sim80C51.Processors
 
         protected readonly SortedList<byte, IV> ivList = new();
 
+        private readonly Dictionary<string, List<Action>> bitCallback = new();
+        private readonly Dictionary<string, List<Action>> sfrCallback = new();
+
         /// <summary>
         /// Constructor
         /// </summary>
@@ -107,6 +110,30 @@ namespace Sim80C51.Processors
         public void RefreshUIProperies()
         {
             DoPropertyChanged("");
+        }
+
+        public void RegisterBitChangeCallback(string bitName, Action callback)
+        {
+            if (bitCallback.ContainsKey(bitName))
+            {
+                bitCallback[bitName].Add(callback);
+            }
+            else
+            {
+                bitCallback.Add(bitName, new() { callback });
+            }
+        }
+
+        public void RegisterSfrChangeCallback(string sfrName, Action callback)
+        {
+            if (sfrCallback.ContainsKey(sfrName))
+            {
+                sfrCallback[sfrName].Add(callback);
+            }
+            else
+            {
+                sfrCallback.Add(sfrName, new() { callback });
+            }
         }
 
         #region Property setter and getter with PropertyChanged notification
@@ -229,6 +256,7 @@ namespace Sim80C51.Processors
 
         /// <summary>
         /// Sets memory from register property, calls PropertyChanged on register and bit if changed
+        /// Function is also called via Processing logic MOV, SETB & CLR
         /// </summary>
         /// <param name="value">new value for register</param>
         /// <param name="sfrName">register name via reflection</param>
@@ -247,11 +275,27 @@ namespace Sim80C51.Processors
             }
 
             byte bitMask = SetMem(sfrMap[sfrName].Address, value);
+            if (sfrCallback.ContainsKey(sfrName))
+            {
+                foreach(Action callback in sfrCallback[sfrName])
+                {
+                    callback.Invoke();
+                }
+            }
+
             DoPropertyChanged(sfrName);
             foreach (KeyValuePair<string, SFRBitAttribute> sfrBit in sfrBitMap.Where(sb => sb.Value.SFRName == sfrName))
             {
                 if (((1 << sfrBit.Value.Bit) & bitMask) != 0)
                 {
+                    if (bitCallback.ContainsKey(sfrBit.Key))
+                    {
+                        foreach (Action callback in bitCallback[sfrBit.Key])
+                        {
+                            callback.Invoke();
+                        }
+                    }
+
                     DoPropertyChanged(sfrBit.Key);
                 }
             }

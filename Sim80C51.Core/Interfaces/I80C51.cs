@@ -1,5 +1,6 @@
 ﻿using System.Collections.ObjectModel;
 using System.ComponentModel;
+using System.Threading;
 
 namespace Sim80C51.Interfaces
 {
@@ -73,5 +74,7 @@ namespace Sim80C51.Interfaces
 
         void SaveAdditionalSettings(IDictionary<string, object> additionalSettings);
         void LoadAdditionalSettings(IDictionary<string, object> additionalSettings);
+        void RegisterBitChangeCallback(string bitName, Action callback);
+        void RegisterSfrChangeCallback(string sfrName, Action callback);
     }
 }

@@ -45,9 +45,18 @@ namespace Sim80C51.TanningBed
                 return;
             }
             owner = mainWindow;
-            CPU!.PropertyChanged += CPU_PropertyChanged;
+            CPU!.RegisterSfrChangeCallback(nameof(I80C51.P1), P1Update);
             CPU!.I2CCommandProcessor = I2cCommandProcessor;
             HC640_0 = 0b00011101;
+        }
+
+        private void P1Update()
+        {
+            byte ioBusSelector = (byte)(CPU!.P1 & 0b00111100);
+            if (ioBusSelector != 0)
+            {
+                CheckIOBus(ioBusSelector);
+            }
         }
 
         private string i2cLastState = string.Empty;
@@ -66,20 +75,6 @@ namespace Sim80C51.TanningBed
             }
 
             return data;
-        }
-
-        private void CPU_PropertyChanged(object? sender, PropertyChangedEventArgs e)
-        {
-            switch (e.PropertyName)
-            {
-                case "P1":
-                    byte ioBusSelector = (byte)(CPU!.P1 & 0b00111100);
-                    if (ioBusSelector != 0)
-                    {
-                        CheckIOBus(ioBusSelector);
-                    }
-                    break;
-            }
         }
 
         bool inUpdate = false;

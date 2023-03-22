@@ -524,23 +524,9 @@ namespace Sim80C51.Processors
             AddIv("CM2", () => PCM2, () => ECM2 && CMI2);
             AddIv("T2", () => PT2, () => ET2 && ((T2IS1 && T20V) || (T2IS0 && T2B0)));
 
-            PropertyChanged += P80C552_PropertyChanged;
-        }
-
-        private void P80C552_PropertyChanged(object? sender, PropertyChangedEventArgs e)
-        {
-            switch(e.PropertyName)
-            {
-                case nameof(STA):
-                    S1StaUpdate(STA);
-                    break;
-                case nameof(S1DAT):
-                    S1DatUpdate();
-                    break;
-                case nameof(STO):
-                    S1StoUpdate(STO);
-                    break;
-            }
+            RegisterBitChangeCallback(nameof(STA), S1StaUpdate);
+            RegisterBitChangeCallback(nameof(STO), S1StoUpdate);
+            RegisterSfrChangeCallback(nameof(S1DAT), S1DatUpdate);
         }
 
         public override void Reset()
@@ -708,9 +694,9 @@ namespace Sim80C51.Processors
             };
         }
 
-        private void S1StaUpdate(bool value)
+        private void S1StaUpdate()
         {
-            if (!value)
+            if (!STA)
             {
                 return;
             }
@@ -729,9 +715,9 @@ namespace Sim80C51.Processors
             S1FillPrescaler();
         }
 
-        private void S1StoUpdate(bool value)
+        private void S1StoUpdate()
         {
-            if (!value)
+            if (!STO)
             {
                 return;
             }
