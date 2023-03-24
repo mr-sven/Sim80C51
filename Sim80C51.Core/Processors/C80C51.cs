@@ -1,6 +1,5 @@
 ﻿using Sim80C51.Interfaces;
 using Sim80C51.Processors.Attributes;
-using Sim80C51.Toolbox.Wpf;
 using System.Collections.ObjectModel;
 
 namespace Sim80C51.Processors

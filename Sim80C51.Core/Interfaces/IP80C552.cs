@@ -7,6 +7,12 @@
         /// </summary>
         byte P4 { get; set; }
 
-        Func<string, byte, byte>? I2CCommandProcessor { get; set; }
+        /// <summary>
+        /// I2C Port data
+        /// </summary>
+        byte S1DAT { get; set; }
+
+
+        Predicate<string>? I2CCommandProcessor { get; set; }
     }
 }

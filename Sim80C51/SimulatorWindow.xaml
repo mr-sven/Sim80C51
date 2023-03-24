@@ -31,6 +31,8 @@
     <Window.InputBindings>
         <KeyBinding Key="F11" Command="{Binding OneStepCommand}" />
         <KeyBinding Key="F5" Command="{Binding PlayCommand}" />
+        <KeyBinding Key="F6" Command="{Binding PlayHiddenCommand}" />
+        <KeyBinding Key="F7" Command="{Binding PauseCommand}" />
         <KeyBinding Key="R" Modifiers="Ctrl" Command="{Binding ResetCommand}" />
         <KeyBinding Key="P" Modifiers="Ctrl" Command="{Binding GotoPcCommand}" />
         <KeyBinding Key="D" Modifiers="Ctrl" Command="{Binding GotoDptrCommand}" />
@@ -102,12 +104,49 @@
                         </Style.Triggers>
                     </Style>
                 </ToolBar.Style>
-                <Button Command="{Binding OneStepCommand}" Width="70">Step (F11)</Button>
-                <Button Command="{Binding PlayCommand}" Width="70">Play (F5)</Button>
-                <Button Command="{Binding ResetCommand}" Width="100" >Reset (Ctrl + R)</Button>
+                <Button Command="{Binding OneStepCommand}" Height="24" ToolTip="Step (F11)">
+                    <Viewbox Width="24">
+                        <!--! Font Awesome Pro 6.3.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license (Commercial License) Copyright 2023 Fonticons, Inc. -->
+                        <Path Height="512" Fill="{Binding Foreground, RelativeSource={RelativeSource AncestorType=Button}}" Data="M52.5 440.6c-9.5 7.9-22.8 9.7-34.1 4.4S0 428.4 0 416V96C0 83.6 7.2 72.3 18.4 67s24.5-3.6 34.1 4.4l192 160L256 241V96c0-17.7 14.3-32 32-32s32 14.3 32 32V416c0 17.7-14.3 32-32 32s-32-14.3-32-32V271l-11.5 9.6-192 160z"/>
+                    </Viewbox>
+                </Button>
+                <Button Command="{Binding PlayCommand}" Height="24" ToolTip="Play (F5)">
+                    <Viewbox Width="24">
+                        <!--! Font Awesome Pro 6.3.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license (Commercial License) Copyright 2023 Fonticons, Inc. -->
+                        <Path Height="512" Fill="{Binding Foreground, RelativeSource={RelativeSource AncestorType=Button}}" Data="M73 39c-14.8-9.1-33.4-9.4-48.5-.9S0 62.6 0 80V432c0 17.4 9.4 33.4 24.5 41.9s33.7 8.1 48.5-.9L361 297c14.3-8.7 23-24.2 23-41s-8.7-32.2-23-41L73 39z"/>
+                    </Viewbox>
+                </Button>
+                <Button Command="{Binding PlayHiddenCommand}" Height="24" ToolTip="Play hidden (F6)">
+                    <Viewbox Width="24">
+                        <!--! Font Awesome Pro 6.3.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license (Commercial License) Copyright 2023 Fonticons, Inc. -->
+                        <Path Height="512" Fill="{Binding Foreground, RelativeSource={RelativeSource AncestorType=Button}}" Data="M52.5 440.6c-9.5 7.9-22.8 9.7-34.1 4.4S0 428.4 0 416V96C0 83.6 7.2 72.3 18.4 67s24.5-3.6 34.1 4.4L224 214.3V256v41.7L52.5 440.6zM256 352V256 128 96c0-12.4 7.2-23.7 18.4-29s24.5-3.6 34.1 4.4l192 160c7.3 6.1 11.5 15.1 11.5 24.6s-4.2 18.5-11.5 24.6l-192 160c-9.5 7.9-22.8 9.7-34.1 4.4s-18.4-16.6-18.4-29V352z"/>
+                    </Viewbox>
+                </Button>
+                <Button Command="{Binding PauseCommand}" Height="24" ToolTip="Pause (F7)">
+                    <Viewbox Width="24">
+                        <!--! Font Awesome Pro 6.3.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license (Commercial License) Copyright 2023 Fonticons, Inc. -->
+                        <Path Height="512" Fill="{Binding Foreground, RelativeSource={RelativeSource AncestorType=Button}}" Data="M48 64C21.5 64 0 85.5 0 112V400c0 26.5 21.5 48 48 48H80c26.5 0 48-21.5 48-48V112c0-26.5-21.5-48-48-48H48zm192 0c-26.5 0-48 21.5-48 48V400c0 26.5 21.5 48 48 48h32c26.5 0 48-21.5 48-48V112c0-26.5-21.5-48-48-48H240z"/>
+                    </Viewbox>
+                </Button>
+                <Button Command="{Binding ResetCommand}" Height="24" ToolTip="Reset (Ctrl + R)">
+                    <Viewbox Width="24">
+                        <!--! Font Awesome Pro 6.3.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license (Commercial License) Copyright 2023 Fonticons, Inc. -->
+                        <Path Height="512" Fill="{Binding Foreground, RelativeSource={RelativeSource AncestorType=Button}}" Data="M0 128C0 92.7 28.7 64 64 64H320c35.3 0 64 28.7 64 64V384c0 35.3-28.7 64-64 64H64c-35.3 0-64-28.7-64-64V128z"/>
+                    </Viewbox>
+                </Button>
                 <Separator/>
-                <Button Command="{Binding GotoPcCommand}">Goto PC (Ctrl + P)</Button>
-                <Button Command="{Binding GotoDptrCommand}">Goto DPTR (Ctrl + D)</Button>
+                <Button Command="{Binding GotoPcCommand}" Height="24" ToolTip="Goto PC (Ctrl + P)">
+                    <Viewbox Width="24">
+                        <!--! Font Awesome Pro 6.3.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license (Commercial License) Copyright 2023 Fonticons, Inc. -->
+                        <Path Height="512" Fill="{Binding Foreground, RelativeSource={RelativeSource AncestorType=Button}}" Data="M544 416L32 416c-17.7 0-32 14.3-32 32s14.3 32 32 32l512 0c17.7 0 32-14.3 32-32s-14.3-32-32-32zm22.6-137.4c12.5-12.5 12.5-32.8 0-45.3s-32.8-12.5-45.3 0L480 274.7 480 64c0-17.7-14.3-32-32-32s-32 14.3-32 32l0 210.7-41.4-41.4c-12.5-12.5-32.8-12.5-45.3 0s-12.5 32.8 0 45.3l96 96c12.5 12.5 32.8 12.5 45.3 0l96-96zm-320-45.3c-12.5-12.5-32.8-12.5-45.3 0L160 274.7 160 64c0-17.7-14.3-32-32-32s-32 14.3-32 32l0 210.7L54.6 233.4c-12.5-12.5-32.8-12.5-45.3 0s-12.5 32.8 0 45.3l96 96c12.5 12.5 32.8 12.5 45.3 0l96-96c12.5-12.5 12.5-32.8 0-45.3z"/>
+                    </Viewbox>
+                </Button>
+                <Button Command="{Binding GotoDptrCommand}" Height="24" ToolTip="Goto DPTR (Ctrl + D)">
+                    <Viewbox Width="24">
+                        <!--! Font Awesome Pro 6.3.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license (Commercial License) Copyright 2023 Fonticons, Inc. -->
+                        <Path Height="512" Fill="{Binding Foreground, RelativeSource={RelativeSource AncestorType=Button}}" Data="M151.6 469.6C145.5 476.2 137 480 128 480s-17.5-3.8-23.6-10.4l-88-96c-11.9-13-11.1-33.3 2-45.2s33.3-11.1 45.2 2L96 365.7V64c0-17.7 14.3-32 32-32s32 14.3 32 32V365.7l32.4-35.4c11.9-13 32.2-13.9 45.2-2s13.9 32.2 2 45.2l-88 96zM320 32h32c17.7 0 32 14.3 32 32s-14.3 32-32 32H320c-17.7 0-32-14.3-32-32s14.3-32 32-32zm0 128h96c17.7 0 32 14.3 32 32s-14.3 32-32 32H320c-17.7 0-32-14.3-32-32s14.3-32 32-32zm0 128H480c17.7 0 32 14.3 32 32s-14.3 32-32 32H320c-17.7 0-32-14.3-32-32s14.3-32 32-32zm0 128H544c17.7 0 32 14.3 32 32s-14.3 32-32 32H320c-17.7 0-32-14.3-32-32s14.3-32 32-32z"/>
+                    </Viewbox>
+                </Button>
             </ToolBar>
         </ToolBarTray>
         <DockPanel LastChildFill="True">

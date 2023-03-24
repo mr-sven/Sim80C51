@@ -1,6 +1,5 @@
 ﻿using Sim80C51.Interfaces;
 using Sim80C51.Processors.Attributes;
-using Sim80C51.Toolbox.Wpf;
 using System.ComponentModel;
 using System.Reflection;
 using System.Runtime.CompilerServices;
@@ -459,14 +458,24 @@ namespace Sim80C51.Processors
         }
 
         #region INotifyPropertyChanged
+        public bool UiUpdates { get; set; } = true;
+
         public event PropertyChangedEventHandler? PropertyChanged;
         protected void DoPropertyChanged([CallerMemberName] string? propertyName = null)
         {
+            if (!UiUpdates)
+            {
+                return;
+            }
             PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
         }
 
         protected void DoPropertyChanged(params string[] propertyNames)
         {
+            if (!UiUpdates)
+            {
+                return;
+            }
             foreach (string propertyName in propertyNames)
             {
                 PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));

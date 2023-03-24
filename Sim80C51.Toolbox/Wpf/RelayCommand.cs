@@ -10,33 +10,26 @@ namespace Sim80C51.Toolbox.Wpf
 
         private Predicate<object?> canExecute;
 
-        private readonly Func<string> nameDetector = () => string.Empty;
-
         private event EventHandler? CanExecuteChangedInternal;
 
-        [DataMember]
-        public string Name { get { return nameDetector.Invoke(); } }
-
-
-        public RelayCommand(Action<object?> execute) : this(() => string.Empty, execute, DefaultCanExecute) { }
-        public RelayCommand(Func<string> name, Action<object?> execute) : this(name, execute, DefaultCanExecute) { }
-        public RelayCommand(Action<object?> execute, Predicate<object?> canExecute) : this(() => string.Empty, execute, canExecute) { }
-        public RelayCommand(Func<string> name, Action<object?> execute, Predicate<object?> canExecute)
+        public RelayCommand(Action<object?> execute) : this(execute, DefaultCanExecute) { }
+        public RelayCommand(Action<object?> execute, Predicate<object?> canExecute)
         {
-            this.execute = execute ?? throw new ArgumentNullException(nameof(execute));
-            this.canExecute = canExecute ?? throw new ArgumentNullException(nameof(canExecute));
-            nameDetector = name ?? throw new ArgumentNullException(nameof(name));
+            this.execute = execute;
+            this.canExecute = canExecute;
         }
 
         public event EventHandler? CanExecuteChanged
         {
             add
             {
+                CommandManager.RequerySuggested += value;
                 CanExecuteChangedInternal += value;
             }
 
             remove
             {
+                CommandManager.RequerySuggested -= value;
                 CanExecuteChangedInternal -= value;
             }
         }
@@ -53,8 +46,7 @@ namespace Sim80C51.Toolbox.Wpf
 
         public void OnCanExecuteChanged()
         {
-            EventHandler? handler = CanExecuteChangedInternal;
-            handler?.Invoke(this, EventArgs.Empty);
+            CanExecuteChangedInternal?.Invoke(this, EventArgs.Empty);
         }
 
         public void Destroy()

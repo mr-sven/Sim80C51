@@ -58,6 +58,8 @@ namespace Sim80C51.Interfaces
         /// </summary>
         Action<ushort, byte>? SetRamByte { get; set; }
 
+        bool UiUpdates { get; set; }
+
         /// <summary>
         /// Process listing entry.
         /// May throw exceptions in case of wrong listing entrys

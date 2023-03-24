@@ -363,17 +363,36 @@ namespace Sim80C51
 
         public ICommand PlayCommand => new RelayCommand((o) =>
         {
+            CPU!.UiUpdates = true;
+            stepTimer.Start();
+            (PlayCommand as RelayCommand)?.OnCanExecuteChanged();
+            (PlayHiddenCommand as RelayCommand)?.OnCanExecuteChanged();
+            (PauseCommand as RelayCommand)?.OnCanExecuteChanged();
+        }, (o) => { return !stepTimer.IsEnabled; });
+
+        public ICommand PlayHiddenCommand => new RelayCommand((o) =>
+        {
+            CPU!.UiUpdates = false;
+            stepTimer.Start();
+            (PlayCommand as RelayCommand)?.OnCanExecuteChanged();
+            (PlayHiddenCommand as RelayCommand)?.OnCanExecuteChanged();
+            (PauseCommand as RelayCommand)?.OnCanExecuteChanged();
+        }, (o) => { return !stepTimer.IsEnabled; });
+
+        public ICommand PauseCommand => new RelayCommand((o) =>
+        {
+            StopStepTimer();
+        }, (o) => { return stepTimer.IsEnabled; });
+
+        public ICommand ResetCommand => new RelayCommand((o) =>
+        {
             if (stepTimer.IsEnabled)
             {
-                stepTimer.Stop();
+                StopStepTimer();
             }
-            else
-            {
-                stepTimer.Start();
-            }
+            CPU?.Reset();
+            GotoPcCommand?.Execute(null);
         });
-
-        public ICommand ResetCommand => new RelayCommand((o) => { CPU?.Reset(); GotoPcCommand?.Execute(null); });
         #endregion
 
         #region Navigate Commands
@@ -499,18 +518,31 @@ namespace Sim80C51
             listingCtx = simulatorWindow.listingEditor.DataContext as Controls.ListingEditorContext;
             listingCtx!.AddBreakPoint = AddBreakPoint;
             stepTimer.Tick += new EventHandler(StepTimer_Tick);
-            stepTimer.Interval = new TimeSpan(0, 0, 0, 0, 1);
+            stepTimer.Interval = TimeSpan.FromTicks(1);
             LabelView = new CollectionViewSource() { Source = listingCtx.Listing }.View;
             LabelView.Filter = (entry) => !string.IsNullOrEmpty((entry as ListingEntry)?.Label);
         }
         #endregion
 
+        private void StopStepTimer()
+        {
+            if (stepTimer.IsEnabled)
+            {
+                stepTimer.Stop();
+                (PlayCommand as RelayCommand)?.OnCanExecuteChanged();
+                (PlayHiddenCommand as RelayCommand)?.OnCanExecuteChanged();
+                (PauseCommand as RelayCommand)?.OnCanExecuteChanged();
+                CPU!.UiUpdates = true;
+                CPU!.RefreshUIProperies();
+                GotoPcCommand.Execute(null);
+            }
+        }
+
         private void StepTimer_Tick(object? sender, EventArgs e)
         {
             if (listingCtx?.GetFromAddress(CPU!.PC) is not ListingEntry entry || entry.Instruction == Processors.InstructionType.DB)
             {
-                stepTimer.Stop();
-                GotoPcCommand.Execute(null);
+                StopStepTimer();
                 return;
             }
 
@@ -519,8 +551,7 @@ namespace Sim80C51
 
             if (Breakpoints.Contains(CPU.PC))
             {
-                stepTimer.Stop();
-                GotoPcCommand.Execute(null);
+                StopStepTimer();
                 return;
             }
         }
@@ -687,14 +718,12 @@ namespace Sim80C51
             }
             else
             {
-                stepTimer.Stop();
-                GotoPcCommand.Execute(null);
+                StopStepTimer();
             }
 
             if (stepTimer.IsEnabled && MemoryPointer.ContainsKey(address) && MemoryPointer[address].Write)
             {
-                stepTimer.Stop();
-                GotoPcCommand.Execute(null);
+                StopStepTimer();
             }
         }
 
@@ -707,15 +736,13 @@ namespace Sim80C51
 
             if (stepTimer.IsEnabled && MemoryPointer.ContainsKey(address) && MemoryPointer[address].Read)
             {
-                stepTimer.Stop();
-                GotoPcCommand.Execute(null);
+                StopStepTimer();
             }
 
             ushort lastMemAddress = xmemCtx.Keys.Where(a => a <= address).Last();            
             if (xmemCtx[lastMemAddress].Size <= address - lastMemAddress)
             {
-                stepTimer.Stop();
-                GotoPcCommand.Execute(null);
+                StopStepTimer();
                 return 0xff;
             }
             return xmemCtx[lastMemAddress][address - lastMemAddress];
@@ -725,8 +752,7 @@ namespace Sim80C51
         {
             if (stepTimer.IsEnabled && MemoryPointer.ContainsKey(address) && MemoryPointer[address].Read)
             {
-                stepTimer.Stop();
-                GotoPcCommand.Execute(null);
+                StopStepTimer();
             }
 
             return listingCtx!.GetCodeByte(address);

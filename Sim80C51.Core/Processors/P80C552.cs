@@ -20,6 +20,18 @@ namespace Sim80C51.Processors
     {
         public const int RAM_SIZE = 256;
         public const int SFR_SIZE = 128;
+        private const byte I2C_RESET = 0xf8;
+        private const byte I2C_START = 0x08;
+        private const byte I2C_REPEAT_START = 0x10;
+        private const byte I2C_SLA_W_ACK = 0x18;
+        private const byte I2C_SLA_W_NACK = 0x20;
+        private const byte I2C_S1DAT_W_ACK = 0x28;
+        private const byte I2C_S1DAT_W_NACK = 0x30;
+        private const byte I2C_SLA_R_ACK = 0x40;
+        private const byte I2C_SLA_R_NACK = 0x48;
+        private const byte I2C_S1DAT_R_ACK = 0x50;
+        private const byte I2C_S1DAT_R_NACK = 0x58;
+        private const byte I2C_DATA_LEN = 9; // 8 Bit + ACK
 
         #region ADCH
         [SFR(0xC6)]
@@ -523,10 +535,6 @@ namespace Sim80C51.Processors
             AddIv("CM1", () => PCM1, () => ECM1 && CMI1);
             AddIv("CM2", () => PCM2, () => ECM2 && CMI2);
             AddIv("T2", () => PT2, () => ET2 && ((T2IS1 && T20V) || (T2IS0 && T2B0)));
-
-            RegisterBitChangeCallback(nameof(STA), S1StaUpdate);
-            RegisterBitChangeCallback(nameof(STO), S1StoUpdate);
-            RegisterSfrChangeCallback(nameof(S1DAT), S1DatUpdate);
         }
 
         public override void Reset()
@@ -607,128 +615,121 @@ namespace Sim80C51.Processors
         }
 
         #region S1 I2C
-        public Func<string, byte, byte>? I2CCommandProcessor { get; set; }
+        public Predicate<string>? I2CCommandProcessor { get; set; }
 
         private int s1Prescaler = 0;
         private int s1DataCounter = 0;
-        private bool s1DataInternalUpdate = false;
 
         private void StepS1()
         {
-            if (s1Prescaler <= 0 || !ENS1)
+            // no processing if IRQ set or not enabled
+            if (SI || !ENS1)
             {
                 return;
             }
 
-            s1Prescaler--;
-            if (s1Prescaler == 0)
+            s1Prescaler++;
+            if (s1Prescaler >= S1PrescalerSize)
             {
-                S1FillPrescaler();
-                if (!SI)
-                {
-                    S1Process();
-                }
+                s1Prescaler = 0;
+                S1Process();
             }
         }
 
         private void S1Process()
         {
-            if (STA)
-            {
-                s1Prescaler = 0;
-                S1STA = 0x08;
-                SI = true;
-                I2CCommandProcessor?.Invoke("STA", 0);
-                return;
-            }
-
-            if (s1DataCounter > 0)
-            {
-                s1DataCounter--;
-                if (s1DataCounter == 0)
-                {
-                    s1Prescaler = 0;
-                    if (S1STA == 0x08)
-                    {
-                        S1STA = 0x18;
-                    }
-                    else if (S1STA == 0x18)
-                    {
-                        S1STA = 0x28;
-                    }
-                    SI = true;
-                    s1DataInternalUpdate = true;
-                    S1DAT = I2CCommandProcessor?.Invoke("DAT", S1DAT) ?? S1DAT;
-                    s1DataInternalUpdate = false;
-                    return;
-                }
-            }
-
             if (STO)
             {
                 STO = false;
-                s1Prescaler = 0;
-                I2CCommandProcessor?.Invoke("STO", 0);
-            }
-        }
-
-        private void S1FillPrescaler()
-        {
-            s1Prescaler = (S1CON & 0x83) switch
-            {
-                // fOSC / 256
-                0x00 => 43,
-                // fOSC / 224
-                0x01 => 37,
-                // fOSC / 192
-                0x02 => 32,
-                // fOSC / 160
-                0x03 => 27,
-                // fOSC / 960
-                0x80 => 160,
-                // fOSC / 120
-                0x81 => 20,
-                // fOSC / 60
-                0x82 => 10,
-                _ => 0,
-            };
-        }
-
-        private void S1StaUpdate()
-        {
-            if (!STA)
-            {
+                S1STA = I2C_RESET;
+                s1DataCounter = 0;
+                I2CCommandProcessor?.Invoke("STO");
                 return;
             }
 
-            // start S1
-            S1FillPrescaler();
-        }
-
-        private void S1DatUpdate()
-        {
-            if (s1DataInternalUpdate)
+            if (STA)
             {
+                if (S1STA == I2C_SLA_W_NACK ||
+                    S1STA == I2C_S1DAT_W_ACK ||
+                    S1STA == I2C_SLA_R_NACK ||
+                    S1STA == I2C_S1DAT_R_NACK)
+                {
+                    S1STA = I2C_REPEAT_START;
+                }
+                else
+                {
+                    S1STA = I2C_START;
+                }
+                SI = true;
+                I2CCommandProcessor?.Invoke("STA");
+                // Start SLA + RW Transmit
+                s1DataCounter = sizeof(byte) + 1; // size + ACK
                 return;
             }
-            s1DataCounter = 8;
-            S1FillPrescaler();
+
+            if (s1DataCounter <= 0)
+            {
+                switch (S1STA)
+                {
+                    case (I2C_START):
+                    case (I2C_REPEAT_START):
+                        bool rw = (S1DAT & 0x01) != 0;
+                        SI = true;
+                        AA = I2CCommandProcessor?.Invoke("SLA") == true;
+                        S1STA = rw ? (AA ? I2C_SLA_R_ACK : I2C_SLA_R_NACK) : (AA ? I2C_SLA_W_ACK : I2C_SLA_W_NACK);
+                        // if write or ACK rceived. If read and no ACK received, do not transfer data.
+                        if (!rw || AA)
+                        {
+                            // Start data transfer
+                            s1DataCounter = I2C_DATA_LEN;
+                        }
+                        break;
+
+                    case (I2C_SLA_W_NACK):
+                    case (I2C_SLA_W_ACK):
+                    case (I2C_S1DAT_W_NACK):
+                    case (I2C_S1DAT_W_ACK):
+                        SI = true;
+                        AA = I2CCommandProcessor?.Invoke("DAT") == true;
+                        S1STA = AA ? I2C_S1DAT_W_ACK : I2C_S1DAT_W_NACK;
+                        // Start data transfer
+                        s1DataCounter = I2C_DATA_LEN;
+                        break;
+
+                    case (I2C_SLA_R_ACK):
+                    case (I2C_S1DAT_R_ACK):
+                        SI = true;
+                        I2CCommandProcessor?.Invoke("DAT");
+                        S1STA = AA ? I2C_S1DAT_R_ACK : I2C_S1DAT_R_NACK;
+                        // Start data transfer
+                        s1DataCounter = I2C_DATA_LEN;
+                        break;
+                }
+            }
+            else
+            {
+                s1DataCounter--;
+            }
         }
 
-        private void S1StoUpdate()
+        private int S1PrescalerSize => (S1CON & 0x83) switch
         {
-            if (!STO)
-            {
-                return;
-            }
-
-            // start S1
-            if (s1Prescaler == 0)
-            {
-                S1FillPrescaler();
-            }
-        }
-
+            // fOSC / 256
+            0x00 => 43,
+            // fOSC / 224
+            0x01 => 37,
+            // fOSC / 192
+            0x02 => 32,
+            // fOSC / 160
+            0x03 => 27,
+            // fOSC / 960
+            0x80 => 160,
+            // fOSC / 120
+            0x81 => 20,
+            // fOSC / 60
+            0x82 => 10,
+            _ => 0,
+        };
         #endregion
 
         #region ADC Values
