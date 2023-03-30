@@ -13,7 +13,7 @@
     <WrapPanel>
         <GroupBox Header="Left HC640 (Inputs)" Padding="5">
             <StackPanel>
-                <CheckBox tbx:Bitmask.Mask="0x01" tbx:Bitmask.Value="{Binding HC640_1}" tbx:Bitmask.IsChecked="{Binding Path=IsChecked, RelativeSource={RelativeSource Self}}">Condensation pump failure</CheckBox>
+                <CheckBox tbx:Bitmask.Mask="0x01" tbx:Bitmask.Value="{Binding HC640_1}" tbx:Bitmask.IsChecked="{Binding Path=IsChecked, RelativeSource={RelativeSource Self}}">Condensation pump in service</CheckBox>
                 <CheckBox tbx:Bitmask.Mask="0x02" tbx:Bitmask.Value="{Binding HC640_1}" tbx:Bitmask.IsChecked="{Binding Path=IsChecked, RelativeSource={RelativeSource Self}}">Door Contact</CheckBox>
                 <CheckBox tbx:Bitmask.Mask="0x04" tbx:Bitmask.Value="{Binding HC640_1}" tbx:Bitmask.IsChecked="{Binding Path=IsChecked, RelativeSource={RelativeSource Self}}">DIP 3</CheckBox>
                 <CheckBox tbx:Bitmask.Mask="0x08" tbx:Bitmask.Value="{Binding HC640_1}" tbx:Bitmask.IsChecked="{Binding Path=IsChecked, RelativeSource={RelativeSource Self}}">DIP 2</CheckBox>
@@ -28,11 +28,11 @@
                 <CheckBox tbx:Bitmask.Mask="0x01" tbx:Bitmask.Value="{Binding HC640_0}" tbx:Bitmask.IsChecked="{Binding Path=IsChecked, RelativeSource={RelativeSource Self}}">FT Temperature limiter</CheckBox>
                 <CheckBox tbx:Bitmask.Mask="0x02" tbx:Bitmask.Value="{Binding HC640_0}" tbx:Bitmask.IsChecked="{Binding Path=IsChecked, RelativeSource={RelativeSource Self}}">Airflow switch</CheckBox>
                 <CheckBox tbx:Bitmask.Mask="0x04" tbx:Bitmask.Value="{Binding HC640_0}" tbx:Bitmask.IsChecked="{Binding Path=IsChecked, RelativeSource={RelativeSource Self}}">Acrylic panels switch</CheckBox>
-                <CheckBox tbx:Bitmask.Mask="0x08" tbx:Bitmask.Value="{Binding HC640_0}" tbx:Bitmask.IsChecked="{Binding Path=IsChecked, RelativeSource={RelativeSource Self}}">Filter side</CheckBox>
-                <CheckBox tbx:Bitmask.Mask="0x10" tbx:Bitmask.Value="{Binding HC640_0}" tbx:Bitmask.IsChecked="{Binding Path=IsChecked, RelativeSource={RelativeSource Self}}">Filter top</CheckBox>
+                <CheckBox tbx:Bitmask.Mask="0x08" tbx:Bitmask.Value="{Binding HC640_0}" tbx:Bitmask.IsChecked="{Binding Path=IsChecked, RelativeSource={RelativeSource Self}}">FT Sunfilter side</CheckBox>
+                <CheckBox tbx:Bitmask.Mask="0x10" tbx:Bitmask.Value="{Binding HC640_0}" tbx:Bitmask.IsChecked="{Binding Path=IsChecked, RelativeSource={RelativeSource Self}}">FT Sunfilter top</CheckBox>
                 <CheckBox tbx:Bitmask.Mask="0x20" tbx:Bitmask.Value="{Binding HC640_0}" tbx:Bitmask.IsChecked="{Binding Path=IsChecked, RelativeSource={RelativeSource Self}}">foreign MCS on</CheckBox>
                 <CheckBox tbx:Bitmask.Mask="0x40" tbx:Bitmask.Value="{Binding HC640_0}" tbx:Bitmask.IsChecked="{Binding Path=IsChecked, RelativeSource={RelativeSource Self}}">reserved</CheckBox>
-                <CheckBox tbx:Bitmask.Mask="0x80" tbx:Bitmask.Value="{Binding HC640_0}" tbx:Bitmask.IsChecked="{Binding Path=IsChecked, RelativeSource={RelativeSource Self}}">N.C.</CheckBox>
+                <CheckBox tbx:Bitmask.Mask="0x80" tbx:Bitmask.Value="{Binding HC640_0}" tbx:Bitmask.IsChecked="{Binding Path=IsChecked, RelativeSource={RelativeSource Self}}">Condensation tank ok</CheckBox>
             </StackPanel>
         </GroupBox>
         <GroupBox Header="Left HC273 (Outputs)" Padding="5">
@@ -74,31 +74,39 @@
                     <RowDefinition/>
                     <RowDefinition/>
                 </Grid.RowDefinitions>
-                <ToggleButton Grid.ColumnSpan="3" Margin="1" tbx:Bitmask.Mask="0x80" tbx:Bitmask.Value="{Binding PCF8574_21}" tbx:Bitmask.Inverted="True" tbx:Bitmask.IsChecked="{Binding Path=IsChecked, RelativeSource={RelativeSource Self}}">Start</ToggleButton>
+                <ToggleButton Grid.ColumnSpan="3" Margin="1" tbx:Bitmask.Mask="0x80" tbx:Bitmask.Value="{Binding PCF8574_21.PIn}" tbx:Bitmask.Inverted="True" tbx:Bitmask.IsChecked="{Binding Path=IsChecked, RelativeSource={RelativeSource Self}}">Start</ToggleButton>
                 <TextBlock Grid.Row="1" VerticalAlignment="Center" Margin="1">Shoulder Tanner:</TextBlock>
-                <ToggleButton Grid.Row="1" Grid.Column="1" Width="16" Margin="1" tbx:Bitmask.Mask="0x01" tbx:Bitmask.Value="{Binding PCF8574_21}" tbx:Bitmask.Inverted="True" tbx:Bitmask.IsChecked="{Binding Path=IsChecked, RelativeSource={RelativeSource Self}}">0</ToggleButton>
-                <ToggleButton Grid.Row="1" Grid.Column="2" Width="16" Margin="1" tbx:Bitmask.Mask="0x02" tbx:Bitmask.Value="{Binding PCF8574_21}" tbx:Bitmask.Inverted="True" tbx:Bitmask.IsChecked="{Binding Path=IsChecked, RelativeSource={RelativeSource Self}}">1</ToggleButton>
+                <ToggleButton Grid.Row="1" Grid.Column="1" Width="16" Margin="1" tbx:Bitmask.Mask="0x01" tbx:Bitmask.Value="{Binding PCF8574_21.PIn}" tbx:Bitmask.Inverted="True" tbx:Bitmask.IsChecked="{Binding Path=IsChecked, RelativeSource={RelativeSource Self}}">0</ToggleButton>
+                <ToggleButton Grid.Row="1" Grid.Column="2" Width="16" Margin="1" tbx:Bitmask.Mask="0x02" tbx:Bitmask.Value="{Binding PCF8574_21.PIn}" tbx:Bitmask.Inverted="True" tbx:Bitmask.IsChecked="{Binding Path=IsChecked, RelativeSource={RelativeSource Self}}">1</ToggleButton>
                 <TextBlock Grid.Row="2" VerticalAlignment="Center" Margin="1">Air Condition:</TextBlock>
-                <ToggleButton Grid.Row="2" Grid.Column="1" Width="16" Margin="1" tbx:Bitmask.Mask="0x10" tbx:Bitmask.Value="{Binding PCF8574_20}" tbx:Bitmask.Inverted="True" tbx:Bitmask.IsChecked="{Binding Path=IsChecked, RelativeSource={RelativeSource Self}}">0</ToggleButton>
-                <ToggleButton Grid.Row="2" Grid.Column="2" Width="16" Margin="1" tbx:Bitmask.Mask="0x08" tbx:Bitmask.Value="{Binding PCF8574_20}" tbx:Bitmask.Inverted="True" tbx:Bitmask.IsChecked="{Binding Path=IsChecked, RelativeSource={RelativeSource Self}}">1</ToggleButton>
+                <ToggleButton Grid.Row="2" Grid.Column="1" Width="16" Margin="1" tbx:Bitmask.Mask="0x10" tbx:Bitmask.Value="{Binding PCF8574_20.PIn}" tbx:Bitmask.Inverted="True" tbx:Bitmask.IsChecked="{Binding Path=IsChecked, RelativeSource={RelativeSource Self}}">0</ToggleButton>
+                <ToggleButton Grid.Row="2" Grid.Column="2" Width="16" Margin="1" tbx:Bitmask.Mask="0x08" tbx:Bitmask.Value="{Binding PCF8574_20.PIn}" tbx:Bitmask.Inverted="True" tbx:Bitmask.IsChecked="{Binding Path=IsChecked, RelativeSource={RelativeSource Self}}">1</ToggleButton>
                 <TextBlock Grid.Row="3" VerticalAlignment="Center" Margin="1">Face Tanner:</TextBlock>
-                <ToggleButton Grid.Row="3" Grid.Column="1" Width="16" Margin="1" tbx:Bitmask.Mask="0x20" tbx:Bitmask.Value="{Binding PCF8574_20}" tbx:Bitmask.Inverted="True" tbx:Bitmask.IsChecked="{Binding Path=IsChecked, RelativeSource={RelativeSource Self}}">-</ToggleButton>
-                <ToggleButton Grid.Row="3" Grid.Column="2" Width="16" Margin="1" tbx:Bitmask.Mask="0x04" tbx:Bitmask.Value="{Binding PCF8574_20}" tbx:Bitmask.Inverted="True" tbx:Bitmask.IsChecked="{Binding Path=IsChecked, RelativeSource={RelativeSource Self}}">+</ToggleButton>
+                <ToggleButton Grid.Row="3" Grid.Column="1" Width="16" Margin="1" tbx:Bitmask.Mask="0x20" tbx:Bitmask.Value="{Binding PCF8574_20.PIn}" tbx:Bitmask.Inverted="True" tbx:Bitmask.IsChecked="{Binding Path=IsChecked, RelativeSource={RelativeSource Self}}">-</ToggleButton>
+                <ToggleButton Grid.Row="3" Grid.Column="2" Width="16" Margin="1" tbx:Bitmask.Mask="0x04" tbx:Bitmask.Value="{Binding PCF8574_20.PIn}" tbx:Bitmask.Inverted="True" tbx:Bitmask.IsChecked="{Binding Path=IsChecked, RelativeSource={RelativeSource Self}}">+</ToggleButton>
                 <TextBlock Grid.Row="4" VerticalAlignment="Center" Margin="1">Bottom Fan:</TextBlock>
-                <ToggleButton Grid.Row="4" Grid.Column="1" Width="16" Margin="1" tbx:Bitmask.Mask="0x40" tbx:Bitmask.Value="{Binding PCF8574_20}" tbx:Bitmask.Inverted="True" tbx:Bitmask.IsChecked="{Binding Path=IsChecked, RelativeSource={RelativeSource Self}}">-</ToggleButton>
-                <ToggleButton Grid.Row="4" Grid.Column="2" Width="16" Margin="1" tbx:Bitmask.Mask="0x02" tbx:Bitmask.Value="{Binding PCF8574_20}" tbx:Bitmask.Inverted="True" tbx:Bitmask.IsChecked="{Binding Path=IsChecked, RelativeSource={RelativeSource Self}}">+</ToggleButton>
+                <ToggleButton Grid.Row="4" Grid.Column="1" Width="16" Margin="1" tbx:Bitmask.Mask="0x40" tbx:Bitmask.Value="{Binding PCF8574_20.PIn}" tbx:Bitmask.Inverted="True" tbx:Bitmask.IsChecked="{Binding Path=IsChecked, RelativeSource={RelativeSource Self}}">-</ToggleButton>
+                <ToggleButton Grid.Row="4" Grid.Column="2" Width="16" Margin="1" tbx:Bitmask.Mask="0x02" tbx:Bitmask.Value="{Binding PCF8574_20.PIn}" tbx:Bitmask.Inverted="True" tbx:Bitmask.IsChecked="{Binding Path=IsChecked, RelativeSource={RelativeSource Self}}">+</ToggleButton>
                 <TextBlock Grid.Row="5" VerticalAlignment="Center" Margin="1">Top Fan:</TextBlock>
-                <ToggleButton Grid.Row="5" Grid.Column="1" Width="16" Margin="1" tbx:Bitmask.Mask="0x80" tbx:Bitmask.Value="{Binding PCF8574_20}" tbx:Bitmask.Inverted="True" tbx:Bitmask.IsChecked="{Binding Path=IsChecked, RelativeSource={RelativeSource Self}}">-</ToggleButton>
-                <ToggleButton Grid.Row="5" Grid.Column="2" Width="16" Margin="1" tbx:Bitmask.Mask="0x01" tbx:Bitmask.Value="{Binding PCF8574_20}" tbx:Bitmask.Inverted="True" tbx:Bitmask.IsChecked="{Binding Path=IsChecked, RelativeSource={RelativeSource Self}}">+</ToggleButton>
+                <ToggleButton Grid.Row="5" Grid.Column="1" Width="16" Margin="1" tbx:Bitmask.Mask="0x80" tbx:Bitmask.Value="{Binding PCF8574_20.PIn}" tbx:Bitmask.Inverted="True" tbx:Bitmask.IsChecked="{Binding Path=IsChecked, RelativeSource={RelativeSource Self}}">-</ToggleButton>
+                <ToggleButton Grid.Row="5" Grid.Column="2" Width="16" Margin="1" tbx:Bitmask.Mask="0x01" tbx:Bitmask.Value="{Binding PCF8574_20.PIn}" tbx:Bitmask.Inverted="True" tbx:Bitmask.IsChecked="{Binding Path=IsChecked, RelativeSource={RelativeSource Self}}">+</ToggleButton>
             </Grid>
         </GroupBox>
         <GroupBox Header="Control DIP" Padding="5">
             <StackPanel>
-                <CheckBox tbx:Bitmask.Mask="0x08" tbx:Bitmask.Value="{Binding PCF8574_21}" tbx:Bitmask.Inverted="True" tbx:Bitmask.IsChecked="{Binding Path=IsChecked, RelativeSource={RelativeSource Self}}">DIP 1</CheckBox>
-                <CheckBox tbx:Bitmask.Mask="0x04" tbx:Bitmask.Value="{Binding PCF8574_21}" tbx:Bitmask.Inverted="True" tbx:Bitmask.IsChecked="{Binding Path=IsChecked, RelativeSource={RelativeSource Self}}">DIP 2</CheckBox>
-                <CheckBox tbx:Bitmask.Mask="0x40" tbx:Bitmask.Value="{Binding PCF8574_21}" tbx:Bitmask.Inverted="True" tbx:Bitmask.IsChecked="{Binding Path=IsChecked, RelativeSource={RelativeSource Self}}">DIP 3</CheckBox>
-                <CheckBox tbx:Bitmask.Mask="0x20" tbx:Bitmask.Value="{Binding PCF8574_21}" tbx:Bitmask.Inverted="True" tbx:Bitmask.IsChecked="{Binding Path=IsChecked, RelativeSource={RelativeSource Self}}">DIP 4</CheckBox>
-                <CheckBox tbx:Bitmask.Mask="0x10" tbx:Bitmask.Value="{Binding PCF8574_21}" tbx:Bitmask.Inverted="True" tbx:Bitmask.IsChecked="{Binding Path=IsChecked, RelativeSource={RelativeSource Self}}">DIP 5</CheckBox>
+                <CheckBox tbx:Bitmask.Mask="0x08" tbx:Bitmask.Value="{Binding PCF8574_21.PIn}" tbx:Bitmask.Inverted="True" tbx:Bitmask.IsChecked="{Binding Path=IsChecked, RelativeSource={RelativeSource Self}}">DIP 1</CheckBox>
+                <CheckBox tbx:Bitmask.Mask="0x04" tbx:Bitmask.Value="{Binding PCF8574_21.PIn}" tbx:Bitmask.Inverted="True" tbx:Bitmask.IsChecked="{Binding Path=IsChecked, RelativeSource={RelativeSource Self}}">DIP 2</CheckBox>
+                <CheckBox tbx:Bitmask.Mask="0x40" tbx:Bitmask.Value="{Binding PCF8574_21.PIn}" tbx:Bitmask.Inverted="True" tbx:Bitmask.IsChecked="{Binding Path=IsChecked, RelativeSource={RelativeSource Self}}">DIP 3</CheckBox>
+                <CheckBox tbx:Bitmask.Mask="0x20" tbx:Bitmask.Value="{Binding PCF8574_21.PIn}" tbx:Bitmask.Inverted="True" tbx:Bitmask.IsChecked="{Binding Path=IsChecked, RelativeSource={RelativeSource Self}}">DIP 4</CheckBox>
+                <CheckBox tbx:Bitmask.Mask="0x10" tbx:Bitmask.Value="{Binding PCF8574_21.PIn}" tbx:Bitmask.Inverted="True" tbx:Bitmask.IsChecked="{Binding Path=IsChecked, RelativeSource={RelativeSource Self}}">DIP 5</CheckBox>
+            </StackPanel>
+        </GroupBox>
+        <GroupBox Header="Display" Padding="5">
+            <StackPanel Orientation="Horizontal">
+                <tbx:SevenSegments Value="{Binding SAA1064_3B.Digit4}" VerticalAlignment="Top" ShowDot="True" PenThickness="0" VertSegDivider="7" FillBrush="LightGray" SelectedFillBrush="Firebrick" GapWidth ="2" Height="30" Width="20"/>
+                <tbx:SevenSegments Value="{Binding SAA1064_3B.Digit3}" VerticalAlignment="Top" ShowDot="True" PenThickness="0" VertSegDivider="7" FillBrush="LightGray" SelectedFillBrush="Firebrick" GapWidth ="2" Height="30" Width="20"/>
+                <tbx:SevenSegments Value="{Binding SAA1064_3B.Digit2}" VerticalAlignment="Top" ShowDot="True" PenThickness="0" VertSegDivider="7" FillBrush="LightGray" SelectedFillBrush="Firebrick" GapWidth ="2" Height="30" Width="20"/>
+                <tbx:SevenSegments Value="{Binding SAA1064_3B.Digit1}" VerticalAlignment="Top" ShowDot="True" PenThickness="0" VertSegDivider="7" FillBrush="LightGray" SelectedFillBrush="Firebrick" GapWidth ="2" Height="30" Width="20"/>
             </StackPanel>
         </GroupBox>
     </WrapPanel>

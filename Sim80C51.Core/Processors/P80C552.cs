@@ -34,12 +34,12 @@ namespace Sim80C51.Processors
         private const byte I2C_DATA_LEN = 9; // 8 Bit + ACK
 
         #region ADCH
-        [SFR(0xC6)]
+        [SFR(0xC6, 0x00)]
         public byte ADCH { get => GetMemFromProp(); set { SetMemFromProp(value); } }
         #endregion ADCH
 
         #region ADCON
-        [SFR(0xC5)]
+        [SFR(0xC5, 0x00)]
         public byte ADCON
         {
             get => GetMemFromProp(); 
@@ -72,7 +72,7 @@ namespace Sim80C51.Processors
         #endregion ADCON
 
         #region CTCON
-        [SFR(0xEB)]
+        [SFR(0xEB, 0x00)]
         public byte CTCON { get => GetMemFromProp(); set { SetMemFromProp(value); } }
         [SFRBit(nameof(CTCON), 0)]
         public bool CTP0 { get => GetBitFromProp(); set { SetBitFromProp(value); } }
@@ -95,63 +95,63 @@ namespace Sim80C51.Processors
         #region CT3
         [SFR16(nameof(CTH3), nameof(CTL3))]
         public ushort CT3 { get => GetMem16FromProp(); set { SetMem16FromProp(value); } }
-        [SFR(0xCF)]
+        [SFR(0xCF, 0x00)]
         public byte CTH3 { get => GetMemFromProp(); set { SetMemFromProp(value); } }
-        [SFR(0xAF)]
+        [SFR(0xAF, 0x00)]
         public byte CTL3 { get => GetMemFromProp(); set { SetMemFromProp(value); } }
         #endregion CT3
 
         #region CT2
         [SFR16(nameof(CTH2), nameof(CTL2))]
         public ushort CT2 { get => GetMem16FromProp(); set { SetMem16FromProp(value); } }
-        [SFR(0xCE)]
+        [SFR(0xCE, 0x00)]
         public byte CTH2 { get => GetMemFromProp(); set { SetMemFromProp(value); } }
-        [SFR(0xAE)]
+        [SFR(0xAE, 0x00)]
         public byte CTL2 { get => GetMemFromProp(); set { SetMemFromProp(value); } }
         #endregion CT2
 
         #region CT1
         [SFR16(nameof(CTH1), nameof(CTL1))]
         public ushort CT1 { get => GetMem16FromProp(); set { SetMem16FromProp(value); } }
-        [SFR(0xCD)]
+        [SFR(0xCD, 0x00)]
         public byte CTH1 { get => GetMemFromProp(); set { SetMemFromProp(value); } }
-        [SFR(0xAD)]
+        [SFR(0xAD, 0x00)]
         public byte CTL1 { get => GetMemFromProp(); set { SetMemFromProp(value); } }
         #endregion CT1
 
         #region CT0
         [SFR16(nameof(CTH0), nameof(CTL0))]
         public ushort CT0 { get => GetMem16FromProp(); set { SetMem16FromProp(value); } }
-        [SFR(0xCC)]
+        [SFR(0xCC, 0x00)]
         public byte CTH0 { get => GetMemFromProp(); set { SetMemFromProp(value); } }
-        [SFR(0xAC)]
+        [SFR(0xAC, 0x00)]
         public byte CTL0 { get => GetMemFromProp(); set { SetMemFromProp(value); } }
         #endregion CT0
 
         #region CM2
         [SFR16(nameof(CMH2), nameof(CML2))]
         public ushort CM2 { get => GetMem16FromProp(); set { SetMem16FromProp(value); } }
-        [SFR(0xCB)]
+        [SFR(0xCB, 0x00)]
         public byte CMH2 { get => GetMemFromProp(); set { SetMemFromProp(value); } }
-        [SFR(0xAB)]
+        [SFR(0xAB, 0x00)]
         public byte CML2 { get => GetMemFromProp(); set { SetMemFromProp(value); } }
         #endregion CM2
 
         #region CM1
         [SFR16(nameof(CMH1), nameof(CML1))]
         public ushort CM1 { get => GetMem16FromProp(); set { SetMem16FromProp(value); } }
-        [SFR(0xCA)]
+        [SFR(0xCA, 0x00)]
         public byte CMH1 { get => GetMemFromProp(); set { SetMemFromProp(value); } }
-        [SFR(0xAA)]
+        [SFR(0xAA, 0x00)]
         public byte CML1 { get => GetMemFromProp(); set { SetMemFromProp(value); } }
         #endregion CM1
 
         #region CM0
         [SFR16(nameof(CMH0), nameof(CML0))]
         public ushort CM0 { get => GetMem16FromProp(); set { SetMem16FromProp(value); } }
-        [SFR(0xC9)]
+        [SFR(0xC9, 0x00)]
         public byte CMH0 { get => GetMemFromProp(); set { SetMemFromProp(value); } }
-        [SFR(0xA9)]
+        [SFR(0xA9, 0x00)]
         public byte CML0 { get => GetMemFromProp(); set { SetMemFromProp(value); } }
         #endregion CM0
 
@@ -163,7 +163,7 @@ namespace Sim80C51.Processors
         #endregion IEN0
 
         #region IEN1
-        [SFR(0xE8)]
+        [SFR(0xE8, 0x00)]
         public byte IEN1 { get => GetMemFromProp(); set { SetMemFromProp(value); } }
         [SFRBit(nameof(IEN1), 0, true)]
         public bool ECT0 { get => GetBitFromProp(); set { SetBitFromProp(value); } }
@@ -191,7 +191,7 @@ namespace Sim80C51.Processors
         #endregion IP0
 
         #region IP1
-        [SFR(0xF8)]
+        [SFR(0xF8, 0x00)]
         public byte IP1 { get => GetMemFromProp(); set { SetMemFromProp(value); } }
         [SFRBit(nameof(IP1), 0, true)]
         public bool PCT0 { get => GetBitFromProp(); set { SetBitFromProp(value); } }
@@ -212,7 +212,7 @@ namespace Sim80C51.Processors
         #endregion IP1
 
         #region P5
-        [SFR(0xC4)]
+        [SFR(0xC4, 0x00)]
         public byte P5 { get => GetMemFromProp(); set { SetMemFromProp(value); } }
         [SFRBit(nameof(P5), 0)]
         public bool ADC0 { get => GetBitFromProp(); set { SetBitFromProp(value); } }
@@ -233,7 +233,7 @@ namespace Sim80C51.Processors
         #endregion P5
 
         #region P4
-        [SFR(0xC0)]
+        [SFR(0xC0, 0xff)]
         public byte P4 { get => GetMemFromProp(); set { SetMemFromProp(value); } }
         [SFRBit(nameof(P4), 0)]
         public bool CMSR0 { get => GetBitFromProp(); set { SetBitFromProp(value); } }
@@ -316,22 +316,22 @@ namespace Sim80C51.Processors
         #endregion PCON
 
         #region PWMP
-        [SFR(0xFE)]
+        [SFR(0xFE, 0x00)]
         public byte PWMP { get => GetMemFromProp(); set { SetMemFromProp(value); } }
         #endregion PWMP
 
         #region PWM1
-        [SFR(0xFD)]
+        [SFR(0xFD, 0x00)]
         public byte PWM1 { get => GetMemFromProp(); set { SetMemFromProp(value); } }
         #endregion PWM1
 
         #region PWM0
-        [SFR(0xFC)]
+        [SFR(0xFC, 0x00)]
         public byte PWM0 { get => GetMemFromProp(); set { SetMemFromProp(value); } }
         #endregion PWM0
 
         #region RTE
-        [SFR(0xEF)]
+        [SFR(0xEF, 0x00)]
         public byte RTE { get => GetMemFromProp(); set { SetMemFromProp(value); } }
         [SFRBit(nameof(RTE), 0)]
         public bool RP40 { get => GetBitFromProp(); set { SetBitFromProp(value); } }
@@ -352,19 +352,19 @@ namespace Sim80C51.Processors
         #endregion RTE
 
         #region S1ADR
-        [SFR(0xDB)]
+        [SFR(0xDB, 0x00)]
         public byte S1ADR { get => GetMemFromProp(); set { SetMemFromProp(value); } }
         [SFRBit(nameof(S1ADR), 0)]
         public bool GC { get => GetBitFromProp(); set { SetBitFromProp(value); } }
         #endregion S1ADR
 
         #region S1DAT
-        [SFR(0xDA, true)]
+        [SFR(0xDA, 0x00)]
         public byte S1DAT { get => GetMemFromProp(); set { SetMemFromProp(value); } }
         #endregion S1DAT
 
         #region S1STA
-        [SFR(0xD9)]
+        [SFR(0xD9, 0xf8)]
         public byte S1STA { get => GetMemFromProp(); set { SetMemFromProp(value); } }
         [SFRBit(nameof(S1STA), 3)]
         public bool SC0 { get => GetBitFromProp(); set { SetBitFromProp(value); } }
@@ -379,7 +379,7 @@ namespace Sim80C51.Processors
         #endregion S1STA
 
         #region S1CON
-        [SFR(0xD8)]
+        [SFR(0xD8, 0x00)]
         public byte S1CON { get => GetMemFromProp(); set { SetMemFromProp(value); } }
         [SFRBit(nameof(S1CON), 0, true)]
         public bool CR0 { get => GetBitFromProp(); set { SetBitFromProp(value); } }
@@ -400,7 +400,7 @@ namespace Sim80C51.Processors
         #endregion S1CON
 
         #region STE
-        [SFR(0xEE)]
+        [SFR(0xEE,0xc0)]
         public byte STE { get => GetMemFromProp(); set { SetMemFromProp(value); } }
         [SFRBit(nameof(STE), 0)]
         public bool SP40 { get => GetBitFromProp(); set { SetBitFromProp(value); } }
@@ -423,14 +423,14 @@ namespace Sim80C51.Processors
         #region TM2
         [SFR16(nameof(TMH2), nameof(TML2))]
         public ushort TM2 { get => GetMem16FromProp(); set { SetMem16FromProp(value); } }
-        [SFR(0xED)]
+        [SFR(0xED, 0x00)]
         public byte TMH2 { get => GetMemFromProp(); set { SetMemFromProp(value); } }
-        [SFR(0xEC)]
+        [SFR(0xEC, 0x00)]
         public byte TML2 { get => GetMemFromProp(); set { SetMemFromProp(value); } }
         #endregion TM2
 
         #region TM2CON
-        [SFR(0xEA)]
+        [SFR(0xEA, 0x00)]
         public byte TM2CON { get => GetMemFromProp(); set { SetMemFromProp(value); } }
         [SFRBit(nameof(TM2CON), 0)]
         public bool T2MS0 { get => GetBitFromProp(); set { SetBitFromProp(value); } }
@@ -451,7 +451,7 @@ namespace Sim80C51.Processors
         #endregion TM2CON
 
         #region TM2IR
-        [SFR(0xC8)]
+        [SFR(0xC8, 0x00)]
         public byte TM2IR { get => GetMemFromProp(); set { SetMemFromProp(value); } }
         [SFRBit(nameof(TM2IR), 0, true)]
         public bool CTI0 { get => GetBitFromProp(); set { SetBitFromProp(value); } }
@@ -479,7 +479,7 @@ namespace Sim80C51.Processors
         public bool EW { get => ew; set { ew = value; DoPropertyChanged(); } }
         private bool ew = true;
 
-        [SFR(0xFF)]
+        [SFR(0xFF, 0x00)]
         public byte T3
         {
             get => GetMemFromProp();
@@ -541,45 +541,13 @@ namespace Sim80C51.Processors
         {
             base.Reset();
 
-            ADCH = 0x00;
-            ADCON = 0x00;
-            CTCON = 0x00;
-            CTH3 = 0x00;
-            CTH2 = 0x00;
-            CTH1 = 0x00;
-            CTH0 = 0x00;
-            CMH2 = 0x00;
-            CMH1 = 0x00;
-            CMH0 = 0x00;
-            CTL3 = 0x00;
-            CTL2 = 0x00;
-            CTL1 = 0x00;
-            CTL0 = 0x00;
-            CML2 = 0x00;
-            CML1 = 0x00;
-            CML0 = 0x00;
-            IEN1 = 0x00;
-            IP1 = 0x00;
-            P5 = 0x00;
-            P4 = 0xff;
-            PWMP = 0x00;
-            PWM1 = 0x00;
-            PWM0 = 0x00;
-            RTE = 0x00;
-            S1ADR = 0x00;
-            S1DAT = 0x00;
-            S1STA = 0xF8;
-            S1CON = 0x00;
-            STE = 0xC0;
-            TMH2 = 0x00;
-            TML2 = 0x00;
-            TM2CON = 0x00;
-            TM2IR = 0x00;
-
             // Watchdog via internal
             SetMem(nameof(T3), 0);
             DoPropertyChanged(nameof(T3));
             t3Prescaler = 0;
+            s1Prescaler = 0;
+            s1DataCounter = 0;
+            adcCycle = 0;
         }
 
         public override void SaveAdditionalSettings(IDictionary<string, object> additionalSettings)

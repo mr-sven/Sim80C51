@@ -123,7 +123,7 @@ namespace Sim80C51.Toolbox
             value = default!;
             ObservableKeyValuePair<TKey, TValue>? pair = GetPairByTheKey(key);
 
-            if (!Equals(pair, default(ObservableKeyValuePair<TKey, TValue>)))
+            if (Equals(pair, default(ObservableKeyValuePair<TKey, TValue>)))
             {
                 return false;
             }

@@ -46,7 +46,7 @@ namespace Sim80C51.Processors
         public byte R7 { get => GetRegister(); set { SetRegister(value); } }
 
         #region ACC
-        [SFR(0xE0)]
+        [SFR(0xE0, 0x00)]
         public byte ACC { get => GetMemFromProp(); set { if (SetMemFromProp(value)) SetParity(); } }
         [SFRBit(nameof(ACC), 0, true)]
         public bool ACC0 { get => GetBitFromProp(); set { if (SetBitFromProp(value)) SetParity(); } }
@@ -82,7 +82,7 @@ namespace Sim80C51.Processors
         #endregion
 
         #region B
-        [SFR(0xF0)]
+        [SFR(0xF0, 0x00)]
         public byte B { get => GetMemFromProp(); set { SetMemFromProp(value); } }
         [SFRBit(nameof(B), 0, true)]
         public bool B0 { get => GetBitFromProp(); set { SetBitFromProp(value); } }
@@ -103,7 +103,7 @@ namespace Sim80C51.Processors
         #endregion B
 
         #region PSW
-        [SFR(0xD0)]
+        [SFR(0xD0, 0x00)]
         public byte PSW { get => GetMemFromProp(); set { if (SetMemFromProp(value)) DoPropertyChanged("R0", "R1", "R2", "R3", "R4", "R5", "R6", "R7"); } }
         [SFRBit(nameof(PSW), 0, true)]
         public bool P { get => GetBitFromProp(); set { SetBitFromProp(value); } }
@@ -124,7 +124,7 @@ namespace Sim80C51.Processors
         #endregion PSW
 
         #region SP
-        [SFR(0x81)]
+        [SFR(0x81, 0x07)]
         public byte SP { get => GetMemFromProp(); set { SetMemFromProp(value); } }
         #endregion SP
 
@@ -132,30 +132,30 @@ namespace Sim80C51.Processors
         [SFR16(nameof(DPH), nameof(DPL))]
         public ushort DPTR { get => GetMem16FromProp(); set { SetMem16FromProp(value); } }
 
-        [SFR(0x83)]
+        [SFR(0x83, 0x00)]
         public byte DPH { get => GetMemFromProp(); set { SetMemFromProp(value); } }
 
-        [SFR(0x82)]
+        [SFR(0x82, 0x00)]
         public byte DPL { get => GetMemFromProp(); set { SetMemFromProp(value); } }
         #endregion DPTR
 
         #region P0
-        [SFR(0x80)]
+        [SFR(0x80, 0xff)]
         public byte P0 { get => GetMemFromProp(); set { SetMemFromProp(value); } }
         #endregion P0
 
         #region P1
-        [SFR(0x90)]
+        [SFR(0x90, 0xff)]
         public byte P1 { get => GetMemFromProp(); set { SetMemFromProp(value); } }
         #endregion P1
 
         #region P2
-        [SFR(0xA0)]
+        [SFR(0xA0, 0xff)]
         public byte P2 { get => GetMemFromProp(); set { SetMemFromProp(value); } }
         #endregion P2
 
         #region P3
-        [SFR(0xB0)]
+        [SFR(0xB0, 0xff)]
         public byte P3 { get => GetMemFromProp(); set { SetMemFromProp(value); } }
         [SFRBit(nameof(P3), 0)]
         public bool RXD { get => GetBitFromProp(); set { SetBitFromProp(value); } }
@@ -176,7 +176,7 @@ namespace Sim80C51.Processors
         #endregion P3
 
         #region IEN0
-        [SFR(0xA8)]
+        [SFR(0xA8, 0x00)]
         public byte IEN0 { get => GetMemFromProp(); set { SetMemFromProp(value); } }
         [SFRBit(nameof(IEN0), 0, true)]
         public bool EX0 { get => GetBitFromProp(); set { SetBitFromProp(value); } }
@@ -193,7 +193,7 @@ namespace Sim80C51.Processors
         #endregion IEN0
 
         #region IP0
-        [SFR(0xB8)]
+        [SFR(0xB8, 0x00)]
         public byte IP0 { get => GetMemFromProp(); set { SetMemFromProp(value); } }
         [SFRBit(nameof(IP0), 0, true)]
         public bool PX0 { get => GetBitFromProp(); set { SetBitFromProp(value); } }
@@ -208,7 +208,7 @@ namespace Sim80C51.Processors
         #endregion IP0
 
         #region TMOD
-        [SFR(0x89)]
+        [SFR(0x89, 0x00)]
         public byte TMOD { get => GetMemFromProp(); set { SetMemFromProp(value); } }
         [SFRBit(nameof(TMOD), 0)]
         public bool M0_0 { get => GetBitFromProp(); set { SetBitFromProp(value); } }
@@ -229,7 +229,7 @@ namespace Sim80C51.Processors
         #endregion TMOD
 
         #region TCON
-        [SFR(0x88)]
+        [SFR(0x88, 0x00)]
         public byte TCON { get => GetMemFromProp(); set { SetMemFromProp(value); } }
         [SFRBit(nameof(TCON), 0, true)]
         public bool IT0 { get => GetBitFromProp(); set { SetBitFromProp(value); } }
@@ -252,23 +252,23 @@ namespace Sim80C51.Processors
         #region TM0
         [SFR16(nameof(TH0), nameof(TL0))]
         public ushort TM0 { get => GetMem16FromProp(); set { SetMem16FromProp(value); } }
-        [SFR(0x8c)]
+        [SFR(0x8c, 0x00)]
         public byte TH0 { get => GetMemFromProp(); set { SetMemFromProp(value); } }
-        [SFR(0x8a)]
+        [SFR(0x8a, 0x00)]
         public byte TL0 { get => GetMemFromProp(); set { SetMemFromProp(value); } }
         #endregion TM0
 
         #region TM1
         [SFR16(nameof(TH1), nameof(TL1))]
         public ushort TM1 { get => GetMem16FromProp(); set { SetMem16FromProp(value); } }
-        [SFR(0x8d)]
+        [SFR(0x8d, 0x00)]
         public byte TH1 { get => GetMemFromProp(); set { SetMemFromProp(value); } }
-        [SFR(0x8b)]
+        [SFR(0x8b, 0x00)]
         public byte TL1 { get => GetMemFromProp(); set { SetMemFromProp(value); } }
         #endregion TM1
 
         #region S0CON
-        [SFR(0x98)]
+        [SFR(0x98, 0x00)]
         public byte S0CON { get => GetMemFromProp(); set { SetMemFromProp(value); } }
         [SFRBit(nameof(S0CON), 0, true)]
         public bool RI { get => GetBitFromProp(); set { SetBitFromProp(value); } }
@@ -289,12 +289,12 @@ namespace Sim80C51.Processors
         #endregion S0CON
 
         #region S0BUF
-        [SFR(0x99)]
+        [SFR(0x99, 0x00)]
         public byte S0BUF { get => GetMemFromProp(); set { SetMemFromProp(value); } }
         #endregion S0BUF
 
         #region PCON
-        [SFR(0x87)]
+        [SFR(0x87, 0x00)]
         public byte PCON { get => GetMemFromProp(); set { SetMemFromProp(value); } }
         [SFRBit(nameof(PCON), 0)]
         public bool IDLE { get => GetBitFromProp(); set { SetBitFromProp(value); } }

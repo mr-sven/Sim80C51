@@ -5,12 +5,12 @@
     {
         public ushort Address { get; }
 
-        public bool ForceUpdate { get; }
+        public byte ResetValue { get; }
 
-        public SFRAttribute(ushort address, bool forceUpdate = false)
+        public SFRAttribute(ushort address, byte resetValue)
         {
             Address = address;
-            ForceUpdate = forceUpdate;
+            ResetValue = resetValue;
         }
     }
 }

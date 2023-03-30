@@ -82,29 +82,26 @@ namespace Sim80C51.Processors
         /// </summary>
         public virtual void Reset()
         {
+            foreach (IByteRow mem in CoreMemory)
+            {
+                for (int i = 0; i < ByteRow.ROW_WIDTH; i++)
+                {
+                    mem[i] = 0;
+                }
+            }
             CallStack.Clear();
             Cycles = 0;
             PC = 0x0000;
-            ACC = 0x00;
-            B = 0x00;
-            DPTR = 0x00;
-            IEN0 = 0x00;
-            IP0 = 0x00;
-            P3 = 0xff;
-            P2 = 0xff;
-            P1 = 0xff;
-            P0 = 0xff;
-            PCON = 0x00;
-            PSW = 0x00;
-            SP = 0x07;
-            S0BUF = 0x00;
-            S0CON = 0x00;
-            TH1 = 0x00;
-            TH0 = 0x00;
-            TL1 = 0x00;
-            TL0 = 0x00;
-            TMOD = 0x00;
-            TCON = 0x00;
+
+            foreach (KeyValuePair<string, SFRAttribute> attr in sfrMap)
+            {
+                SetMemFromProp(attr.Value.ResetValue, attr.Key);
+            }
+
+            irqHighInProgress = false;
+            irqLowInProgress = false;
+
+            RefreshUIProperies();
         }
 
         public void RefreshUIProperies()
@@ -269,7 +266,7 @@ namespace Sim80C51.Processors
                 throw new ArgumentException(sfrName);
             }
 
-            if (GetMem(sfrMap[sfrName].Address) == value && !sfrMap[sfrName].ForceUpdate)
+            if (GetMem(sfrMap[sfrName].Address) == value)
             {
                 return false;
             }

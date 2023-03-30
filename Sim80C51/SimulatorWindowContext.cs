@@ -24,6 +24,7 @@ namespace Sim80C51
         private Controls.ListingEditorContext? listingCtx;
         private readonly SortedDictionary<ushort, Controls.MemoryContext> xmemCtx = new();
         private readonly DispatcherTimer stepTimer = new();
+        private int hiddenStepCounter = 0;
         #endregion
 
         #region Workspace commands
@@ -372,7 +373,7 @@ namespace Sim80C51
 
         public ICommand PlayHiddenCommand => new RelayCommand((o) =>
         {
-            CPU!.UiUpdates = false;
+            //CPU!.UiUpdates = false;
             stepTimer.Start();
             (PlayCommand as RelayCommand)?.OnCanExecuteChanged();
             (PlayHiddenCommand as RelayCommand)?.OnCanExecuteChanged();
@@ -540,20 +541,25 @@ namespace Sim80C51
 
         private void StepTimer_Tick(object? sender, EventArgs e)
         {
-            if (listingCtx?.GetFromAddress(CPU!.PC) is not ListingEntry entry || entry.Instruction == Processors.InstructionType.DB)
+            hiddenStepCounter = 0;
+            do
             {
-                StopStepTimer();
-                return;
-            }
+                if (listingCtx?.GetFromAddress(CPU!.PC) is not ListingEntry entry || entry.Instruction == Processors.InstructionType.DB)
+                {
+                    StopStepTimer();
+                    return;
+                }
 
-            CPU.Process(entry);
-            listingCtx.HighlightAddress = CPU.PC;
+                CPU.Process(entry);
+                listingCtx.HighlightAddress = CPU.PC;
 
-            if (Breakpoints.Contains(CPU.PC))
-            {
-                StopStepTimer();
-                return;
-            }
+                if (Breakpoints.Contains(CPU.PC))
+                {
+                    StopStepTimer();
+                    return;
+                }
+                hiddenStepCounter++;
+            } while (CPU!.UiUpdates == false && stepTimer.IsEnabled && hiddenStepCounter < 20);
         }
 
         private void AddBreakPoint(ushort address)
