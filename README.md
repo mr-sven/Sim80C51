@@ -8,7 +8,7 @@ Current implemented Processors:
 
 The current workspace state, including memories and CPU state can be saved and loaded for continuing work or debugging later.
 
-You can add multiple external RAM spaces direct empty or load a binary to a definded XRAM address. 
+You can add multiple external RAM spaces direct empty or load a binary to a definded XRAM address.
 
 You can also enable M48T Timekeeper function on every RAM block, it uses a `DispatcherTimer` to update the time in the M48T time registers. It supports stop functionalities via the control registers. Write is not supported it will always update the time from current system clock.
 
@@ -26,11 +26,14 @@ The editor can load listings and import ROM dumps from binary or Intel HEX files
 
 The editor supports the following key commands at the moment:
 
-* C - generate code from `DB` statement, possible switch case jumps `JMP @A+DPTR`
-* L - generate or update label
-* J - follow jump label
-* K - update comment
 * B - add breakpoint
+* C - generate code from `DB` statement, possible switch case jumps `JMP @A+DPTR`
+* J - follow jump label
+* L - generate or update label
+* K - update comment
+* S - create string
+* U - undefine listing entry
+* X - show XRefs
 
 ## Listing Format
 
@@ -49,11 +52,11 @@ The listings are stored and loaded in the following format:
 
 Example:
 ```
-0000  02 01 00                 RESET:               LJMP  INIT                 
+0000  02 01 00                 RESET:               LJMP  INIT
 0003  FF FF FF FF FF FF FF FF                       DB    ffh, ffh, ffh, ffh, ffh, ffh, ffh, ffh ; ........
-000B  C0 D0                    T0:                  PUSH  PSW                  
-000D  C0 E0                                         PUSH  ACC                  
-000F  C0 F0                                         PUSH  B    
+000B  C0 D0                    T0:                  PUSH  PSW
+000D  C0 E0                                         PUSH  ACC
+000F  C0 F0                                         PUSH  B
 ```
 
 Every unidentified code, empty memory or other data is grouped in `DB` instructions by the length of 8 bytes.
