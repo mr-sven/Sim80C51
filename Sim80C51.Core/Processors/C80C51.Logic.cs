@@ -14,22 +14,22 @@ namespace Sim80C51.Processors
         /// <summary>
         /// map for sfr addresses
         /// </summary>
-        private readonly Dictionary<string, SFRAttribute> sfrMap = new();
+        private readonly Dictionary<string, SFRAttribute> sfrMap = [];
 
         /// <summary>
         /// map for bits to sfr
         /// </summary>
-        private readonly Dictionary<string, SFRBitAttribute> sfrBitMap = new();
+        private readonly Dictionary<string, SFRBitAttribute> sfrBitMap = [];
 
         /// <summary>
         /// map for 16bit values
         /// </summary>
-        private readonly Dictionary<string, SFR16Attribute> sfr16Map = new();
+        private readonly Dictionary<string, SFR16Attribute> sfr16Map = [];
 
-        protected readonly SortedList<byte, IV> ivList = new();
+        protected readonly SortedList<byte, IV> ivList = [];
 
-        private readonly Dictionary<string, List<Action>> bitCallback = new();
-        private readonly Dictionary<string, List<Action>> sfrCallback = new();
+        private readonly Dictionary<string, List<Action>> bitCallback = [];
+        private readonly Dictionary<string, List<Action>> sfrCallback = [];
 
         /// <summary>
         /// Constructor
@@ -111,25 +111,25 @@ namespace Sim80C51.Processors
 
         public void RegisterBitChangeCallback(string bitName, Action callback)
         {
-            if (bitCallback.ContainsKey(bitName))
+            if (bitCallback.TryGetValue(bitName, out List<Action>? callbackList))
             {
-                bitCallback[bitName].Add(callback);
+                callbackList.Add(callback);
             }
             else
             {
-                bitCallback.Add(bitName, new() { callback });
+                bitCallback.Add(bitName, [callback]);
             }
         }
 
         public void RegisterSfrChangeCallback(string sfrName, Action callback)
         {
-            if (sfrCallback.ContainsKey(sfrName))
+            if (sfrCallback.TryGetValue(sfrName, out List<Action>? callbackList))
             {
-                sfrCallback[sfrName].Add(callback);
+                callbackList.Add(callback);
             }
             else
             {
-                sfrCallback.Add(sfrName, new() { callback });
+                sfrCallback.Add(sfrName, [callback]);
             }
         }
 
@@ -142,28 +142,26 @@ namespace Sim80C51.Processors
         /// <exception cref="ArgumentException">if register not found</exception>
         protected void SetMem16FromProp(ushort value, [CallerMemberName] string sfr16Name = "")
         {
-            if (!sfr16Map.ContainsKey(sfr16Name))
+            if (!sfr16Map.TryGetValue(sfr16Name, out SFR16Attribute? sfrAttr))
             {
                 throw new ArgumentException(sfr16Name);
             }
 
-            string sfrhName = sfr16Map[sfr16Name].SFRHName;
-            string sfrlName = sfr16Map[sfr16Name].SFRLName;
-            if (!sfrMap.ContainsKey(sfrhName))
+            if (!sfrMap.ContainsKey(sfrAttr.SFRHName))
             {
-                throw new ArgumentException(sfrhName);
+                throw new ArgumentException(sfrAttr.SFRHName);
             }
 
-            if (!sfrMap.ContainsKey(sfrlName))
+            if (!sfrMap.ContainsKey(sfrAttr.SFRLName))
             {
-                throw new ArgumentException(sfrlName);
+                throw new ArgumentException(sfrAttr.SFRLName);
             }
 
             byte lValue = (byte)(value & 0xff);
             byte hValue = (byte)(value >> 8 & 0xff);
 
-            SetMemFromProp(hValue, sfrhName);
-            SetMemFromProp(lValue, sfrlName);
+            SetMemFromProp(hValue, sfrAttr.SFRHName);
+            SetMemFromProp(lValue, sfrAttr.SFRLName);
         }
 
         /// <summary>
@@ -174,24 +172,22 @@ namespace Sim80C51.Processors
         /// <exception cref="ArgumentException">if register not found</exception>
         protected ushort GetMem16FromProp([CallerMemberName] string sfr16Name = "")
         {
-            if (!sfr16Map.ContainsKey(sfr16Name))
+            if (!sfr16Map.TryGetValue(sfr16Name, out SFR16Attribute? sfrAttr))
             {
                 throw new ArgumentException(sfr16Name);
             }
 
-            string sfrhName = sfr16Map[sfr16Name].SFRHName;
-            string sfrlName = sfr16Map[sfr16Name].SFRLName;
-            if (!sfrMap.ContainsKey(sfrhName))
+            if (!sfrMap.TryGetValue(sfrAttr.SFRHName, out SFRAttribute? sfrH))
             {
-                throw new ArgumentException(sfrhName);
+                throw new ArgumentException(sfrAttr.SFRHName);
             }
 
-            if (!sfrMap.ContainsKey(sfrlName))
+            if (!sfrMap.TryGetValue(sfrAttr.SFRLName, out SFRAttribute? sfrL))
             {
-                throw new ArgumentException(sfrlName);
+                throw new ArgumentException(sfrAttr.SFRLName);
             }
 
-            return (ushort)(GetMem(sfrMap[sfrhName].Address) << 8 | GetMem(sfrMap[sfrlName].Address));
+            return (ushort)(GetMem(sfrH.Address) << 8 | GetMem(sfrL.Address));
         }
 
         /// <summary>
@@ -203,23 +199,23 @@ namespace Sim80C51.Processors
         /// <exception cref="ArgumentException">if bit or register not found</exception>
         protected bool SetBitFromProp(bool value, [CallerMemberName] string sfrBitName = "")
         {
-            if (!sfrBitMap.ContainsKey(sfrBitName))
+            if (!sfrBitMap.TryGetValue(sfrBitName, out SFRBitAttribute? sfrBit))
             {
                 throw new ArgumentException(sfrBitName);
             }
 
-            string sfrName = sfrBitMap[sfrBitName].SFRName;
-            if (!sfrMap.ContainsKey(sfrName))
+            string sfrName = sfrBit.SFRName;
+            if (!sfrMap.TryGetValue(sfrName, out SFRAttribute? sfrAttr))
             {
                 throw new ArgumentException(sfrName);
             }
 
-            if (GetBit(sfrMap[sfrName].Address, sfrBitMap[sfrBitName].Bit) == value)
+            if (GetBit(sfrAttr.Address, sfrBit.Bit) == value)
             {
                 return false;
             }
 
-            SetBit(sfrMap[sfrName].Address, sfrBitMap[sfrBitName].Bit, value);
+            SetBit(sfrAttr.Address, sfrBit.Bit, value);
             DoPropertyChanged(sfrName);
             DoPropertyChanged(sfrBitName);
             foreach (string sfr16name in sfr16Map.Where(sf => sf.Value.SFRHName == sfrName || sf.Value.SFRLName == sfrName).Select(sf => sf.Key))
@@ -237,18 +233,18 @@ namespace Sim80C51.Processors
         /// <exception cref="ArgumentException">if bit or register not found</exception>
         protected bool GetBitFromProp([CallerMemberName] string sfrBitName = "")
         {
-            if (!sfrBitMap.ContainsKey(sfrBitName))
+            if (!sfrBitMap.TryGetValue(sfrBitName, out SFRBitAttribute? sfrBit))
             {
                 throw new ArgumentException(sfrBitName);
             }
 
-            string sfrName = sfrBitMap[sfrBitName].SFRName;
-            if (!sfrMap.ContainsKey(sfrName))
+            string sfrName = sfrBit.SFRName;
+            if (!sfrMap.TryGetValue(sfrName, out SFRAttribute? sfrAttr))
             {
                 throw new ArgumentException(sfrName);
             }
 
-            return GetBit(sfrMap[sfrName].Address, sfrBitMap[sfrBitName].Bit);
+            return GetBit(sfrAttr.Address, sfrBit.Bit);
         }
 
         /// <summary>
@@ -261,20 +257,20 @@ namespace Sim80C51.Processors
         /// <exception cref="ArgumentException">if register not found</exception>
         protected bool SetMemFromProp(byte value, [CallerMemberName] string sfrName = "")
         {
-            if (!sfrMap.ContainsKey(sfrName))
+            if (!sfrMap.TryGetValue(sfrName, out SFRAttribute? sfrAttr))
             {
                 throw new ArgumentException(sfrName);
             }
 
-            if (GetMem(sfrMap[sfrName].Address) == value)
+            if (GetMem(sfrAttr.Address) == value)
             {
                 return false;
             }
 
-            byte bitMask = SetMem(sfrMap[sfrName].Address, value);
-            if (sfrCallback.ContainsKey(sfrName))
+            byte bitMask = SetMem(sfrAttr.Address, value);
+            if (sfrCallback.TryGetValue(sfrName, out List<Action>? callbackList))
             {
-                foreach(Action callback in sfrCallback[sfrName])
+                foreach(Action callback in callbackList)
                 {
                     callback.Invoke();
                 }
@@ -285,9 +281,9 @@ namespace Sim80C51.Processors
             {
                 if (((1 << sfrBit.Value.Bit) & bitMask) != 0)
                 {
-                    if (bitCallback.ContainsKey(sfrBit.Key))
+                    if (bitCallback.TryGetValue(sfrBit.Key, out List<Action>? bitCallbackList))
                     {
-                        foreach (Action callback in bitCallback[sfrBit.Key])
+                        foreach (Action callback in bitCallbackList)
                         {
                             callback.Invoke();
                         }
@@ -312,12 +308,12 @@ namespace Sim80C51.Processors
         /// <exception cref="ArgumentException">if register not found</exception>
         protected byte GetMemFromProp([CallerMemberName] string sfrName = "")
         {
-            if (!sfrMap.ContainsKey(sfrName))
+            if (!sfrMap.TryGetValue(sfrName, out SFRAttribute? sfrAttr))
             {
                 throw new ArgumentException(sfrName);
             }
 
-            return GetMem(sfrMap[sfrName].Address);
+            return GetMem(sfrAttr.Address);
         }
 
         /// <summary>
@@ -395,17 +391,17 @@ namespace Sim80C51.Processors
         /// <returns>Bitmask of bits updated</returns>
         protected byte SetMem(string sfrName, byte value)
         {
-            if (!sfrMap.ContainsKey(sfrName))
+            if (!sfrMap.TryGetValue(sfrName, out SFRAttribute? sfrAttr))
             {
                 throw new ArgumentException(sfrName);
             }
 
-            if (GetMem(sfrMap[sfrName].Address) == value)
+            if (GetMem(sfrAttr.Address) == value)
             {
                 return 0;
             }
 
-            return SetMem(sfrMap[sfrName].Address, value);
+            return SetMem(sfrAttr.Address, value);
         }
 
         /// <summary>
@@ -426,12 +422,12 @@ namespace Sim80C51.Processors
 
         public static byte ParseIntermediateByte(string value)
         {
-            if (!value.StartsWith("#"))
+            if (!value.StartsWith('#'))
             {
                 throw new ArgumentOutOfRangeException(value);
             }
 
-            if (value.EndsWith("h"))
+            if (value.EndsWith('h'))
             {
                 return Convert.ToByte(value[1..3], 16);
             }
@@ -441,12 +437,12 @@ namespace Sim80C51.Processors
 
         public static ushort ParseIntermediateUShort(string value)
         {
-            if (!value.StartsWith("#"))
+            if (!value.StartsWith('#'))
             {
                 throw new ArgumentOutOfRangeException(value);
             }
 
-            if (value.EndsWith("h"))
+            if (value.EndsWith('h'))
             {
                 return Convert.ToUInt16(value[1..5], 16);
             }

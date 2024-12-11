@@ -1,17 +1,10 @@
 ﻿namespace Sim80C51.Processors.Attributes
 {
     [AttributeUsage(AttributeTargets.Property, AllowMultiple = false)]
-    public class SFRBitAttribute : Attribute
+    public class SFRBitAttribute(string sfrName, byte bit, bool addressable = false) : Attribute
     {
-        public string SFRName { get; }
-        public byte Bit { get; }
-        public bool Addressable { get; }
-
-        public SFRBitAttribute(string SFRName, byte Bit, bool Addressable = false)
-        {
-            this.SFRName = SFRName;
-            this.Bit = Bit;
-            this.Addressable = Addressable;
-        }
+        public string SFRName => sfrName;
+        public byte Bit => bit;
+        public bool Addressable => addressable;
     }
 }

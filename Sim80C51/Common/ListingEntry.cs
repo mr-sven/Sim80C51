@@ -10,7 +10,7 @@ namespace Sim80C51.Common
         private ushort address;
 
         public List<byte> Data { get => data; set { data = value; DoPropertyChanged(); } }
-        private List<byte> data = new();
+        private List<byte> data = [];
 
         public string DataString { get => dataString; private set { dataString = value; DoPropertyChanged(); } }
         private string dataString = string.Empty;
@@ -22,7 +22,7 @@ namespace Sim80C51.Common
         private InstructionType instruction;
 
         public List<string> Arguments { get => arguments; set { arguments = value; DoPropertyChanged(); } }
-        private List<string> arguments = new();
+        private List<string> arguments = [];
 
         public string ArgumentString { get => argumentString; private set { argumentString = value; DoPropertyChanged(); } }
         private string argumentString = string.Empty;
@@ -38,7 +38,7 @@ namespace Sim80C51.Common
 
         public void UpdateStrings()
         {
-            DataString = BitConverter.ToString(Data.ToArray()).Replace('-', ' ');
+            DataString = BitConverter.ToString([.. Data]).Replace('-', ' ');
             ArgumentString = string.Join(", ", arguments);
         }
 

@@ -1,17 +1,10 @@
 ﻿namespace Sim80C51.Processors.Attributes
 {
     [AttributeUsage(AttributeTargets.Class, AllowMultiple = true)]
-    public class IVAttribute : Attribute
+    public class IVAttribute(ushort address, byte priority, string name) : Attribute
     {
-        public ushort Address { get; }
-        public byte Priority { get; }
-        public string Name { get; }
-
-        public IVAttribute(ushort address, byte priority, string name)
-        {
-            Address = address;
-            Priority = priority;
-            Name = name;
-        }
+        public ushort Address => address;
+        public byte Priority => priority;
+        public string Name => name;
     }
 }

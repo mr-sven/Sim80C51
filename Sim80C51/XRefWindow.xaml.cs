@@ -10,7 +10,7 @@ namespace Sim80C51
     /// </summary>
     public partial class XRefWindow : Window
     {
-        public List<ushort> XRefs { get; set; } = new();
+        public List<ushort> XRefs { get; set; } = [];
 
         public ushort Target;
 

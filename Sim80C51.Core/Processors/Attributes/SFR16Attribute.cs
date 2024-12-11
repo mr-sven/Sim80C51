@@ -1,15 +1,9 @@
 ﻿namespace Sim80C51.Processors.Attributes
 {
     [AttributeUsage(AttributeTargets.Property, AllowMultiple = false)]
-    public class SFR16Attribute : Attribute
+    public class SFR16Attribute(string sfrHName, string sfrLName) : Attribute
     {
-        public string SFRHName { get; }
-        public string SFRLName { get; }
-
-        public SFR16Attribute(string SFRHName, string SFRLName)
-        {
-            this.SFRHName = SFRHName;
-            this.SFRLName = SFRLName;
-        }
+        public string SFRHName => sfrHName;
+        public string SFRLName => sfrLName;
     }
 }

@@ -76,10 +76,10 @@ namespace Sim80C51.Common
         public ListingCollection? Listing => listing;
         private ListingCollection? listing;
 
-        private readonly Dictionary<string, SFRBitAttribute> ivBits = new();
-        private readonly Dictionary<ushort, string> reverseSfrMap = new();
-        private readonly Dictionary<ushort, string> reverseSfrBitMap = new();
-        private readonly Dictionary<string, ushort> ivMap = new();
+        private readonly Dictionary<string, SFRBitAttribute> ivBits = [];
+        private readonly Dictionary<ushort, string> reverseSfrMap = [];
+        private readonly Dictionary<ushort, string> reverseSfrBitMap = [];
+        private readonly Dictionary<string, ushort> ivMap = [];
 
         public ListingFactory(Type processorType)
         {
@@ -145,9 +145,9 @@ namespace Sim80C51.Common
 
         public ListingCollection Build(BinaryReader br, string? label = "RESET")
         {
-            listing ??= new();
+            listing ??= [];
 
-            Stack<ListingEntry> branches = new();
+            Stack<ListingEntry> branches = [];
 
             ListingEntry entry;
 
@@ -248,12 +248,12 @@ namespace Sim80C51.Common
                             if (ivBits.ContainsKey(entry.Arguments[0]))
                             {
                                 string ivName = entry.Arguments[0][1..];
-                                if (ivMap.ContainsKey(ivName))
+                                if (ivMap.TryGetValue(ivName, out ushort ivAddress))
                                 {
                                     branches.Push(new ListingEntry()
                                     {
-                                        TargetAddress = ivMap[ivName],
-                                        Arguments = new() { ivName }
+                                        TargetAddress = ivAddress,
+                                        Arguments = [ivName]
                                     });
                                 }
                             }
@@ -368,7 +368,7 @@ namespace Sim80C51.Common
                 branches.Push(new ListingEntry()
                 {
                     TargetAddress = ivMap[ivName],
-                    Arguments = new() { ivName }
+                    Arguments = [ivName]
                 });
             }
         }
@@ -382,7 +382,7 @@ namespace Sim80C51.Common
             {
                 Address = address,
                 Label = label,
-                Data = new() { instruction }
+                Data = [instruction]
             };
 
             switch (instruction)
@@ -1312,7 +1312,7 @@ namespace Sim80C51.Common
                 Instruction = InstructionType.DB,
                 Data = entryData,
                 Comment = entryData.ToAnsiString(),
-                Arguments = new() { "'" + entryData.ToEscapedAnsiString() + "'" }
+                Arguments = ["'" + entryData.ToEscapedAnsiString() + "'"]
             };
             entry.UpdateStrings();
 
@@ -1367,7 +1367,7 @@ namespace Sim80C51.Common
                     {
                         Address = address,
                         Instruction = InstructionType.DB,
-                        Data = buffer.ToList(),
+                        Data = [.. buffer],
                         Comment = buffer.ToAnsiString(),
                         Arguments = buffer.Select(c => c.ToString("x2") + 'h').ToList()
                     };

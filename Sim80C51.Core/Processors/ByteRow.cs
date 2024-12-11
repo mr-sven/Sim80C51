@@ -16,7 +16,7 @@ namespace Sim80C51.Processors
         {
             get
             {
-                string str = System.Text.Encoding.Default.GetString(Row.ToArray());
+                string str = System.Text.Encoding.Default.GetString([.. Row]);
                 return new string(str.Select(c => c < 0x20 ? '.' : c > 0x7f ? '.' : c).ToArray());
             }
         }
@@ -88,7 +88,7 @@ namespace Sim80C51.Processors
 
         public static ByteRow[] FromStream(Stream stream)
         {
-            List<ByteRow> res = new();
+            List<ByteRow> res = [];
 
             byte[] buf = new byte[ROW_WIDTH];
             int row = 0;
@@ -98,7 +98,7 @@ namespace Sim80C51.Processors
                 res.Add(new(row++, buf));
             }
 
-            return res.ToArray();
+            return [.. res];
         }
 
         public static MemoryStream ToMemoryStream(IEnumerable<IByteRow> Rows)

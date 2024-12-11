@@ -4,20 +4,11 @@ using System.Windows.Input;
 namespace Sim80C51.Toolbox.Wpf
 {
     [DataContract]
-    public class RelayCommand : ICommand
+    public class RelayCommand(Action<object?> execute, Predicate<object?> canExecute) : ICommand
     {
-        private Action<object?> execute;
-
-        private Predicate<object?> canExecute;
-
         private event EventHandler? CanExecuteChangedInternal;
 
         public RelayCommand(Action<object?> execute) : this(execute, DefaultCanExecute) { }
-        public RelayCommand(Action<object?> execute, Predicate<object?> canExecute)
-        {
-            this.execute = execute;
-            this.canExecute = canExecute;
-        }
 
         public event EventHandler? CanExecuteChanged
         {

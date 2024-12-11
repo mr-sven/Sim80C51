@@ -57,18 +57,18 @@ namespace Sim80C51.TanningBed
 
         public SAA1064 SAA1064_3B { get; } = new(true, true);
 
-        private II2CDevice[] i2CDevices;
+        private readonly II2CDevice[] i2CDevices;
 
         public MainWindowModel()
         {
-            i2CDevices = new II2CDevice[]
-            {
+            i2CDevices =
+            [
                 PCF8574_20,
                 PCF8574_21,
                 PCF8574_22,
                 SAA1064_38,
                 SAA1064_3B
-            };
+            ];
         }
 
         public void Loaded(MainWindow mainWindow)

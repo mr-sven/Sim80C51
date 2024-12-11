@@ -19,7 +19,7 @@ namespace Sim80C51.Toolbox.Wpf
     public class TwoColumnGrid : Panel
     {
         private double Column1Width;
-        private readonly List<double> RowHeights = new();
+        private readonly List<double> RowHeights = [];
 
         /// <summary>
         /// Gets or sets the amount of spacing (in device independent pixels) between the rows.

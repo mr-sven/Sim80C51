@@ -22,7 +22,7 @@ namespace Sim80C51
         private SimulatorWindow? owner;
         private Interfaces.I80C51? CPU;
         private Controls.ListingEditorContext? listingCtx;
-        private readonly SortedDictionary<ushort, Controls.MemoryContext> xmemCtx = new();
+        private readonly SortedDictionary<ushort, Controls.MemoryContext> xmemCtx = [];
         private readonly DispatcherTimer stepTimer = new();
         #endregion
 
@@ -69,7 +69,7 @@ namespace Sim80C51
                 Processors.ByteRow[] rows = LoadByteRowsFromCompBase64(wsp.InternalMemory);
                 for (int i = 0; i < rows.Length && i < CPU.CoreMemory.Count; i++)
                 {
-                    CPU.CoreMemory[i].UpdateFromBuffer(rows[i].Row.ToArray());
+                    CPU.CoreMemory[i].UpdateFromBuffer([.. rows[i].Row]);
                 }
                 CPU.RefreshUIProperies();
             }
@@ -472,7 +472,7 @@ namespace Sim80C51
         #endregion
 
         #region Property Bindings
-        public Dictionary<string, Type> ProcessorList { get; } = new();
+        public Dictionary<string, Type> ProcessorList { get; } = [];
 
         public Type? SelectedProcessor { get => selectedProcessor; set { selectedProcessor = value; DoPropertyChanged(); } }
         private Type? selectedProcessor;
@@ -480,9 +480,9 @@ namespace Sim80C51
         public bool ProcessorActivated { get => processorActivated; set { processorActivated = value; DoPropertyChanged(); } }
         private bool processorActivated = false;
 
-        public ObservableCollection<ushort> Breakpoints { get; } = new();
+        public ObservableCollection<ushort> Breakpoints { get; } = [];
 
-        public ObservableDictionary<ushort, MemoryAccess> MemoryPointer { get; } = new();
+        public ObservableDictionary<ushort, MemoryAccess> MemoryPointer { get; } = [];
 
         public string DptrAddValue { get => dptrAddValue; set { dptrAddValue = value; DoPropertyChanged(); } }
         private string dptrAddValue = string.Empty;
@@ -726,7 +726,7 @@ namespace Sim80C51
                 StopStepTimer();
             }
 
-            if (stepTimer.IsEnabled && MemoryPointer.ContainsKey(address) && MemoryPointer[address].Write)
+            if (stepTimer.IsEnabled && MemoryPointer.TryGetValue(address, out MemoryAccess? access) && access.Write)
             {
                 StopStepTimer();
             }
@@ -739,7 +739,7 @@ namespace Sim80C51
                 return 0xff;
             }
 
-            if (stepTimer.IsEnabled && MemoryPointer.ContainsKey(address) && MemoryPointer[address].Read)
+            if (stepTimer.IsEnabled && MemoryPointer.TryGetValue(address, out MemoryAccess? access) && access.Read)
             {
                 StopStepTimer();
             }
@@ -755,7 +755,7 @@ namespace Sim80C51
 
         private byte GetCodeByte(ushort address)
         {
-            if (stepTimer.IsEnabled && MemoryPointer.ContainsKey(address) && MemoryPointer[address].Read)
+            if (stepTimer.IsEnabled && MemoryPointer.TryGetValue(address, out MemoryAccess? access) && access.Read)
             {
                 StopStepTimer();
             }

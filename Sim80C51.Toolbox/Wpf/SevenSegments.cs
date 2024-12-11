@@ -320,7 +320,7 @@ namespace Sim80C51.Toolbox.Wpf
             foreach (GeometryWithSegm entry in GeometryFigures)
             {
 
-                if (SegmentsBrush.Any())
+                if (SegmentsBrush.Count != 0)
                 {
                     Tuple<int, Brush, Color>? brush = SegmentsBrush.SingleOrDefault(s => s.Item1 == entry.SegmentNumber);
                     Pen figurePen = new(new SolidColorBrush(brush != null ? brush.Item3 : PenColor), PenThickness);
@@ -344,8 +344,8 @@ namespace Sim80C51.Toolbox.Wpf
         public void ClearSegments()
         {
             Value = 0;
-            SelectedSegments = new List<int>();
-            SegmentsBrush = new List<Tuple<int, Brush, Color>>();
+            SelectedSegments = [];
+            SegmentsBrush = [];
         }
 
         /// <summary>
@@ -353,8 +353,8 @@ namespace Sim80C51.Toolbox.Wpf
         /// </summary>
         protected virtual void AssignSegments()
         {
-            GeometryFigures = new List<GeometryWithSegm>
-            {
+            GeometryFigures =
+            [
                 new GeometryWithSegm(LeftBottomSegement(), 4),
                 new GeometryWithSegm(LeftTopSegement(), 5),
                 new GeometryWithSegm(RightTopSegement(), 1),
@@ -362,7 +362,7 @@ namespace Sim80C51.Toolbox.Wpf
                 new GeometryWithSegm(MiddleSegement(), 6),
                 new GeometryWithSegm(TopSegement(), 0),
                 new GeometryWithSegm(BottomSegement(), 3),
-            };
+            ];
         }
 
         /// <summary>
@@ -370,7 +370,7 @@ namespace Sim80C51.Toolbox.Wpf
         /// </summary>
         protected void SetSegments()
         {
-            if (SelectedSegments.Any())
+            if (SelectedSegments.Count != 0)
             {
                 for (int i = 0; i < SelectedSegments.Count; i++)
                 {
@@ -420,7 +420,7 @@ namespace Sim80C51.Toolbox.Wpf
         /// </summary>
         protected virtual void ValueSegmentsSelection()
         {
-            List<int> segments = new();
+            List<int> segments = [];
             for (int i = 0; i < 7; i++)
             {
                 if ((Value & 1 << i) != 0)
@@ -431,7 +431,7 @@ namespace Sim80C51.Toolbox.Wpf
 
             if (segments.Count > 0)
             {
-                SelectSegments(segments.ToArray());
+                SelectSegments([.. segments]);
             }
         }
 
@@ -566,8 +566,8 @@ namespace Sim80C51.Toolbox.Wpf
             startTopY = VirtualHeight / 2 - GapW / 2;
             double x5 = XByAngle(startTopY - startPointThickness);
 
-            return new()
-            {
+            return
+            [
                 // three top points, starting from the left point
                 new Point(x1 + startPointThickness, HorizSegSmallPartH + GapW + VertSegSmallPartH + startPointThickness),
                 new Point(x2 + VertSegPartW + startPointThickness, HorizSegSmallPartH + startPointThickness + GapShift()),
@@ -580,7 +580,7 @@ namespace Sim80C51.Toolbox.Wpf
 
                 // the point for rounded Bezier curve
                 bezPoint
-            };
+            ];
         }
 
         /// <summary>
@@ -604,8 +604,8 @@ namespace Sim80C51.Toolbox.Wpf
                 ? new Point(xBezier + startPointThickness, yBezier)
                 : new Point(startPointThickness, figureStartPointY - startPointThickness);
 
-            return new()
-            {
+            return
+            [
                 // three top points, starting from left top point
                 new Point(x1 + startPointThickness, VirtualHeight / 2 + GapW / 2),
                 new Point(x1 + VertSegBotPartW + startPointThickness, VirtualHeight / 2 + GapW / 2),
@@ -618,7 +618,7 @@ namespace Sim80C51.Toolbox.Wpf
 
                 // the point for rounded Bezier curve
                 bezPoint
-            };
+            ];
         }
 
         /// <summary>
@@ -627,8 +627,8 @@ namespace Sim80C51.Toolbox.Wpf
         /// <returns></returns>
         protected PointCollection GetRightBottomSegmPoints()
         {
-            return new PointCollection
-            {
+            return
+            [
                 // three top points, starting from the left point
                 new Point(VirtualWidth - LeftTopSegmPoints[3].X, VirtualHeight - LeftTopSegmPoints[3].Y),
                 new Point(VirtualWidth - LeftTopSegmPoints[4].X, VirtualHeight - LeftTopSegmPoints[4].Y),
@@ -641,7 +641,7 @@ namespace Sim80C51.Toolbox.Wpf
                 new Point(VirtualWidth - LeftTopSegmPoints[0].X, VirtualHeight - LeftTopSegmPoints[0].Y),
                 new Point(VirtualWidth - LeftTopSegmPoints[1].X, VirtualHeight - LeftTopSegmPoints[1].Y),
                 new Point(VirtualWidth - LeftTopSegmPoints[2].X, VirtualHeight - LeftTopSegmPoints[2].Y)
-            };
+            ];
         }
 
 
@@ -650,8 +650,8 @@ namespace Sim80C51.Toolbox.Wpf
         /// </summary>
         protected PointCollection GetRightTopSegmPoints()
         {
-            return new()
-            {
+            return
+            [
                 // three top points, starting from the left point
                 new Point(VirtualWidth - LeftBottomSegmPoints[3].X, VirtualHeight - LeftBottomSegmPoints[3].Y),
                 new Point(VirtualWidth - LeftBottomSegmPoints[4].X, VirtualHeight - LeftBottomSegmPoints[4].Y),
@@ -664,7 +664,7 @@ namespace Sim80C51.Toolbox.Wpf
                 new Point(VirtualWidth - LeftBottomSegmPoints[0].X, VirtualHeight - LeftBottomSegmPoints[0].Y),
                 new Point(VirtualWidth - LeftBottomSegmPoints[1].X, VirtualHeight - LeftBottomSegmPoints[1].Y),
                 new Point(VirtualWidth - LeftBottomSegmPoints[2].X, VirtualHeight - LeftBottomSegmPoints[2].Y)
-            };
+            ];
         }
 
         /// <summary>
@@ -677,8 +677,8 @@ namespace Sim80C51.Toolbox.Wpf
             double x1 = XByAngle(VirtualHeight / 2) + VertSegBotPartW + GapW;
             double x2 = XByAngle(VirtualHeight / 2 - HorizSegH / 2) + VertSegW + GapW;
 
-            return new()
-            {
+            return
+            [
                 // three left points, starting from the bottom point
                 new Point(x, VirtualHeight / 2 + HorizSegH / 2),
                 new Point(x1, VirtualHeight / 2),
@@ -688,7 +688,7 @@ namespace Sim80C51.Toolbox.Wpf
                 new Point(VirtualWidth - x, RightTopSegmPoints[6].Y + GapW / 2),
                 new Point(VirtualWidth - x1, VirtualHeight / 2),
                 new Point(VirtualWidth - x2, RightBottomSegmPoints[0].Y - GapW / 2)
-            };
+            ];
         }
 
 
@@ -702,8 +702,8 @@ namespace Sim80C51.Toolbox.Wpf
             double topRightX = RightTopSegmPoints[1].X - HorizSegSmallPartW;
             double coefRound = RoundedCorners ? VirtualWidth / horizRoundCoef : 0;
 
-            return new()
-            {
+            return
+            [
                 // three left points, starting from the bottom point
                 new Point(LeftTopSegmPoints[2].X + GapW, HorizSegH + startPointThickness),
                 new Point(LeftTopSegmPoints[1].X + GapShift(), HorizSegSmallPartH + startPointThickness),
@@ -717,7 +717,7 @@ namespace Sim80C51.Toolbox.Wpf
                 new Point(topRightX, startPointThickness),
                 new Point(RightTopSegmPoints[1].X - GapShift(), HorizSegSmallPartH + startPointThickness),
                 new Point(RightTopSegmPoints[0].X - GapW, HorizSegH + startPointThickness)
-            };
+            ];
         }
 
 
@@ -731,8 +731,8 @@ namespace Sim80C51.Toolbox.Wpf
             double botRightX = RightBottomSegmPoints[5].X - HorizSegSmallPartW;
             double coefRound = RoundedCorners ? VirtualWidth / horizRoundCoef : 0;
 
-            return new()
-            {
+            return
+            [
                 // three left points, starting from the bottom point
                 new Point(botLeftX, VirtualHeight - startPointThickness),
                 new Point(LeftBottomSegmPoints[4].X + GapShift(), VirtualHeight - HorizSegSmallPartH - startPointThickness),
@@ -746,7 +746,7 @@ namespace Sim80C51.Toolbox.Wpf
                 // two bottom Bezier points starting from the right point
                 new Point(botRightX - coefRound, VirtualHeight - startPointThickness),
                 new Point(botLeftX + coefRound, VirtualHeight - startPointThickness)
-            };
+            ];
         }
 
 
@@ -764,12 +764,12 @@ namespace Sim80C51.Toolbox.Wpf
             Point startPoint = RightTopSegmPoints[0];
 
             // The Bezier curve for rounded corners
-            PointCollection pointsBezier = new()
-            {
+            PointCollection pointsBezier =
+            [
                 RightTopSegmPoints[1],
                 RightTopSegmPoints[2],
                 RightTopSegmPoints[3]
-            };
+            ];
 
             PolyBezierSegment bez = new()
             {
@@ -818,12 +818,12 @@ namespace Sim80C51.Toolbox.Wpf
             Point startPoint = RightBottomSegmPoints[0];
 
             // The Bezier curve for rounded corners
-            PointCollection pointsBezier = new()
-            {
+            PointCollection pointsBezier =
+            [
                 RightBottomSegmPoints[3],
                 RightBottomSegmPoints[4],
                 RightBottomSegmPoints[5]
-            };
+            ];
 
             PolyBezierSegment bez = new()
             {
@@ -858,10 +858,10 @@ namespace Sim80C51.Toolbox.Wpf
             Point startPoint = TopSegmPoints[0];
 
             // The left Bezier curve for rounded corners
-            PointCollection pointsBezierLeft = new()
-            {
+            PointCollection pointsBezierLeft =
+            [
                 TopSegmPoints[1], TopSegmPoints[2], TopSegmPoints[3]
-            };
+            ];
 
             PolyBezierSegment bezLeft = new()
             {
@@ -870,10 +870,10 @@ namespace Sim80C51.Toolbox.Wpf
 
 
             // The right Bezier curve for rounded corners
-            PointCollection pointsBezierRight = new()
-            {
+            PointCollection pointsBezierRight =
+            [
                 TopSegmPoints[4], TopSegmPoints[5], TopSegmPoints[6]
-            };
+            ];
 
             PolyBezierSegment bezRight = new()
             {
@@ -912,12 +912,12 @@ namespace Sim80C51.Toolbox.Wpf
             Point startPoint = LeftTopSegmPoints[6];
 
             // The Bezier curve for rounded corners
-            PointCollection pointsBezier = new()
-            {
+            PointCollection pointsBezier =
+            [
                 LeftTopSegmPoints[6],
                 LeftTopSegmPoints[0],
                 LeftTopSegmPoints[1]
-            };
+            ];
 
             PolyBezierSegment bez = new()
             {
@@ -950,12 +950,12 @@ namespace Sim80C51.Toolbox.Wpf
             Point startPoint = LeftBottomSegmPoints[0];
 
             // The Bezier curve for rounded corners
-            PointCollection pointsBezier = new()
-            {
+            PointCollection pointsBezier =
+            [
                 LeftBottomSegmPoints[4],
                 LeftBottomSegmPoints[5],
                 LeftBottomSegmPoints[6]
-            };
+            ];
 
             PolyBezierSegment bez = new()
             {
@@ -991,10 +991,10 @@ namespace Sim80C51.Toolbox.Wpf
             Point startPoint = BottomSegmPoints[1];
 
             // The right Bezier curve for rounded corners
-            PointCollection pointsBezierRight = new()
-            {
+            PointCollection pointsBezierRight =
+            [
                 BottomSegmPoints[4], BottomSegmPoints[5], BottomSegmPoints[6]
-            };
+            ];
 
             PolyBezierSegment bezRight = new()
             {
@@ -1002,10 +1002,10 @@ namespace Sim80C51.Toolbox.Wpf
             };
 
             // The left Bezier curve for rounded corners
-            PointCollection pointsBezierLeft = new()
-            {
+            PointCollection pointsBezierLeft =
+            [
                 BottomSegmPoints[7], BottomSegmPoints[0], BottomSegmPoints[1]
-            };
+            ];
 
             PolyBezierSegment bezLeft = new()
             {
@@ -1035,18 +1035,11 @@ namespace Sim80C51.Toolbox.Wpf
         /// <summary>
         /// The class to detect selected segment
         /// </summary>
-        public class GeometryWithSegm
+        public class GeometryWithSegm(PathGeometry geometry, int segm, bool isSelected = false)
         {
-            public PathGeometry Geometry { get; set; }
-            public int SegmentNumber { get; set; }
-            public bool IsSelected { get; set; }
-
-            public GeometryWithSegm(PathGeometry geometry, int segm, bool isSelected = false)
-            {
-                Geometry = geometry;
-                SegmentNumber = segm;
-                IsSelected = isSelected;
-            }
+            public PathGeometry Geometry { get; set; } = geometry;
+            public int SegmentNumber { get; set; } = segm;
+            public bool IsSelected { get; set; } = isSelected;
         }
         #endregion
     }

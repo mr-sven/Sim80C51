@@ -52,8 +52,8 @@ namespace Sim80C51.Controls
 
         private void ListingView_KeyDown(object sender, KeyEventArgs e)
         {
-            Key[] ignore = new[]
-            {
+            Key[] ignore =
+            [
                 Key.B,
                 Key.C,
                 Key.J,
@@ -62,7 +62,7 @@ namespace Sim80C51.Controls
                 Key.S,
                 Key.U,
                 Key.X,
-            };
+            ];
 
             if (ignore.Contains(e.Key))
             {

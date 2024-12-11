@@ -8,7 +8,7 @@ namespace Sim80C51.Processors
     /// </summary>
     public abstract partial class C80C51 : I80C51
     {
-        private static readonly string[] regNames = new string[] { nameof(R0), nameof(R1), nameof(R2), nameof(R3), nameof(R4), nameof(R5), nameof(R6), nameof(R7) };
+        private static readonly string[] regNames = [nameof(R0), nameof(R1), nameof(R2), nameof(R3), nameof(R4), nameof(R5), nameof(R6), nameof(R7)];
 
         private bool irqHighInProgress = false;
         private bool irqLowInProgress = false;

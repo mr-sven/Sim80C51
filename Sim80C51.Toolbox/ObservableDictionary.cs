@@ -77,7 +77,7 @@ namespace Sim80C51.Toolbox
 
         public bool Remove(TKey key)
         {
-            List<ObservableKeyValuePair<TKey, TValue>> remove = ThisAsCollection().Where(pair => Equals(key, pair.Key)).ToList();
+            List<ObservableKeyValuePair<TKey, TValue>> remove = ThisAsCollection().Where(pair => ObservableDictionary<TKey, TValue>.Equals(key, pair.Key)).ToList();
             foreach (ObservableKeyValuePair<TKey, TValue> pair in remove)
             {
                 ThisAsCollection().Remove(pair);
@@ -99,7 +99,7 @@ namespace Sim80C51.Toolbox
 
         public bool ContainsKey(TKey key)
         {
-            return !Equals(default(ObservableKeyValuePair<TKey, TValue>), ThisAsCollection().FirstOrDefault(i => Equals(key, i.Key)));
+            return !Equals(default(ObservableKeyValuePair<TKey, TValue>), ThisAsCollection().FirstOrDefault(i => ObservableDictionary<TKey, TValue>.Equals(key, i.Key)));
         }
 
         public bool Contains(KeyValuePair<TKey, TValue> item)
@@ -147,7 +147,7 @@ namespace Sim80C51.Toolbox
             return (from i in ThisAsCollection() select new KeyValuePair<TKey, TValue>(i.Key, i.Value)).ToList().GetEnumerator();
         }
 
-        private bool Equals(TKey firstKey, TKey secondKey)
+        private static bool Equals(TKey firstKey, TKey secondKey)
         {
             return EqualityComparer<TKey>.Default.Equals(firstKey, secondKey);
         }

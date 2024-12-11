@@ -13,7 +13,7 @@ namespace Sim80C51.Controls
 {
     public class ListingEditorContext : NotifyPropertyChanged
     {
-        private static readonly InstructionType[] jumpInstructions = new[] {
+        private static readonly InstructionType[] jumpInstructions = [
             //Instruction.JMP, Address based Jump
             InstructionType.LJMP,
             InstructionType.AJMP,
@@ -29,12 +29,12 @@ namespace Sim80C51.Controls
             InstructionType.JNC,
             InstructionType.JZ,
             InstructionType.JNZ
-        };
+        ];
 
         private ListingFactory? factory;
         private BinaryReader? reader;
 
-        public ListingCollection Listing { get; } = new();
+        public ListingCollection Listing { get; } = [];
 
         public ListingEntry? SelectedListingEntry { get => selectedListingEntry; set { selectedListingEntry = value; DoPropertyChanged(); } }
         private ListingEntry? selectedListingEntry;
@@ -153,9 +153,9 @@ namespace Sim80C51.Controls
                 ushort currentAddress = entry.Address;
                 int currentIndex = Listing.IndexOf(entry);
                 string displayText = string.Empty;
-                List<byte> bytes = new();
+                List<byte> bytes = [];
 
-                List<ListingEntry> entries = new();
+                List<ListingEntry> entries = [];
                 while (currentIndex < Listing.Count)
                 {
                     if (Listing[currentIndex].Instruction != InstructionType.DB)
@@ -185,7 +185,7 @@ namespace Sim80C51.Controls
                 startIdx = dlg.StartIndex;
                 endIdx = dlg.EndIndex;
 
-                factory.CreateString(reader, (ushort)(currentAddress + startIdx), bytes.ToArray()[startIdx..(endIdx + 1)].ToList());
+                factory.CreateString(reader, (ushort)(currentAddress + startIdx), [.. bytes.ToArray()[startIdx..(endIdx + 1)]]);
 
                 Application.Current.Dispatcher.Invoke(DispatcherPriority.Background, new Action(delegate { }));
 

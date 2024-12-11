@@ -4,8 +4,8 @@ namespace Sim80C51.Common
 {
     public class ListingCollection : ObservableCollection<ListingEntry>
     {
-        private readonly Dictionary<ushort, ListingEntry> entriesByAddress = new();
-        private readonly Dictionary<string, ListingEntry> entriesByLabel = new();
+        private readonly Dictionary<ushort, ListingEntry> entriesByAddress = [];
+        private readonly Dictionary<string, ListingEntry> entriesByLabel = [];
         
         public new void Remove(ListingEntry entry)
         {
@@ -45,9 +45,8 @@ namespace Sim80C51.Common
 
         public void RemoveByAddress(ushort address)
         {
-            if (entriesByAddress.ContainsKey(address))
+            if (entriesByAddress.TryGetValue(address, out ListingEntry? toRemove))
             {
-                ListingEntry toRemove = entriesByAddress[address];
                 base.Remove(toRemove);
                 entriesByAddress.Remove(address);
                 if (!string.IsNullOrEmpty(toRemove.Label))
@@ -69,9 +68,9 @@ namespace Sim80C51.Common
 
         public ListingEntry? GetByAddress(ushort address)
         {
-            if (entriesByAddress.ContainsKey(address))
+            if (entriesByAddress.TryGetValue(address, out ListingEntry? entry))
             {
-                return entriesByAddress[address];
+                return entry;
             }
 
             return null;
@@ -79,9 +78,9 @@ namespace Sim80C51.Common
 
         public ListingEntry? GetByLabel(string label)
         {
-            if (entriesByLabel.ContainsKey(label))
+            if (entriesByLabel.TryGetValue(label, out ListingEntry? entry))
             {
-                return entriesByLabel[label];
+                return entry;
             }
             return null;
         }
